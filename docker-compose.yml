@@ -1,0 +1,19 @@
+db:
+    build: ./db/
+    environment:
+        MYSQL_ROOT_PASSWORD: password
+        MYSQL_DATABASE: crash_archive
+    volumes:
+        - ./volumes/mysql:/var/lib/mysql
+ca:
+    build: ./app/
+    ports:
+        - "8080:80"
+    volumes:
+        - ./bin/ca-pmmp-linux:/app/ca-pmmp-linux
+        - ./templates:/app/templates
+        - ./config:/app/config
+        - ./volumes/reports:/app/reports
+        - ./static:/app/static
+    links:
+        - db:db

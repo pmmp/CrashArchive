@@ -1,0 +1,36 @@
+{{define "title"}}PocketMine Crash Archive{{end}}
+{{define "head"}}{{end}}
+{{define "content"}}
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h2 style="margin:0px;">Submit crash report</h2>
+        </div>
+        <div class="panel-body">
+            <form action="/submit" method="post" enctype="multipart/form-data" role="form">
+                <input type="hidden" name="report" value="yes" />
+                <div class="input-group input-group-lg">
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                    <input class="form-control" type="text" name="name" placeholder="Your name" required autofocus />
+                </div>
+                <br/>
+                <div class="input-group input-group-lg">
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></span>
+                    <input class="form-control" type="email" name="email" placeholder="E-mail (will be kept secret)" required />
+                </div>
+                <br/>
+                <div id="upload_report" style="display:;" class="input-group input-group-lg">
+                    <span class="input-group-addon"><span class="glyphicon glyphicon-paperclip"></span></span>
+                    <input class="form-control" type="file" name="reportFile"/>
+                </div>
+                <div id="paste_report" style="display:none;">
+                    <textarea class="form-control" name="reportPaste" placeholder="Paste the crash report here" rows="6"></textarea>
+                </div>
+                <p>The crash report can be found on the PocketMine-MP folder. You can alternatively <a href="#" onclick="$('#upload_report').css('display', 'none');$('#paste_report').css('display', 'block');return false;">paste the report</a></p>
+
+                <input type="submit" class="btn btn-lg btn-primary btn-block" value="Submit" style="margin-top:10px;"/>
+
+            </form>
+        </div>
+    </div>
+{{end}}
+{{define "foot"}}{{end}}

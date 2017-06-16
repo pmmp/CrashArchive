@@ -1,0 +1,15 @@
+{
+    "ListenAddress":":80",
+    "Database":{
+        "Username": "",
+        "Password": "",
+        "Hostname": "db",
+        "Port": 3306,
+        "Name": "crasharchive",
+        "Parameter": "?parseTime=true"
+    },
+    "Template": {
+       "Extension": "html",
+       "Folder": "templates"
+     }
+}
