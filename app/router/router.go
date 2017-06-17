@@ -5,10 +5,10 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/pressly/chi"
-	"github.com/pressly/chi/middleware"
 	"bitbucket.org/intyre/ca-pmmp/app"
 	"bitbucket.org/intyre/ca-pmmp/app/handler"
+	"github.com/pressly/chi"
+	"github.com/pressly/chi/middleware"
 )
 
 func New(app *app.App) *chi.Mux {
@@ -39,6 +39,7 @@ func New(app *app.App) *chi.Mux {
 		r.Route("/submit", func(r chi.Router) {
 			r.Get("/", handler.SubmitGet(app))
 			r.Post("/", handler.SubmitPost(app))
+			r.Post("/api", handler.SubmitPost(app))
 		})
 	})
 	return r
