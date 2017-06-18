@@ -74,9 +74,9 @@ type ReportData struct {
 		File    string
 	}
 	Code             map[string]string
-	Plugins          map[string]interface{} `json:"plugins,omitempty"`
-	PocketmineYML    string                 `json:"pocketmine.yml"`
-	ServerProperties string                 `json:"server.properties"`
+	Plugins          interface{} `json:"plugins,omitempty"`
+	PocketmineYML    string      `json:"pocketmine.yml"`
+	ServerProperties string      `json:"server.properties"`
 	Trace            []string
 }
 
@@ -116,7 +116,7 @@ func parse(data string) (*CrashReport, error) {
 	r.Valid = true
 
 	if err := r.ReadCompressed(report); err != nil {
-		return nil, errors.New("failed to read compressed data")
+		return nil, fmt.Errorf("failed to read compressed data: %v\n", err)
 	}
 
 	r.parseDate()
