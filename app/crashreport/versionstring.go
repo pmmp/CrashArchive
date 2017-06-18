@@ -15,7 +15,7 @@ type VersionString struct {
 	Build       int
 }
 
-var reVersion = regexp.MustCompile("([0-9]*)\\.([0-9]*)\\.{0,1}([0-9]*)(dev|)(-[\\0-9]{1,}|)")
+var reVersion = regexp.MustCompile("([0-9]*)\\.([0-9]*)\\.{0,1}([0-9]*)(dev|)(-[0-9]{1,}|)")
 
 // NewVersionString ...
 func NewVersionString(version string, build int) *VersionString {
@@ -33,8 +33,8 @@ func NewVersionString(version string, build int) *VersionString {
 	matches := reVersion.FindStringSubmatch(version)
 	if len(matches) > 0 {
 		v.Generation, _ = strconv.Atoi(matches[1])
-		v.Minor, _ = strconv.Atoi(matches[2])
-		v.Major, _ = strconv.Atoi(matches[3])
+		v.Major, _ = strconv.Atoi(matches[2])
+		v.Minor, _ = strconv.Atoi(matches[3])
 		if matches[4] == "dev" {
 			v.Development = true
 		}
@@ -50,7 +50,7 @@ func (v *VersionString) Get(b bool) string {
 	var dev string
 	var build string
 	if v.Development {
-		dev = ""
+		dev = "dev"
 	}
 	if (v.Build > 0) && b {
 		build = fmt.Sprintf("-%d", v.Build)
@@ -61,8 +61,8 @@ func (v *VersionString) Get(b bool) string {
 // release ...
 func (v *VersionString) release() string {
 	var minor string
-	if v.Build > 0 {
-		minor = fmt.Sprintf(".%d", v.Build)
+	if (v.Minor > 0) {
+		minor = fmt.Sprintf(".%d", v.Minor)
 	}
 	return fmt.Sprintf("%d.%d%s", v.Generation, v.Major, minor)
 }
