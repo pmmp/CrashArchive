@@ -22,8 +22,8 @@ func New(app *app.App) *chi.Mux {
 	}
 
 	r.Route("/", func(r chi.Router) {
+		r.Use(RealIP)
 		r.Use(middleware.Logger)
-		r.Use(middleware.RealIP)
 
 		r.Get("/", handler.HomeGet(app))
 		r.Get("/list", handler.ListGet(app))

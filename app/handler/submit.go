@@ -1,12 +1,13 @@
 package handler
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
-	"time"
+	"strings"
 
 	"bitbucket.org/intyre/ca-pmmp/app"
 	"bitbucket.org/intyre/ca-pmmp/app/crashreport"
@@ -26,92 +27,75 @@ func SubmitGet(app *app.App) http.HandlerFunc {
 }
 
 func SubmitPost(app *app.App) http.HandlerFunc {
-	query := `INSERT INTO crash_reports
-		(plugin, version, build, file, message, line, type, os, reportType, submitDate, reportDate)
-	VALUES
-		(:plugin, :version, :build, :file, :message, :line, :type, :os, :reportType, :submitDate, :reportDate)`
 	return func(w http.ResponseWriter, r *http.Request) {
-		// var err error
 		if r.FormValue("report") != "yes" {
 			log.Println("invalid report")
 			return
 		}
-		// log.Println(r.FormValue("name"), r.FormValue("email"))
-		report, err := parseMultipartForm(r)
+
+		reportStr, err := ParseMultipartForm(r)
 		if err != nil {
 			log.Println(err)
-			return
-		}
-		res, err := app.Database.NamedExec(query, &crashreport.Report{
-			Plugin:     report.CausingPlugin,
-			Version:    report.Version.Get(true),
-			Build:      report.Version.Build,
-			File:       report.Error.File,
-			Message:    report.Error.Message,
-			Line:       report.Error.Line,
-			Type:       report.Error.Type,
-			OS:         report.Data.General.OS,
-			ReportType: report.ReportType,
-			SubmitDate: time.Now().Unix(),
-			ReportDate: report.ReportDate.Unix(),
-		})
-		if err != nil {
-			log.Printf("failed to exec: %v\n", err)
 			return
 		}
 
-		id, err := res.LastInsertId()
+		report, err := crashreport.Parse(reportStr)
 		if err != nil {
 			log.Println(err)
 			return
 		}
-		data := map[string]interface{}{
-			"report":        report.Encoded(),
-			"reportId":      id,
-			"email":         r.FormValue("email"),
-			"name":          r.FormValue("name"),
-			"attachedIssue": false,
-		}
-		err = crashreport.WriteFile(id, data)
+
+		id, err := app.Database.InsertReport(report)
 		if err != nil {
-			log.Printf("failed to write file: %d %v\n", id, data)
+			log.Println(err)
 			return
 		}
-		http.Redirect(w, r, fmt.Sprintf("/view/%d", id), http.StatusMovedPermanently)
+
+		name := r.FormValue("name")
+		email := r.FormValue("email")
+		if err = report.WriteFile(id, name, email); err != nil {
+			log.Printf("failed to write file: %d\n", id)
+			return
+		}
+
+		if !strings.HasSuffix(r.RequestURI, "/api") {
+			http.Redirect(w, r, fmt.Sprintf("/view/%d", id), http.StatusMovedPermanently)
+			return
+		}
+
+		err = json.NewEncoder(w).Encode(map[string]interface{}{
+			"crashId":  id,
+			"crashUrl": fmt.Sprintf("https://crash.pmmp.io/view/%d", id),
+		})
+		if err != nil {
+			log.Println(err)
+			return
+		}
 	}
 }
 
-// parseMultipartForm ...
-func parseMultipartForm(r *http.Request) (*crashreport.CrashReport, error) {
-	var err error
-
-	if err = r.ParseMultipartForm(1024 * 256); err != nil {
-		return nil, err
+func ParseMultipartForm(r *http.Request) (string, error) {
+	if err := r.ParseMultipartForm(1024 * 256); err != nil {
+		return "", err
 	}
 
-	f := r.MultipartForm
-	if files, ok := f.File["reportFile"]; ok {
-		for _, file := range files {
-			m, _ := file.Open()
-			b, _ := ioutil.ReadAll(m)
-			f.Value["reportPaste"][0] = string(b)
-			m.Close()
-		}
-	}
-
-	if v, ok := f.Value["reportPaste"]; ok {
-		if v[0] == "" {
-			return nil, fmt.Errorf("reportPaste is empty: %+v\n", f)
-		}
-
-		report, err := crashreport.FromString(v[0])
+	var report string
+	form := r.MultipartForm
+	if reportPaste, ok := form.Value["reportPaste"]; ok && reportPaste[0] != "" {
+		report = reportPaste[0]
+	} else if reportFile, ok := form.File["reportFile"]; ok && reportFile[0] != nil {
+		f, err := reportFile[0].Open()
 		if err != nil {
-			log.Println(err)
-			return nil, err
+			return "", errors.New("could not open file")
 		}
 
-		return report, nil
+		b, err := ioutil.ReadAll(f)
+		if err != nil {
+			return "", errors.New("could not read file")
+		}
+		f.Close()
+		report = string(b)
 	}
 
-	return nil, errors.New("no valid MultipartForm data found")
+	return report, nil
 }

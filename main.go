@@ -12,6 +12,8 @@ import (
 	"bitbucket.org/intyre/ca-pmmp/app/router"
 )
 
+const dbRetry = 5
+
 func main() {
 	log.SetFlags(log.Lshortfile)
 
@@ -26,22 +28,27 @@ func main() {
 		os.Exit(1)
 	}
 
-	time.Sleep(5 * time.Second)
-	context.Database, err = database.New(context.Config.Database)
-	if err != nil {
-		log.Printf("unable to connect to database: %v\n", err)
-		os.Exit(1)
-	}
+	var retry int
 loop:
-	for i := 0; i <= 5; i++ {
-		if i == 5 {
-			log.Fatal("unable to ping database")
+	for {
+		if retry == dbRetry {
+			log.Println("could not connect to database")
+			os.Exit(1)
 		}
-		if err := context.Database.Ping(); err == nil {
+
+		context.Database, err = database.New(context.Config.Database)
+		if err == nil {
+			if err := context.Database.Ping(); err != nil {
+				log.Println(err)
+				os.Exit(1)
+			}
 			break loop
 		}
-		time.Sleep(2 * time.Second)
+		log.Printf("unable to connect to database: sleeping...\n")
+		time.Sleep(5 * time.Second)
+		retry++
 	}
+
 	r := router.New(context)
 	log.Printf("listening on: %s\n", context.Config.ListenAddress)
 	if err = http.ListenAndServe(context.Config.ListenAddress, r); err != nil {

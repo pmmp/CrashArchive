@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"mime/multipart"
 	"regexp"
 	"strings"
 	"time"
@@ -26,90 +25,12 @@ const (
 	TypeUnknown         = "unknown"
 )
 
-// CrashReport ...
-type CrashReport struct {
-	ReportType   string
-	ErrorMessage string
-	Valid        bool
-
-	CausedByPlugin bool
-	CausingPlugin  string
-
-	Data       *ReportData
-	ReportDate time.Time
-
-	Version    *VersionString
-	APIVersion string
-
-	Error struct {
-		Type    string
-		Message string
-		Line    int
-		File    string
-	}
-}
-
-// ReportData ...
-type ReportData struct {
-	Time    int64
-	Plugin  interface{}
-	General struct {
-		Name     string
-		Version  string
-		Build    int
-		Protocol int
-		API      string
-		GIT      string
-		Raklib   string
-		Uname    string
-		PHP      string
-		Zend     string
-		PHPOS    string
-		OS       string
-	}
-	Error struct {
-		Type    string
-		Message string
-		Line    int
-		File    string
-	}
-	Code             map[string]string
-	Plugins          interface{} `json:"plugins,omitempty"`
-	PocketmineYML    string      `json:"pocketmine.yml"`
-	ServerProperties string      `json:"server.properties"`
-	Trace            []string
-}
-
-// Report ...
-type Report struct {
-	ID         int `db:"id"`
-	Plugin     string
-	Version    string
-	Build      int
-	File       string
-	Message    string
-	Line       int
-	Type       string
-	OS         string
-	ReportType string `db:"reportType"`
-	SubmitDate int64  `db:"submitDate"`
-	ReportDate int64  `db:"reportDate"`
-}
-
-func FromString(data string) (*CrashReport, error) {
-	return parse(data)
-}
-func FromFile(f *multipart.FileHeader) (*CrashReport, error) {
-
-	return nil, nil
-}
-
-func parse(data string) (*CrashReport, error) {
+func Parse(data string) (*CrashReport, error) {
 	report := trimHead(data)
-
 	if report == "" {
 		return nil, errors.New("report is empty")
 	}
+
 	var r CrashReport
 	r.ReportType = TypeGeneric
 	r.CausedByPlugin = false
@@ -145,12 +66,10 @@ func (r *CrashReport) parseError() {
 		r.CausingPlugin = clean(plugin)
 	}
 
-	// TODO: clean this up!
 	r.Error.Type = r.Data.Error.Type
 	r.Error.Message = r.Data.Error.Message
 	r.Error.Line = r.Data.Error.Line
 	r.Error.File = r.Data.Error.File
-	// log.Println("DONE: ParseError!")
 }
 
 // ParseVersion ...
@@ -163,12 +82,10 @@ func (r *CrashReport) parseVersion() {
 	general := r.Data.General
 	r.APIVersion = general.API
 	r.Version = NewVersionString(general.Version, general.Build)
-	// log.Println("DONE: ParseVersion!")
 }
 
 // ClassifyMessage ...
 func (r *CrashReport) classifyMessage() {
-	// log.Println("TODO: ClassifyMessage")
 	if r.Error.Message == "" {
 		r.Valid = false
 		return
@@ -213,7 +130,7 @@ func trimHead(data string) string {
 	x := strings.Trim(data, "\r\n\t` ")
 	i := strings.Index(x, "===BEGIN CRASH DUMP===")
 	if i == -1 {
-		return ""
+		return data
 	}
 	x = x[i:]
 	return x
@@ -233,13 +150,7 @@ func (r *CrashReport) ReadCompressed(report string) error {
 	if err != nil {
 		return err
 	}
-	//var x map[string]interface{}
-	//err = json.NewDecoder(zr).Decode(&x)
-	//log.Printf("%#v\n", x)
-	//buf, _ := json.MarshalIndent(x, "", "    ")
-	//fmt.Printf("%s\n", buf)
 
-	//err = json.Unmarshal(buf, &r.Data)
 	err = json.NewDecoder(zr).Decode(&r.Data)
 	if err != nil {
 		return err
@@ -262,7 +173,7 @@ func (r *CrashReport) Encoded() string {
 	if err != nil {
 		log.Fatal(err)
 	}
-	//log.Println(hex.Dump(jsonBuf.Bytes()))
+
 	var zlibBuf bytes.Buffer
 	zw := zlib.NewWriter(&zlibBuf)
 	defer zw.Close()
@@ -272,7 +183,6 @@ func (r *CrashReport) Encoded() string {
 	}
 
 	zw.Flush()
-	//log.Println(hex.Dump(zlibBuf.Bytes()))
 
 	return fmt.Sprintf("===BEGIN CRASH DUMP===\n%s\n===END CRASH DUMP===", base64.StdEncoding.EncodeToString(zlibBuf.Bytes()))
 }
