@@ -27,32 +27,47 @@ func SubmitGet(app *app.App) http.HandlerFunc {
 }
 
 func SubmitPost(app *app.App) http.HandlerFunc {
+	name := "error"
+	errorTmpl, err := template.LoadTemplate(name, app.Config.Template)
+	if err != nil {
+		log.Fatalf("failed to load template %s: %v\n", name, err)
+	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.FormValue("report") != "yes" {
-			log.Println("invalid report")
+			http.Redirect(w, r, "/submit", http.StatusMovedPermanently)
 			return
 		}
 
 		reportStr, err := ParseMultipartForm(r)
 		if err != nil {
 			log.Println(err)
+			http.Redirect(w, r, "/submit", http.StatusMovedPermanently)
 			return
 		}
 
 		report, err := crashreport.Parse(reportStr)
 		if err != nil {
 			log.Println(err)
+			errorTmpl.ExecuteTemplate(w, "base.html", map[string]interface{}{
+				"Message": "This crash report is not valid",
+				"URL":     "/submit",
+			})
 			return
 		}
 
 		if report.Data.General.Name != "PocketMine-MP" {
 			log.Printf("spoon detected from: %s\n", r.RemoteAddr)
+			http.Error(w, http.StatusText(http.StatusTeapot), http.StatusTeapot)
 			return
 		}
 
 		id, err := app.Database.InsertReport(report)
 		if err != nil {
 			log.Println(err)
+			errorTmpl.ExecuteTemplate(w, "base.html", map[string]interface{}{
+				"Message": "Internal error",
+				"URL":     "/submit",
+			})
 			return
 		}
 
@@ -60,6 +75,10 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 		email := r.FormValue("email")
 		if err = report.WriteFile(id, name, email); err != nil {
 			log.Printf("failed to write file: %d\n", id)
+			errorTmpl.ExecuteTemplate(w, "base.html", map[string]interface{}{
+				"Message": "Internal error",
+				"URL":     "/submit",
+			})
 			return
 		}
 
