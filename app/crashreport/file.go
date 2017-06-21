@@ -63,12 +63,7 @@ func (r *CrashReport) WriteFile(id int64, name, email string) error {
 	}
 	defer fout.Close()
 
-	enc := json.NewEncoder(fout)
-	if err := enc.Encode(data); err != nil {
-		return err
-	}
-
-	return nil
+	return json.NewEncoder(fout).Encode(data)
 }
 
 func filenameHash(id int64) string {

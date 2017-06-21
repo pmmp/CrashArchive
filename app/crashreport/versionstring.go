@@ -15,7 +15,7 @@ type VersionString struct {
 	Build       int
 }
 
-var reVersion = regexp.MustCompile("([0-9]*)\\.([0-9]*)\\.{0,1}([0-9]*)(dev|)(-[0-9]{1,}|)")
+var reVersion = regexp.MustCompile(`([0-9]*)\.([0-9]*)\.{0,1}([0-9]*)(dev|)(-[0-9]{1,}|)`)
 
 // NewVersionString ...
 func NewVersionString(version string, build int) *VersionString {
@@ -61,7 +61,7 @@ func (v *VersionString) Get(b bool) string {
 // release ...
 func (v *VersionString) release() string {
 	var minor string
-	if (v.Minor > 0) {
+	if v.Minor > 0 {
 		minor = fmt.Sprintf(".%d", v.Minor)
 	}
 	return fmt.Sprintf("%d.%d%s", v.Generation, v.Major, minor)

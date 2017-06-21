@@ -23,7 +23,7 @@ func LoadTemplate(name string, cfg *Config) (*template.Template, error) {
 	for i, name := range templateList {
 		path, err := filepath.Abs(cfg.Folder + string(os.PathSeparator) + name + "." + cfg.Extension)
 		if err != nil {
-			log.Fatalf("Template Path Error: %v\n")
+			log.Fatalf("Template Path Error: %v\n", path)
 			return nil, err
 		}
 		templateList[i] = path

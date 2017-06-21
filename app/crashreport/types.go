@@ -17,12 +17,7 @@ type CrashReport struct {
 	Version    *VersionString
 	APIVersion string
 
-	Error struct {
-		Type    string
-		Message string
-		Line    int
-		File    string
-	}
+	Error ReportError
 }
 
 // ReportData ...
@@ -43,17 +38,19 @@ type ReportData struct {
 		PHPOS    string
 		OS       string
 	}
-	Error struct {
-		Type    string
-		Message string
-		Line    int
-		File    string
-	}
+	Error            ReportError
 	Code             map[string]string
 	Plugins          interface{} `json:"plugins,omitempty"`
 	PocketmineYML    string      `json:"pocketmine.yml"`
 	ServerProperties string      `json:"server.properties"`
 	Trace            []string
+}
+
+type ReportError struct {
+	Type    string
+	Message string
+	Line    int
+	File    string
 }
 
 // Report ...

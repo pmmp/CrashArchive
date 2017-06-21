@@ -152,16 +152,12 @@ func (r *CrashReport) ReadCompressed(report string) error {
 	}
 
 	err = json.NewDecoder(zr).Decode(&r.Data)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return err
 }
 
 // clean is shoghi magic
 func clean(v string) string {
-	var re = regexp.MustCompile("[^A-Za-z0-9_\\-\\.\\,\\;\\:/\\#\\(\\)\\\\ ]")
+	var re = regexp.MustCompile(`[^A-Za-z0-9_\-\.\,\;\:/\#\(\)\\ ]`)
 	return re.ReplaceAllString(v, "")
 }
 

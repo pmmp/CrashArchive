@@ -75,7 +75,7 @@ func SearchBuildPost(app *app.App) http.HandlerFunc {
 		log.Fatalf("failed to load template %s: %v\n", name, err)
 	}
 
-	query := "SELECT id, version, message FROM crash_reports WHERE build"
+	query := "SELECT id, version, message FROM crash_reports WHERE build ORDER BY id DESC"
 	queryTotal := "SELECT COUNT(*) FROM crash_reports"
 	return func(w http.ResponseWriter, r *http.Request) {
 

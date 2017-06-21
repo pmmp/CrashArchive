@@ -10,9 +10,14 @@ import (
 )
 
 var funcMap = template.FuncMap{
-	"shorten":  shorten,
-	"split":    split,
-	"sortcode": sortcode,
+	"shorten":   shorten,
+	"split":     split,
+	"sortcode":  sortcode,
+	"shorthash": shorthash,
+}
+
+func shorthash(s string) string {
+	return s[:8]
 }
 
 func shorten(s string) string {

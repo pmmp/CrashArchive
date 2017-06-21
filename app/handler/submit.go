@@ -45,6 +45,11 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 			return
 		}
 
+		if report.Data.General.Name != "PocketMine-MP" {
+			log.Printf("spoon detected from: %s\n", r.RemoteAddr)
+			return
+		}
+
 		id, err := app.Database.InsertReport(report)
 		if err != nil {
 			log.Println(err)
@@ -63,15 +68,16 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 			return
 		}
 
-		err = json.NewEncoder(w).Encode(map[string]interface{}{
+		jsonResponse(w, map[string]interface{}{
 			"crashId":  id,
 			"crashUrl": fmt.Sprintf("https://crash.pmmp.io/view/%d", id),
 		})
-		if err != nil {
-			log.Println(err)
-			return
-		}
+
 	}
+}
+
+func jsonResponse(w http.ResponseWriter, data map[string]interface{}) {
+	json.NewEncoder(w).Encode(data)
 }
 
 func ParseMultipartForm(r *http.Request) (string, error) {
