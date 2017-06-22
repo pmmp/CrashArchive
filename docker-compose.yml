@@ -1,12 +1,12 @@
 db:
-    build: ./db/
+    build: ./docker/db/
     environment:
         MYSQL_ROOT_PASSWORD: password
         MYSQL_DATABASE: crash_archive
     volumes:
         - ./volumes/mysql:/var/lib/mysql
 ca:
-    build: ./app/
+    build: ./docker/ca/
     ports:
         - "8080:80"
     volumes:
