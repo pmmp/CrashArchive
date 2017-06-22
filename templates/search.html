@@ -1,16 +1,16 @@
 {{define "title"}}PocketMine Crash Archive{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
-    <div class="panel panel-info">
-        <div class="panel-heading">
+    <div class="card">
+        <div class="card-header card-outline-primary">
             <h2 style="margin:0px;">Search reports</h2>
         </div>
-        <div class="panel-body">
+        <div class="card-block">
             <form action="/search/plugin" method="post" role="form">
                 <h3>Search by Plugin</h3>
                 <div class="form-group">
-                    <div class="input-group input-group-lg">
-                        <span class="input-group-addon"><span class="glyphicon glyphicon-screenshot"></span></span>
+                    <div class="input-group">
+                        <span class="input-group-addon"><span class="fa fa-crosshairs" aria-hidden="true"></span></span>
                         <input class="form-control" type="text" name="plugin" placeholder="Plugin name (case sensitive)" required autofocus />
                     </div>
                 </div>
@@ -22,13 +22,13 @@
             <form action="/search/build" method="post" role="form">
                 <h3>Search by Build number</h3>
                 <div class="form-group">
-                    <div class="input-group input-group-lg">
-                        <span class="input-group-addon"><span class="glyphicon glyphicon-pushpin"></span></span>
+                    <div class="input-group">
+                        <span class="input-group-addon"><span class="fa fa-thumb-tack" aria-hidden="true"></span></span>
                         <input class="form-control" type="text" name="build" placeholder="Build number" required autofocus />
                     </div>
                     <br/>
-                    <div class="input-group input-group-lg">
-                        <span class="input-group-addon"><span class="glyphicon glyphicon-sort"></span></span>
+                    <div class="input-group">
+                        <span class="input-group-addon"><span class="fa fa-sort" aria-hidden="true"></span></span>
                         <select class="form-control" name="type">
                             <option value="equal">Equal</option>
                             <option value="greater">Greater than</option>
@@ -43,8 +43,8 @@
 
             <form action="/search/report" method="post" role="form">
                 <h3>Search duplicates</h3>
-                <div class="input-group input-group-lg">
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-pushpin"></span></span>
+                <div class="input-group">
+                    <span class="input-group-addon"><span class="fa fa-thumb-tack" aria-hidden="true"></span></span>
                     <input class="form-control" type="text" name="id" placeholder="Report ID" required autofocus />
                 </div>
                 <input type="submit" class="btn btn-lg btn-primary btn-block" value="Search" style="margin-top:5px;"/>
@@ -54,8 +54,8 @@
 
             <form action="/search/id" method="post" role="form">
                 <h3>Search by Report ID</h3>
-                <div class="input-group input-group-lg">
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-pushpin"></span></span>
+                <div class="input-group">
+                    <span class="input-group-addon"><span class="fa fa-thumb-tack" aria-hidden="true"></span></span>
                     <input class="form-control" type="text" name="id" placeholder="Report ID" required autofocus />
                 </div>
                 <input type="submit" class="btn btn-lg btn-primary btn-block" value="Go" style="margin-top:5px;"/>

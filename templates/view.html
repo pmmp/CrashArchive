@@ -1,11 +1,11 @@
 {{define "title"}}PocketMine Crash Archive{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
- <div class="panel panel-info">
-     <div class="panel-heading">
+ <div class="card">
+     <div class="card-header card-outline-primary">
          <h2 style="margin:0px;"><span class="text-muted">#{{ .ReportID}}</span> {{shorten .Report.Error.Message}}</h2>
      </div>
-     <div class="panel-body">
+     <div class="card-block">
          <div>
              <span class="text-muted">Submitted by</span> {{.Name}} <img src="http://www.gravatar.com/avatar/{{.EmailHash}}" height="28" class="img-middle img-circle"/>
 
@@ -36,8 +36,8 @@
                  <b>File:</b> <span style="word-break: break-all;">{{.Report.Error.File}}</span><br/>
                  <b>Line:</b> #{{.Report.Error.Line}}<br/>
                  <b>Error level:</b> {{.Report.Error.Type}}<br/><br/>
-                 <pre style="overflow: auto; word-wrap: normal; white-space: pre;">{{sortcode .Report.Data.Code}}</pre>
-                 <pre style="overflow: auto; word-wrap: normal; white-space: pre;">{{range .Report.Data.Trace}}{{.}}<br/>{{end}}</pre>
+                 <pre class="codeblock"><code style="overflow: auto; word-wrap: normal; white-space: pre;">{{sortcode .Report.Data.Code}}</code></pre>
+                 <pre class="codeblock"><code style="overflow: auto; word-wrap: normal; white-space: pre;">{{range .Report.Data.Trace}}{{.}}<br/>{{end}}</code></pre>
              </div>
          </div>
 
@@ -45,13 +45,14 @@
              <div class="col-md-12">
                  <h3>Loaded Plugins</h3>
                  <table class="table table-striped table-condensed">
-                     <tr><th>Name</th><th>Version</th><th>State</th><th>Author(s)</th></tr>
-                     {{range .Report.Data.Plugins}}<tr><td>{{.name}}</td><td>{{.version}}</td><td>{{.enabled}}</td>
+                     <thead><tr><th>Name</th><th>Version</th><th>State</th><th>Author(s)</th></tr></thead>
+                     <tbody>{{range .Report.Data.Plugins}}<tr><td>{{.name}}</td><td>{{.version}}</td><td>{{.enabled}}</td>
                      <td>{{$equipment := .authors}}
                         {{ range $index, $element := .authors}}
                             {{if $index}},{{end}}
                             {{$element}}
                      {{end}}</td></tr>{{end}}
+                    </tbody>
                  </table>
              </div>
          </div>
@@ -69,7 +70,7 @@
          </div>
 
          <div style="text-align: right;">
-             <a href="/search/report/{{.ReportID}}" style="text-decoration: none;"><span class="glyphicon glyphicon-transfer"></span> Find duplicates</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="/download/{{.ReportID}}" style="text-decoration: none;"><span class="glyphicon glyphicon-download-alt"></span> Download</a>
+             <a href="/search/report/{{.ReportID}}" style="text-decoration: none;"><span class="fa fa-exchange" aria-hidden="true"></span> Find duplicates</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="/download/{{.ReportID}}" style="text-decoration: none;"><span class="fa fa-download" aria-hidden="true"></span> Download</a>
          </div>
      </div>
  </div>

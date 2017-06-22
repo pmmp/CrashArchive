@@ -1,17 +1,17 @@
 {{define "title"}}PocketMine Crash Archive{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
-    <div class="panel panel-info">
-        <div class="panel-heading">
+    <div class="card">
+        <div class="card-header card-outline-primary">
             <h2 style="margin:0px;">Search results</h2>
         </div>
-        <div class="panel-body">
+        <div class="card-block">
             <p>Showing {{.ShowCount}} of {{.TotalCount}} report(s). Duplicated reports might have been hidden.</p>
-            <table class="table table-striped table-condensed">
-                <tr><th>#ID</th><th>Version</th><th>Message</th><th></th></tr>
-                {{ range .Data }}
-                    <tr><td>{{.ID}}</td><td>{{.Version}}</td><td>{{shorten .Message}}</td><td><a href="/view/{{.ID}}" class="btn btn-xs btn-primary">-&gt;</a></td></tr>
-                {{end}}
+            <table class="table table-striped table-condensed table-sm">
+                <thead><tr><th>#ID</th><th>Version</th><th>Message</th><th></th></tr></thead>
+                <tbody>{{ range .Data }}
+                    <tr><td>{{.ID}}</td><td>{{.Version}}</td><td>{{shorten .Message}}</td><td><a href="/view/{{.ID}}" class="btn btn-sm btn-primary">-&gt;</a></td></tr>
+                {{end}}</tbody>
             </table>
         </div>
     </div>

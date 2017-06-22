@@ -1,25 +1,25 @@
 {{define "title"}}PocketMine Crash Archive{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
-    <div class="panel panel-info">
-        <div class="panel-heading">
+    <div class="card panel-info">
+        <div class="card-header card-outline-primary">
             <h2 style="margin:0px;">Submit crash report</h2>
         </div>
-        <div class="panel-body">
+        <div class="card-block">
             <form action="/submit" method="post" enctype="multipart/form-data" role="form">
                 <input type="hidden" name="report" value="yes" />
-                <div class="input-group input-group-lg">
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-user"></span></span>
+                <div class="input-group">
+                    <span class="input-group-addon"><span class="fa fa-user" aria-hidden="true"></span></span>
                     <input class="form-control" type="text" name="name" placeholder="Your name" required autofocus />
                 </div>
                 <br/>
-                <div class="input-group input-group-lg">
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></span>
+                <div class="input-group">
+                    <span class="input-group-addon"><span class="fa fa-envelope" aria-hidden="true"></span></span>
                     <input class="form-control" type="email" name="email" placeholder="E-mail (will be kept secret)" required />
                 </div>
                 <br/>
-                <div id="upload_report" style="display:;" class="input-group input-group-lg">
-                    <span class="input-group-addon"><span class="glyphicon glyphicon-paperclip"></span></span>
+                <div id="upload_report" style="display:;" class="input-group">
+                    <span class="input-group-addon"><span class="fa fa-paperclip" aria-hidden="true"></span></span>
                     <input class="form-control" type="file" name="reportFile"/>
                 </div>
                 <div id="paste_report" style="display:none;">

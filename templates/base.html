@@ -7,33 +7,23 @@
         <meta name="description" content="Crash Archive and classifier for PocketMine"/>
         <meta name="language" content="en"/>
         <meta http-equiv="X-UA-Compatible" content="chrome=1"/>
-        <meta property="twitter:account_id" content="1510082350"/>
         <title>{{template "title" .}}</title>
         <link rel="shortcut icon" href="http://cdn.pocketmine.net/favicon.png"/>
         <link rel="stylesheet" href="/css/bootstrap.min.css">
-        <!--<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">-->
-        <link href="/css/style.css" rel="stylesheet">
 
-        <script src="/js/jquery-2.1.1.min.js"></script>
-        <script src="/js/bootstrap.min.js"></script>
-        <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-        <![endif]-->
+        <link href="/css/style.css" rel="stylesheet">
+        <link href="/css/font-awesome.min.css" rel="stylesheet" >
         {{ template "head" .}}
     </head>
 
     <body>
         <div class="container">
-            <div class="header">
-                {{ template "menu.html" . }}
-            </div>
+
+            {{ template "menu.html" . }}
+
 
             {{template "content" .}}
 
             {{template "foot" .}}
-        </div>
 
         {{ template "footer.html" .}}
-    </body>
-</html>
