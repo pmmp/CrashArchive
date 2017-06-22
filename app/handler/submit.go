@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"strings"
 
@@ -38,16 +39,19 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 			return
 		}
 
-		reportStr, err := ParseMultipartForm(r)
+		if err := r.ParseMultipartForm(1024 * 256); err != nil {
+			http.Redirect(w, r, "/submit", http.StatusMovedPermanently)
+			return
+		}
+
+		reportStr, err := ParseMultipartForm(r.MultipartForm)
 		if err != nil {
-			log.Println(err)
 			http.Redirect(w, r, "/submit", http.StatusMovedPermanently)
 			return
 		}
 
 		report, err := crashreport.Parse(reportStr)
 		if err != nil {
-			log.Println(err)
 			errorTmpl.ExecuteTemplate(w, "base.html", map[string]interface{}{
 				"Message": "This crash report is not valid",
 				"URL":     "/submit",
@@ -63,7 +67,6 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 
 		id, err := app.Database.InsertReport(report)
 		if err != nil {
-			log.Println(err)
 			errorTmpl.ExecuteTemplate(w, "base.html", map[string]interface{}{
 				"Message": "Internal error",
 				"URL":     "/submit",
@@ -99,13 +102,8 @@ func jsonResponse(w http.ResponseWriter, data map[string]interface{}) {
 	json.NewEncoder(w).Encode(data)
 }
 
-func ParseMultipartForm(r *http.Request) (string, error) {
-	if err := r.ParseMultipartForm(1024 * 256); err != nil {
-		return "", err
-	}
-
+func ParseMultipartForm(form *multipart.Form) (string, error) {
 	var report string
-	form := r.MultipartForm
 	if reportPaste, ok := form.Value["reportPaste"]; ok && reportPaste[0] != "" {
 		report = reportPaste[0]
 	} else if reportFile, ok := form.File["reportFile"]; ok && reportFile[0] != nil {

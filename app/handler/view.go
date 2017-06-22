@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strconv"
 
-	"github.com/pressly/chi"
+	"github.com/go-chi/chi"
 
 	"bitbucket.org/intyre/ca-pmmp/app"
 	"bitbucket.org/intyre/ca-pmmp/app/crashreport"
@@ -35,7 +35,6 @@ func ViewIDGet(app *app.App) http.HandlerFunc {
 			})
 			return
 		}
-
 		report, jsonData, err := crashreport.ReadFile(int64(reportID))
 		if err != nil {
 			errorTmpl.ExecuteTemplate(w, "base.html", map[string]interface{}{
@@ -53,7 +52,7 @@ func ViewIDGet(app *app.App) http.HandlerFunc {
 		v["ReportID"] = reportID
 
 		if err = tmpl.ExecuteTemplate(w, "base.html", v); err != nil {
-			log.Println(err)
+			return
 		}
 	}
 }
