@@ -1,80 +1,141 @@
 {{define "title"}}PocketMine Crash Archive{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
- <div class="card">
-     <div class="card-header card-outline-primary">
-         <h2 style="margin:0px;"><span class="text-muted">#{{ .ReportID}}</span> {{shorten .Report.Error.Message}}</h2>
-     </div>
-     <div class="card-block">
-         <div>
-             <span class="text-muted">Submitted by</span> {{.Name}} <img src="http://www.gravatar.com/avatar/{{.EmailHash}}" height="28" class="img-middle img-circle"/>
+<div class="container">
+      <div class="row">
+        <div class="col s12">
+          <div class="card">
+            <div class="card-content">
+              <span class="card-title">#{{ .ReportID}} {{shorten .Report.Error.Message}}</span>
+              <p>Submitted by {{.Name}}</p>
+                <div class="row">
+                    <div class="col m12 l6">
+                        <div class="card-panel">
+                            <h3>General information</h3>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>Version:</th>
+                                        <td>{{.PocketMineVersion}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Git commit:</th>
+                                        <td><a href="https://github.com/pmmp/PocketMine-MP/commit/{{.Report.Data.General.GIT}}">{{ shorthash .Report.Data.General.GIT}}</a></td>
+                                    </tr>
+                                    <tr>
+                                        <th>API version:</th>
+                                        <td>{{.Report.APIVersion}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Raklib version:</th>
+                                        <td>{{.Report.Data.General.Raklib}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Caused by a Plugin:</th>
+                                        <td>{{.Report.CausedByPlugin}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Report date:</th>
+                                        <td>{{.Report.ReportDate}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Attached Issue:</th>
+                                        <td>{{.AttachedIssue}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col m12 l6">
+                        <div class="card-panel">
+                            <h3>System Information</h3>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>PHP version:</th>
+                                        <td>{{.Report.Data.General.PHP}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Operating system:</th>
+                                        <td>{{.Report.Data.General.OS}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>System banner</th>
+                                        <td>{{.Report.Data.General.Uname}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
-         </div>
+                <div class="row">
+                    <div class="col m12">
+                        <div class="card-panel">
+                            <h3>Error information</h3>
+                            <strong>{{.Report.Error.Message}}</strong><br/>
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th>File:</th>
+                                        <td>{{.Report.Error.File}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Line:</th>
+                                        <td>#{{.Report.Error.Line}}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Error level:</th>
+                                        <td>{{.Report.Error.Type}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="card-panel grey lighten-2"><pre><code style="overflow: auto; word-wrap: normal; white-space: pre;">{{sortcode .Report.Data.Code}}</code></pre></div>
+                            <div class="card-panel grey lighten-2"><pre><code style="overflow: auto; word-wrap: normal; white-space: pre;">{{range .Report.Data.Trace}}{{.}}<br/>{{end}}</code></pre></div>
+                        </div>
+                    </div>
+                </div>
 
-         {{.Warnings}}
-         <div class="row">
-             <div class="col-md-6">
-                 <h3>General information</h3>
-                 <b>Version:</b> {{.PocketMineVersion}}<br/>
-                 <b>Git commit:</b> <a href="https://github.com/pmmp/PocketMine-MP/commit/{{.Report.Data.General.GIT}}">{{ shorthash .Report.Data.General.GIT}}</a><br/>
-                 <b>API version:</b> {{.Report.APIVersion}}<br/>
-                 <b>Raklib version:</b> {{.Report.Data.General.Raklib}}<br/>
-                 <b>Caused by a Plugin:</b> {{.Report.CausedByPlugin}}<br/>
-                 <b>Report date:</b> {{.Report.ReportDate}}<br/>
-                 <b>Attached Issue:</b> {{.AttachedIssue}}
-             </div>
-             <div class="col-md-6">
-                 <h3>System Information</h3>
-                 <b>PHP version:</b> {{.Report.Data.General.PHP}}<br/>
-                 <b>Operating system:</b> {{.Report.Data.General.OS}}<br/>
-                 <b>System banner:</b> <code style="word-break: break-all; white-space: normal;">{{.Report.Data.General.Uname}}</code>
-             </div>
-         </div>
+                <div class="row">
+                    <div class="col m12">
+                        <h3>Loaded Plugins</h3>
+                        <table class="striped">
+                            <thead><tr><th>Name</th><th>Version</th><th>State</th><th>Author(s)</th></tr></thead>
+                            <tbody>{{range .Report.Data.Plugins}}<tr><td>{{.name}}</td><td>{{.version}}</td><td>{{.enabled}}</td>
+                            <td>{{$equipment := .authors}}
+                               {{ range $index, $element := .authors}}
+                                   {{if $index}},{{end}}
+                                   {{$element}}
+                            {{end}}</td></tr>{{end}}
+                           </tbody>
+                        </table>
+                    </div>
+                </div>
 
-         <div class="row">
-             <div class="col-md-12">
-                 <h3>Error information</h3>
-                 <strong>{{.Report.Error.Message}}</strong><br/>
-                 <b>File:</b> <span style="word-break: break-all;">{{.Report.Error.File}}</span><br/>
-                 <b>Line:</b> #{{.Report.Error.Line}}<br/>
-                 <b>Error level:</b> {{.Report.Error.Type}}<br/><br/>
-                 <pre class="codeblock"><code style="overflow: auto; word-wrap: normal; white-space: pre;">{{sortcode .Report.Data.Code}}</code></pre>
-                 <pre class="codeblock"><code style="overflow: auto; word-wrap: normal; white-space: pre;">{{range .Report.Data.Trace}}{{.}}<br/>{{end}}</code></pre>
-             </div>
-         </div>
-
-         <div class="row">
-             <div class="col-md-12">
-                 <h3>Loaded Plugins</h3>
-                 <table class="table table-striped table-condensed">
-                     <thead><tr><th>Name</th><th>Version</th><th>State</th><th>Author(s)</th></tr></thead>
-                     <tbody>{{range .Report.Data.Plugins}}<tr><td>{{.name}}</td><td>{{.version}}</td><td>{{.enabled}}</td>
-                     <td>{{$equipment := .authors}}
-                        {{ range $index, $element := .authors}}
-                            {{if $index}},{{end}}
-                            {{$element}}
-                     {{end}}</td></tr>{{end}}
-                    </tbody>
-                 </table>
-             </div>
-         </div>
-
-         <div class="row">
-             <div class="col-md-12">
-                 <h3 data-toggle="collapse" data-target="#settings-table" style="cursor: pointer;">Server Settings <small>[toggle]</small></h3>
-                 <div class="collapse" id="settings-table">
-                     <table class="table table-striped table-condensed">
-                         <tr><th>Name</th><th>Value</th></tr>
-                         {{split .Report.Data.ServerProperties}}
-                     </table>
-                 </div>
-             </div>
-         </div>
-
-         <div style="text-align: right;">
-             <a href="/search/report/{{.ReportID}}" style="text-decoration: none;"><span class="fa fa-exchange" aria-hidden="true"></span> Find duplicates</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="/download/{{.ReportID}}" style="text-decoration: none;"><span class="fa fa-download" aria-hidden="true"></span> Download</a>
-         </div>
-     </div>
- </div>
+                <div class="row">
+                    <div class="col m12">
+                        <h3>Server Settings</h3>
+                        <ul class="collapsible collapsible-accordion" data-collapsible="accordion">
+                            <li class="">
+                                <div class="collapsible-header">Show</div>
+                                <div class="collapsible-body" style="display: none;">
+                                    <table class="striped">
+                                        <tr><th>Name</th><th>Value</th></tr>
+                                        {{split .Report.Data.ServerProperties}}
+                                    </table>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="card-action">
+              <a href="/search/report/{{.ReportID}}" style="text-decoration: none;"><span class="fa fa-exchange" aria-hidden="true"></span> Find duplicates</a>
+              <a href="/download/{{.ReportID}}" style="text-decoration: none;"><span class="fa fa-download" aria-hidden="true"></span> Download</a>
+            </div>
+          </div>
+        </div>
+      </div>
+</div>
 {{end}}
 {{define "foot"}}{{end}}
