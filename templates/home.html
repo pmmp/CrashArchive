@@ -1,14 +1,20 @@
 {{define "title"}}PocketMine Crash Archive{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
-    <div class="jumbotron">
-        <h1>Crash Report Submission</h1>
-        <p class="lead">
-            Here you can submit your crash reports. They will be classified, allowing the development team
+<div class="section no-pad-bot" id="index-banner">
+    <div class="container">
+        <br><br>
+        <h1 class="header center orange-text">Crash Report Submission</h1>
+        <div class="row center">
+            <h5 class="header col s12 light">Here you can submit your crash reports. They will be classified, allowing the development team
             to fix them easily and help Plugin developers correct errors in their creations.
-            Personal information is hidden by default.
-        </p>
-        <p><a class="btn btn-lg btn-success" href="/submit" role="button">Submit report</a></p>
+            Personal information is hidden by default.</h5>
+        </div>
+        <div class="row center">
+            <a href="/submit" id="submit-button" class="btn-large waves-effect waves-light orange">Submit report</a>
+        </div>
+        <br><br>
     </div>
+</div>
 {{end}}
 {{define "foot"}}{{end}}

@@ -1,66 +1,92 @@
 {{define "title"}}PocketMine Crash Archive{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
-    <div class="card">
-        <div class="card-header card-outline-primary">
-            <h2 style="margin:0px;">Search reports</h2>
-        </div>
-        <div class="card-block">
-            <form action="/search/plugin" method="post" role="form">
-                <h3>Search by Plugin</h3>
-                <div class="form-group">
-                    <div class="input-group">
-                        <span class="input-group-addon"><span class="fa fa-crosshairs" aria-hidden="true"></span></span>
-                        <input class="form-control" type="text" name="plugin" placeholder="Plugin name (case sensitive)" required autofocus />
-                    </div>
+<div class="container">
+    <div class="row">
+        <div class="col s10 offset-s2">
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title">Search by Plugin</span>
+                    <form action="/search/plugin" method="post" role="form">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">mode_edit</i>
+                                <input placeholder="Plugin name (case sensitive)" name="plugin" type="text" class="validate">
+                            </div>
+                        </div>
+                        <input type="submit" class="waves-effect waves-light btn" value="Search" style="margin-top:10px;"/>
+                    </form>
+                    <hr/>
                 </div>
-                <input type="submit" class="btn btn-lg btn-primary btn-block" value="Search" style="margin-top:10px;"/>
-            </form>
-
-            <hr/>
-
-            <form action="/search/build" method="post" role="form">
-                <h3>Search by Build number</h3>
-                <div class="form-group">
-                    <div class="input-group">
-                        <span class="input-group-addon"><span class="fa fa-thumb-tack" aria-hidden="true"></span></span>
-                        <input class="form-control" type="text" name="build" placeholder="Build number" required autofocus />
-                    </div>
-                    <br/>
-                    <div class="input-group">
-                        <span class="input-group-addon"><span class="fa fa-sort" aria-hidden="true"></span></span>
-                        <select class="form-control" name="type">
-                            <option value="equal">Equal</option>
-                            <option value="greater">Greater than</option>
-                            <option value="less">Less than</option>
-                        </select>
-                    </div>
-                </div>
-                <input type="submit" class="btn btn-lg btn-primary btn-block" value="Search" style="margin-top:10px;"/>
-            </form>
-
-            <hr/>
-
-            <form action="/search/report" method="post" role="form">
-                <h3>Search duplicates</h3>
-                <div class="input-group">
-                    <span class="input-group-addon"><span class="fa fa-thumb-tack" aria-hidden="true"></span></span>
-                    <input class="form-control" type="text" name="id" placeholder="Report ID" required autofocus />
-                </div>
-                <input type="submit" class="btn btn-lg btn-primary btn-block" value="Search" style="margin-top:5px;"/>
-            </form>
-
-            <hr/>
-
-            <form action="/search/id" method="post" role="form">
-                <h3>Search by Report ID</h3>
-                <div class="input-group">
-                    <span class="input-group-addon"><span class="fa fa-thumb-tack" aria-hidden="true"></span></span>
-                    <input class="form-control" type="text" name="id" placeholder="Report ID" required autofocus />
-                </div>
-                <input type="submit" class="btn btn-lg btn-primary btn-block" value="Go" style="margin-top:5px;"/>
-            </form>
+            </div>
         </div>
     </div>
+
+    <div class="row">
+        <div class="col s10 offset-s2">
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title">Search by Build number</span>
+                    <form action="/search/build" method="post" role="form">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">mode_edit</i>
+                                <input placeholder="Build number" name="build" type="text" class="validate">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s4 offset-s1">
+                                <select name="type" class="browser-default">
+                                    <option value="equal">Equal</option>
+                                    <option value="greater">Greater than</option>
+                                    <option value="less">Less than</option>
+                                </select>
+                            </div>
+                        </div>
+                        <input type="submit" class="waves-effect waves-light btn" value="Search" style="margin-top:10px;"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s10 offset-s2">
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title">Search duplicates</span>
+                    <form action="/search/report" method="post" role="form">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">mode_edit</i>
+                                <input placeholder="Report ID" name="id" type="text" class="validate">
+                            </div>
+                        </div>
+                        <input type="submit" class="waves-effect waves-light btn" value="Search" style="margin-top:10px;"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s10 offset-s2">
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title">Search by Report ID</span>
+                    <form action="/search/id" method="post" role="form">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <i class="material-icons prefix">mode_edit</i>
+                                <input placeholder="Report ID" name="id" type="text" class="validate">
+                            </div>
+                        </div>
+                        <input type="submit" class="waves-effect waves-light btn" value="Search" style="margin-top:10px;"/>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {{end}}
 {{define "foot"}}{{end}}
