@@ -150,6 +150,7 @@ func (r *CrashReport) ReadCompressed(report string) error {
 	if err != nil {
 		return err
 	}
+	defer zr.Close()
 
 	err = json.NewDecoder(zr).Decode(&r.Data)
 	return err
