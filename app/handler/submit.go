@@ -85,6 +85,8 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 			return
 		}
 
+		app.ReportToSlack(name, id, report.ErrorMessage)
+
 		if !strings.HasSuffix(r.RequestURI, "/api") {
 			http.Redirect(w, r, fmt.Sprintf("/view/%d", id), http.StatusMovedPermanently)
 			return

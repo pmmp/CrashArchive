@@ -12,6 +12,7 @@ type Config struct {
 	ListenAddress string
 	Database      *database.Config
 	Template      *template.Config
+	SlackURL      string
 }
 
 func LoadConfig(configPath string) (*Config, error) {
