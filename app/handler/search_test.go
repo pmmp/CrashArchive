@@ -5,7 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"bitbucket.org/intyre/ca-pmmp/app"
+	"github.com/pmmp/CrashArchive/app"
 )
 
 func TestSearchGet(t *testing.T) {

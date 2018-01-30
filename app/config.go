@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"os"
 
-	"bitbucket.org/intyre/ca-pmmp/app/database"
-	"bitbucket.org/intyre/ca-pmmp/app/template"
+	"github.com/pmmp/CrashArchive/app/database"
+	"github.com/pmmp/CrashArchive/app/template"
 )
 
 type Config struct {

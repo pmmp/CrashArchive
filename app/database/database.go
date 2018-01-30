@@ -6,7 +6,7 @@ import (
 	"log"
 	"time"
 
-	"bitbucket.org/intyre/ca-pmmp/app/crashreport"
+	"github.com/pmmp/CrashArchive/app/crashreport"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"

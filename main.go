@@ -7,9 +7,9 @@ import (
 	"os"
 	"time"
 
-	"bitbucket.org/intyre/ca-pmmp/app"
-	"bitbucket.org/intyre/ca-pmmp/app/database"
-	"bitbucket.org/intyre/ca-pmmp/app/router"
+	"github.com/pmmp/CrashArchive/app"
+	"github.com/pmmp/CrashArchive/app/database"
+	"github.com/pmmp/CrashArchive/app/router"
 )
 
 const dbRetry = 5

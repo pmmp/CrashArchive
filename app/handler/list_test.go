@@ -5,8 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"bitbucket.org/intyre/ca-pmmp/app"
-	"bitbucket.org/intyre/ca-pmmp/app/template"
+	"github.com/pmmp/CrashArchive/app"
+	"github.com/pmmp/CrashArchive/app/template"
 )
 
 func TestListGet(t *testing.T) {

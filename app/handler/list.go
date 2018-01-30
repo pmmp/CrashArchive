@@ -4,9 +4,9 @@ import (
 	"log"
 	"net/http"
 
-	"bitbucket.org/intyre/ca-pmmp/app"
-	"bitbucket.org/intyre/ca-pmmp/app/crashreport"
-	"bitbucket.org/intyre/ca-pmmp/app/template"
+	"github.com/pmmp/CrashArchive/app"
+	"github.com/pmmp/CrashArchive/app/crashreport"
+	"github.com/pmmp/CrashArchive/app/template"
 )
 
 func ListGet(app *app.App) http.HandlerFunc {

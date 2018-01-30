@@ -9,8 +9,8 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 
-	"bitbucket.org/intyre/ca-pmmp/app"
-	"bitbucket.org/intyre/ca-pmmp/app/handler"
+	"github.com/pmmp/CrashArchive/app"
+	"github.com/pmmp/CrashArchive/app/handler"
 )
 
 func New(app *app.App) *chi.Mux {

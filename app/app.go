@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"bitbucket.org/intyre/ca-pmmp/app/database"
+	"github.com/pmmp/CrashArchive/app/database"
 )
 
 // App ...

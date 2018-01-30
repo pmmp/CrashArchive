@@ -8,9 +8,9 @@ import (
 
 	"github.com/go-chi/chi"
 
-	"bitbucket.org/intyre/ca-pmmp/app"
-	"bitbucket.org/intyre/ca-pmmp/app/crashreport"
-	"bitbucket.org/intyre/ca-pmmp/app/template"
+	"github.com/pmmp/CrashArchive/app"
+	"github.com/pmmp/CrashArchive/app/crashreport"
+	"github.com/pmmp/CrashArchive/app/template"
 )
 
 func ViewIDGet(app *app.App) http.HandlerFunc {
