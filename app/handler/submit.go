@@ -65,6 +65,12 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 			return
 		}
 
+		if report.Data.General.GIT == strings.Repeat("00", 20) || strings.HasSuffix(report.Data.General.GIT, "-dirty") {
+			log.Printf("invalid git hash %s in report from: %s\n", report.Data.General.GIT, r.RemoteAddr)
+			http.Error(w, http.StatusText(http.StatusTeapot), http.StatusTeapot)
+			return
+		}
+
 		id, err := app.Database.InsertReport(report)
 		if err != nil {
 			errorTmpl.ExecuteTemplate(w, "base.html", map[string]interface{}{
