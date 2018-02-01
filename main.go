@@ -43,6 +43,8 @@ loop:
 				os.Exit(1)
 			}
 			break loop
+		} else {
+			log.Println(err)
 		}
 		log.Printf("unable to connect to database: sleeping...\n")
 		time.Sleep(5 * time.Second)

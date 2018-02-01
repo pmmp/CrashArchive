@@ -17,6 +17,9 @@ type DB struct {
 }
 
 func New(config *Config) (*DB, error) {
+	if config.Username == "" || config.Password == "" {
+		return nil, errors.New("Username and password for mysql database not set in config.json")
+	}
 	db, err := sqlx.Connect("mysql", DSN(config))
 	if err != nil {
 		return nil, err
