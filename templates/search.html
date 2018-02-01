@@ -3,45 +3,40 @@
 {{define "content"}}
 <div class="container">
     <div class="row">
-        <div class="col s10 offset-s2">
+        <div class="col s12">
             <div class="card">
                 <div class="card-content">
                     <span class="card-title">Search by Plugin</span>
                     <form action="/search/plugin" method="post" role="form">
                         <div class="row">
                             <div class="input-field col s12">
-                                <i class="material-icons prefix">mode_edit</i>
                                 <input placeholder="Plugin name (case sensitive)" name="plugin" type="text" class="validate">
                             </div>
                         </div>
                         <input type="submit" class="waves-effect waves-light btn" value="Search" style="margin-top:10px;"/>
                     </form>
-                    <hr/>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="row">
-        <div class="col s10 offset-s2">
+        <div class="col s12">
             <div class="card">
                 <div class="card-content">
                     <span class="card-title">Search by Build number</span>
                     <form action="/search/build" method="post" role="form">
                         <div class="row">
-                            <div class="input-field col s12">
-                                <i class="material-icons prefix">mode_edit</i>
-                                <input placeholder="Build number" name="build" type="text" class="validate">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="input-field col s4 offset-s1">
+                            <div class="input-field col s6 m3 l2">
                                 <select name="type" class="browser-default">
                                     <option value="equal">Equal</option>
                                     <option value="greater">Greater than</option>
                                     <option value="less">Less than</option>
                                 </select>
                             </div>
+                            <div class="input-field col s6 m9 l10">
+                                <input placeholder="Build number" name="build" type="text" class="validate">
+                            </div>
                         </div>
                         <input type="submit" class="waves-effect waves-light btn" value="Search" style="margin-top:10px;"/>
                     </form>
@@ -51,14 +46,13 @@
     </div>
 
     <div class="row">
-        <div class="col s10 offset-s2">
+        <div class="col s12">
             <div class="card">
                 <div class="card-content">
                     <span class="card-title">Search duplicates</span>
                     <form action="/search/report" method="post" role="form">
                         <div class="row">
                             <div class="input-field col s12">
-                                <i class="material-icons prefix">mode_edit</i>
                                 <input placeholder="Report ID" name="id" type="text" class="validate">
                             </div>
                         </div>
@@ -70,14 +64,13 @@
     </div>
 
     <div class="row">
-        <div class="col s10 offset-s2">
+        <div class="col s12">
             <div class="card">
                 <div class="card-content">
                     <span class="card-title">Search by Report ID</span>
                     <form action="/search/id" method="post" role="form">
                         <div class="row">
                             <div class="input-field col s12">
-                                <i class="material-icons prefix">mode_edit</i>
                                 <input placeholder="Report ID" name="id" type="text" class="validate">
                             </div>
                         </div>

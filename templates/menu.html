@@ -1,11 +1,18 @@
 <nav class="light-blue lighten-1" role="navigation">
     <div class="nav-wrapper">
         <a href="/" class="brand-logo">Crash Archive</a>
-        <ul id="nav-mobile" class="right hide-on-med-and-down">
-        <li><a href="/"><span class="fa fa-home fa-2x" aria-hidden="true"></span></a></li>
-        <li><a href="/search"><span class="fa fa-search fa-2x" aria-hidden="true"></span></a></li>
-        <li><a href="/list"><span class="fa fa-list fa-2x" aria-hidden="true"></span></a></li>
-        <li><a href="/submit"><span class="fa fa-plus fa-2x" aria-hidden="true"></span></a></li>
+        <a href="/"  data-activates="mobile-menu" class="button-collapse"><i class="material-icons">menu</i></a>
+        <ul class="right hide-on-med-and-down">
+            <li><a href="/"><span class="fa fa-home fa-2x" aria-hidden="true"></span></a></li>
+            <li><a href="/search"><span class="fa fa-search fa-2x" aria-hidden="true"></span></a></li>
+            <li><a href="/list"><span class="fa fa-list fa-2x" aria-hidden="true"></span></a></li>
+            <li><a href="/submit"><span class="fa fa-plus fa-2x" aria-hidden="true"></span></a></li>
+      </ul>
+      <ul class="side-nav" id="mobile-menu">
+          <li><a href="/" >Home</a></li>
+          <li><a href="/search" >Search</a></li>
+          <li><a href="/list" >List</a></li>
+          <li><a href="/submit" >Submit</a></li>
       </ul>
     </div>
 </nav>
