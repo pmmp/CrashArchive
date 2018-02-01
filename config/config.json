@@ -1,11 +1,11 @@
 {
-    "ListenAddress":":80",
+    "ListenAddress":"0.0.0.0:80",
     "Database":{
-        "Username": "",
-        "Password": "",
+        "Username": "root",
+        "Password": "password",
         "Hostname": "db",
         "Port": 3306,
-        "Name": "crasharchive",
+        "Name": "crash_archive",
         "Parameter": "?parseTime=true"
     },
     "Template": {
