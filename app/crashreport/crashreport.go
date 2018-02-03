@@ -173,13 +173,12 @@ func (r *CrashReport) Encoded() string {
 
 	var zlibBuf bytes.Buffer
 	zw := zlib.NewWriter(&zlibBuf)
-	defer zw.Close()
 	_, err = zw.Write(jsonBuf.Bytes())
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	zw.Flush()
+	zw.Close()
 
 	return fmt.Sprintf("===BEGIN CRASH DUMP===\n%s\n===END CRASH DUMP===", base64.StdEncoding.EncodeToString(zlibBuf.Bytes()))
 }
