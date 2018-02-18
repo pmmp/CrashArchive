@@ -99,16 +99,23 @@
                 <div class="row">
                     <div class="col m12">
                         <h3>Loaded Plugins</h3>
-                        <table class="striped">
-                            <thead><tr><th>Name</th><th>Version</th><th>State</th><th>Author(s)</th></tr></thead>
-                            <tbody>{{range .Report.Data.Plugins}}<tr><td>{{.name}}</td><td>{{.version}}</td><td>{{.enabled}}</td>
-                            <td>{{$equipment := .authors}}
-                               {{ range $index, $element := .authors}}
-                                   {{if $index}},{{end}}
-                                   {{$element}}
-                            {{end}}</td></tr>{{end}}
-                           </tbody>
-                        </table>
+                        <ul class="collapsible collapsible-accordion" data-collapsible="accordion">
+                            <li class="">
+                                <div class="collapsible-header">Show</div>
+                                <div class="collapsible-body" style="display: none;">
+                                    <table class="striped">
+                                        <thead><tr><th>Name</th><th>Version</th><th>State</th><th>Author(s)</th></tr></thead>
+                                        <tbody>{{range .Report.Data.Plugins}}<tr><td>{{.name}}</td><td>{{.version}}</td><td>{{.enabled}}</td>
+                                        <td>{{$equipment := .authors}}
+                                           {{ range $index, $element := .authors}}
+                                               {{if $index}},{{end}}
+                                               {{$element}}
+                                        {{end}}</td></tr>{{end}}
+                                       </tbody>
+                                    </table>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
                 </div>
 
