@@ -29,7 +29,6 @@ func New(app *app.App) *chi.Mux {
 
 		r.Get("/", handler.HomeGet(app))
 		r.Get("/list", handler.ListGet(app))
-		r.Get("/list/{pageID}", handler.ListGet(app))
 		r.Get("/view/{reportID}", handler.ViewIDGet(app))
 		r.Get("/download/{reportID}", handler.DownloadGet(app))
 

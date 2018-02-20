@@ -7,7 +7,6 @@ import (
 	"github.com/pmmp/CrashArchive/app"
 	"github.com/pmmp/CrashArchive/app/crashreport"
 	"github.com/pmmp/CrashArchive/app/template"
-	"github.com/go-chi/chi"
 	"strconv"
 	"fmt"
 )
@@ -30,7 +29,9 @@ func ListGet(app *app.App) http.HandlerFunc {
 
 		var pageId int
 
-		pageParam := chi.URLParam(r, "pageID")
+		params := r.URL.Query()
+
+		pageParam := params.Get("page")
 		if pageParam != "" {
 			pageId, err = strconv.Atoi(pageParam)
 			if err != nil || pageId < 0 || (pageId - 1) * pageSize > total {
