@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"net/http"
+	"github.com/pmmp/CrashArchive/app/crashreport"
 )
 
 type Config struct {
@@ -47,4 +48,41 @@ func ExecuteErrorTemplate(w http.ResponseWriter, cfg *Config, message string, ba
 		"URL":     backURL,
 	})
 	return nil
+}
+
+func ExecuteListTemplate(w http.ResponseWriter, cfg *Config, reports []crashreport.Report, basePageUrl string, pageId int, rangeStart int, total int) {
+	const templateName = "list"
+
+	tmpl, err := LoadTemplate(templateName, cfg)
+	if err != nil {
+		log.Printf("failed to load template %s: %v\n", templateName, err)
+		http.Error(w, http.StatusText(500), 500)
+		return
+	}
+
+	reportCount := len(reports)
+
+	data := make(map[string]interface{})
+	data["Data"] = reports
+	if reportCount <= 0 {
+		data["RangeStart"] = 0
+	} else {
+		data["RangeStart"] = rangeStart + 1
+	}
+
+	data["RangeEnd"] = rangeStart + reportCount
+	data["ShowCount"] = reportCount
+	data["TotalCount"] = total
+	data["BaseUrl"] = basePageUrl
+	if rangeStart <= 0 {
+		data["PrevPage"] = 0
+	} else {
+		data["PrevPage"] = pageId - 1
+	}
+	if rangeStart + reportCount >= total {
+		data["NextPage"] = 0
+	} else {
+		data["NextPage"] = pageId + 1
+	}
+	tmpl.ExecuteTemplate(w, "base.html", data)
 }

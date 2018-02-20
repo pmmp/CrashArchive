@@ -33,12 +33,6 @@ func SearchIDPost(app *app.App) http.HandlerFunc {
 	}
 }
 func SearchPluginPost(app *app.App) http.HandlerFunc {
-	const name = "list"
-	tmpl, err := template.LoadTemplate(name, app.Config.Template)
-	if err != nil {
-		log.Fatalf("failed to load template %s: %v\n", name, err)
-	}
-
 	query := "SELECT id, version, message FROM crash_reports WHERE plugin = ? ORDER BY id DESC"
 	queryTotal := "SELECT COUNT(*) FROM crash_reports"
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -61,20 +55,10 @@ func SearchPluginPost(app *app.App) http.HandlerFunc {
 			return
 		}
 
-		data := make(map[string]interface{})
-		data["Data"] = reports
-		data["ShowCount"] = len(reports)
-		data["TotalCount"] = total
-		tmpl.ExecuteTemplate(w, "base.html", data)
+		template.ExecuteListTemplate(w, app.Config.Template, reports, "", 1, 0, len(reports))
 	}
 }
 func SearchBuildPost(app *app.App) http.HandlerFunc {
-	const name = "list"
-	tmpl, err := template.LoadTemplate(name, app.Config.Template)
-	if err != nil {
-		log.Fatalf("failed to load template %s: %v\n", name, err)
-	}
-
 	query := "SELECT id, version, message FROM crash_reports WHERE build"
 	queryTotal := "SELECT COUNT(*) FROM crash_reports"
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -82,6 +66,7 @@ func SearchBuildPost(app *app.App) http.HandlerFunc {
 		buildID, err := strconv.Atoi(r.FormValue("build"))
 		if err != nil {
 			http.Error(w, http.StatusText(404), 404)
+			log.Println(err)
 			return
 		}
 
@@ -105,20 +90,11 @@ func SearchBuildPost(app *app.App) http.HandlerFunc {
 			log.Println(err)
 			return
 		}
-		data := make(map[string]interface{})
-		data["Data"] = reports
-		data["ShowCount"] = len(reports)
-		data["TotalCount"] = total
-		tmpl.ExecuteTemplate(w, "base.html", data)
+
+		template.ExecuteListTemplate(w, app.Config.Template, reports, "", 1, 0, len(reports))
 	}
 }
 func SearchReportPost(app *app.App) http.HandlerFunc {
-	const name = "list"
-	tmpl, err := template.LoadTemplate(name, app.Config.Template)
-	if err != nil {
-		log.Fatalf("failed to load template %s: %v\n", name, err)
-	}
-
 	query := "SELECT * FROM crash_reports WHERE id = ?"
 	queryDupe := "SELECT id, version, message FROM crash_reports WHERE message = ? AND file = ? and line = ? ORDER BY id DESC"
 	queryTotal := "SELECT COUNT(*) FROM crash_reports"
@@ -149,10 +125,7 @@ func SearchReportPost(app *app.App) http.HandlerFunc {
 			log.Println(err)
 			return
 		}
-		data := make(map[string]interface{})
-		data["Data"] = reports
-		data["ShowCount"] = len(reports)
-		data["TotalCount"] = total
-		tmpl.ExecuteTemplate(w, "base.html", data)
+
+		template.ExecuteListTemplate(w, app.Config.Template, reports, "", 1, 0, len(reports))
 	}
 }
