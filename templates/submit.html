@@ -10,17 +10,17 @@
                     <form action="/submit" method="post" enctype="multipart/form-data" role="form">
                         <input type="hidden" name="report" value="yes" />
                         <div class="row">
-                            <div class="input-field col s6">
+                            <div class="input-field col s12">
                                 <input type="text" name="name" placeholder="Your name" class="validate">
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s6">
+                            <div class="input-field col s12">
                                 <input type="email" name="email" placeholder="E-mail (will be kept secret)" class="validate">
                             </div>
                         </div>
                         <div class="row">
-                            <div class="file-field input-field">
+                            <div class="file-field input-field col s12">
                                 <div class="btn">
                                     <span>File</span>
                                     <input type="file" name="reportFile">
@@ -36,7 +36,7 @@
                         </div>
                         <p>The crash report can be found on the PocketMine-MP folder. You can alternatively <a href="#" onclick="$('#upload_report').css('display', 'none');$('#paste_report').css('display', 'block');return false;">paste the report</a></p>
 
-                        <input type="submit" class="btn btn-lg btn-primary btn-block" value="Submit" style="margin-top:10px;"/>
+                        <button type="submit" class="btn btn-lg btn-primary btn-block" style="margin-top:10px; margin-left: auto; margin-right: auto">Submit<i class="material-icons left">send</i></button>
                     </form>
                 </div>
 
