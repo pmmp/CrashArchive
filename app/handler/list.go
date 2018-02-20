@@ -34,7 +34,7 @@ func ListGet(app *app.App) http.HandlerFunc {
 		pageParam := params.Get("page")
 		if pageParam != "" {
 			pageId, err = strconv.Atoi(pageParam)
-			if err != nil || pageId < 0 || (pageId - 1) * pageSize > total {
+			if err != nil || pageId <= 0 || (pageId - 1) * pageSize > total {
 				http.Error(w, http.StatusText(404), 404)
 				return
 			}
