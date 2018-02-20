@@ -10,10 +10,10 @@
                     <p>Showing {{.RangeStart}}-{{.RangeEnd}} ({{.ShowCount}} reports) of {{.TotalCount}} report(s). Duplicated reports might have been hidden.</p>
                     <a href="/list/{{.PrevPage}}" {{if eq .PrevPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons left">arrow_back</i>Prev</a>
                     <a href="/list/{{.NextPage}}" {{if eq .NextPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons right">arrow_forward</i>Next</a>
-                    <table class="striped ">
-                        <thead><tr><th>#ID</th><th>Version</th><th>Message</th><th></th></tr></thead>
+                    <table class="striped">
+                        <thead><tr><th style="width: 10%">#ID</th><th style="width: 10%">Version</th><th>Message</th><th></th></tr></thead>
                         <tbody>{{ range .Data }}
-                            <tr><td>{{.ID}}</td><td>{{.Version}}</td><td>{{shorten .Message}}</td><td><a href="/view/{{.ID}}" class="btn btn-sm btn-primary"><i class="material-icons">arrow_forward</i></a></td></tr>
+                            <tr><td>{{.ID}}</td><td>{{.Version}}</td><td>{{shorten .Message}}</td><td style="float: right;"><a href="/view/{{.ID}}" class="btn btn-sm btn-primary"><i class="material-icons">arrow_forward</i></a></td></tr>
                         {{end}}</tbody>
                     </table>
                 </div>
