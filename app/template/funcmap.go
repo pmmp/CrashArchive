@@ -7,6 +7,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"net/url"
+	"log"
 )
 
 var funcMap = template.FuncMap{
@@ -14,6 +16,7 @@ var funcMap = template.FuncMap{
 	"split":     split,
 	"sortcode":  sortcode,
 	"shorthash": shorthash,
+	"pagenum":   pagenum,
 }
 
 func shorthash(s string) string {
@@ -54,4 +57,17 @@ func sortcode(a map[string]string) template.HTML {
 		r = append(r, fmt.Sprintf("%2d %s", v, template.HTMLEscapeString(a[strconv.Itoa(v)])))
 	}
 	return template.HTML(strings.Join(r, "<br/>"))
+}
+
+func pagenum(base string, page int) string {
+	parsed, err := url.Parse(base)
+	if err != nil {
+		log.Println(err)
+		return base
+	}
+
+	params := parsed.Query()
+	params.Set("page", strconv.Itoa(page))
+	parsed.RawQuery = params.Encode()
+	return parsed.String()
 }

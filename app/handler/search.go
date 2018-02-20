@@ -55,7 +55,7 @@ func SearchPluginGet(app *app.App) http.HandlerFunc {
 			return
 		}
 
-		template.ExecuteListTemplate(w, app.Config.Template, reports, "", 1, 0, len(reports))
+		template.ExecuteListTemplate(w, app.Config.Template, reports, r.URL.String(), 1, 0, len(reports))
 	}
 }
 func SearchBuildGet(app *app.App) http.HandlerFunc {
@@ -91,7 +91,7 @@ func SearchBuildGet(app *app.App) http.HandlerFunc {
 			return
 		}
 
-		template.ExecuteListTemplate(w, app.Config.Template, reports, "", 1, 0, len(reports))
+		template.ExecuteListTemplate(w, app.Config.Template, reports, r.URL.String(), 1, 0, len(reports))
 	}
 }
 func SearchReportGet(app *app.App) http.HandlerFunc {
@@ -126,6 +126,6 @@ func SearchReportGet(app *app.App) http.HandlerFunc {
 			return
 		}
 
-		template.ExecuteListTemplate(w, app.Config.Template, reports, "", 1, 0, len(reports))
+		template.ExecuteListTemplate(w, app.Config.Template, reports, r.URL.String(), 1, 0, len(reports))
 	}
 }

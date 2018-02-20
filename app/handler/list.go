@@ -52,6 +52,6 @@ func ListGet(app *app.App) http.HandlerFunc {
 			return
 		}
 
-		template.ExecuteListTemplate(w, app.Config.Template, reports, "/list", pageId, rangeStart, total)
+		template.ExecuteListTemplate(w, app.Config.Template, reports, r.URL.String(), pageId, rangeStart, total)
 	}
 }

@@ -8,10 +8,8 @@
                 <div class="card-content">
                     <span class="card-title">Search results</span>
                     <p>Showing {{.RangeStart}}-{{.RangeEnd}} ({{.ShowCount}} reports) of {{.TotalCount}} report(s). Duplicated reports might have been hidden.</p>
-                    {{if .BaseUrl}}
-                    <a href="{{.BaseUrl}}?page={{.PrevPage}}" {{if eq .PrevPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons left">arrow_back</i>Prev</a>
-                    <a href="{{.BaseUrl}}?page={{.NextPage}}" {{if eq .NextPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons right">arrow_forward</i>Next</a>
-                    {{end}}
+                    <a href="{{pagenum .SearchUrl .PrevPage}}" {{if eq .PrevPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons left">arrow_back</i>Prev</a>
+                    <a href="{{pagenum .SearchUrl .NextPage}}" {{if eq .NextPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons right">arrow_forward</i>Next</a>
                     <table class="striped">
                         <thead><tr><th style="width: 10%">#ID</th><th style="width: 10%">Version</th><th style="width: 100%">Message</th><th></th></tr></thead>
                         <tbody>{{ range .Data }}

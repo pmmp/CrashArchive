@@ -50,7 +50,7 @@ func ExecuteErrorTemplate(w http.ResponseWriter, cfg *Config, message string, ba
 	return nil
 }
 
-func ExecuteListTemplate(w http.ResponseWriter, cfg *Config, reports []crashreport.Report, basePageUrl string, pageId int, rangeStart int, total int) {
+func ExecuteListTemplate(w http.ResponseWriter, cfg *Config, reports []crashreport.Report, searchUrl string, pageId int, rangeStart int, total int) {
 	const templateName = "list"
 
 	tmpl, err := LoadTemplate(templateName, cfg)
@@ -73,7 +73,7 @@ func ExecuteListTemplate(w http.ResponseWriter, cfg *Config, reports []crashrepo
 	data["RangeEnd"] = rangeStart + reportCount
 	data["ShowCount"] = reportCount
 	data["TotalCount"] = total
-	data["BaseUrl"] = basePageUrl
+	data["SearchUrl"] = searchUrl
 	if rangeStart <= 0 {
 		data["PrevPage"] = 0
 	} else {
