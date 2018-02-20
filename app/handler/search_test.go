@@ -33,7 +33,7 @@ func TestSearchIDPost(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SearchIDPost(app))
+	handler := http.HandlerFunc(SearchIDGet(app))
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -50,7 +50,7 @@ func TestSearchPluginPost(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SearchPluginPost(app))
+	handler := http.HandlerFunc(SearchPluginGet(app))
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -67,7 +67,7 @@ func TestSearchBuildPost(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SearchBuildPost(app))
+	handler := http.HandlerFunc(SearchBuildGet(app))
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -84,7 +84,7 @@ func TestSearchReportPost(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SearchReportPost(app))
+	handler := http.HandlerFunc(SearchReportGet(app))
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {

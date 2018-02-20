@@ -34,10 +34,10 @@ func New(app *app.App) *chi.Mux {
 
 		r.Route("/search", func(r chi.Router) {
 			r.Get("/", handler.SearchGet(app))
-			r.Post("/id", handler.SearchIDPost(app))
-			r.Post("/plugin", handler.SearchPluginPost(app))
-			r.Post("/build", handler.SearchBuildPost(app))
-			r.Post("/report", handler.SearchReportPost(app))
+			r.Get("/id", handler.SearchIDGet(app))
+			r.Get("/plugin", handler.SearchPluginGet(app))
+			r.Get("/build", handler.SearchBuildGet(app))
+			r.Get("/report", handler.SearchReportGet(app))
 		})
 
 		r.Route("/submit", func(r chi.Router) {

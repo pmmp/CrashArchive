@@ -22,9 +22,9 @@ func SearchGet(app *app.App) http.HandlerFunc {
 		tmpl.ExecuteTemplate(w, "base.html", nil)
 	}
 }
-func SearchIDPost(app *app.App) http.HandlerFunc {
+func SearchIDGet(app *app.App) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		reportID, err := strconv.Atoi(r.FormValue("id"))
+		reportID, err := strconv.Atoi(r.URL.Query().Get("id"))
 		if err != nil {
 			http.Error(w, http.StatusText(404), 404)
 			return
@@ -32,11 +32,11 @@ func SearchIDPost(app *app.App) http.HandlerFunc {
 		http.Redirect(w, r, fmt.Sprintf("/view/%d", reportID), http.StatusMovedPermanently)
 	}
 }
-func SearchPluginPost(app *app.App) http.HandlerFunc {
+func SearchPluginGet(app *app.App) http.HandlerFunc {
 	query := "SELECT id, version, message FROM crash_reports WHERE plugin = ? ORDER BY id DESC"
 	queryTotal := "SELECT COUNT(*) FROM crash_reports"
 	return func(w http.ResponseWriter, r *http.Request) {
-		plugin := r.FormValue("plugin")
+		plugin := r.URL.Query().Get("plugin")
 		if plugin == "" {
 			http.Error(w, http.StatusText(404), 404)
 			return
@@ -58,12 +58,12 @@ func SearchPluginPost(app *app.App) http.HandlerFunc {
 		template.ExecuteListTemplate(w, app.Config.Template, reports, "", 1, 0, len(reports))
 	}
 }
-func SearchBuildPost(app *app.App) http.HandlerFunc {
+func SearchBuildGet(app *app.App) http.HandlerFunc {
 	query := "SELECT id, version, message FROM crash_reports WHERE build"
 	queryTotal := "SELECT COUNT(*) FROM crash_reports"
 	return func(w http.ResponseWriter, r *http.Request) {
-
-		buildID, err := strconv.Atoi(r.FormValue("build"))
+		params := r.URL.Query()
+		buildID, err := strconv.Atoi(params.Get("build"))
 		if err != nil {
 			http.Error(w, http.StatusText(404), 404)
 			log.Println(err)
@@ -71,7 +71,7 @@ func SearchBuildPost(app *app.App) http.HandlerFunc {
 		}
 
 		operator := "="
-		typ := r.FormValue("type")
+		typ := params.Get("type")
 		if typ == "greater" {
 			operator = ">"
 		} else if typ == "less" {
@@ -94,13 +94,13 @@ func SearchBuildPost(app *app.App) http.HandlerFunc {
 		template.ExecuteListTemplate(w, app.Config.Template, reports, "", 1, 0, len(reports))
 	}
 }
-func SearchReportPost(app *app.App) http.HandlerFunc {
+func SearchReportGet(app *app.App) http.HandlerFunc {
 	query := "SELECT * FROM crash_reports WHERE id = ?"
 	queryDupe := "SELECT id, version, message FROM crash_reports WHERE message = ? AND file = ? and line = ? ORDER BY id DESC"
 	queryTotal := "SELECT COUNT(*) FROM crash_reports"
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		reportID, err := strconv.Atoi(r.FormValue("id"))
+		reportID, err := strconv.Atoi(r.URL.Query().Get("id"))
 		if err != nil {
 			http.Error(w, http.StatusText(404), 404)
 			return
