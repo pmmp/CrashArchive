@@ -14,8 +14,8 @@ import (
 func ListGet(app *app.App) http.HandlerFunc {
 	const pageSize = 50
 
-	querySelect := "SELECT id, version, message FROM crash_reports ORDER BY id DESC LIMIT %d, %d"
-	queryTotal := "SELECT COUNT(*) FROM crash_reports"
+	querySelect := "SELECT id, version, message FROM crash_reports WHERE duplicate = false ORDER BY id DESC LIMIT %d, %d"
+	queryTotal := "SELECT COUNT(*) FROM crash_reports WHERE duplicate = false"
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		var err error

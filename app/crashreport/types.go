@@ -7,6 +7,7 @@ type CrashReport struct {
 	ReportType   string
 	ErrorMessage string
 	Valid        bool
+	Duplicate    bool
 
 	CausedByPlugin bool
 	CausingPlugin  string
@@ -67,4 +68,5 @@ type Report struct {
 	ReportType string `db:"reportType"`
 	SubmitDate int64  `db:"submitDate"`
 	ReportDate int64  `db:"reportDate"`
+	Duplicate  bool
 }

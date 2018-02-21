@@ -71,6 +71,12 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 			return
 		}
 
+		dupes, err := app.Database.CheckDuplicate(report)
+		report.Duplicate = dupes > 0
+		if dupes > 0 {
+			log.Printf("found %d duplicates of report from: %s", dupes, r.RemoteAddr)
+		}
+
 		id, err := app.Database.InsertReport(report)
 		if err != nil {
 			errorTmpl.ExecuteTemplate(w, "base.html", map[string]interface{}{

@@ -8,3 +8,6 @@ run: build
 
 build/linux:
 	GOOS=linux go build -o ./bin/ca-pmmp-linux
+
+cli/mysql:
+	docker-compose exec db mysql -p -D crash_archive

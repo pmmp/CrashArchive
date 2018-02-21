@@ -27,13 +27,21 @@ func New(config *Config) (*DB, error) {
 	if err := db.Ping(); err != nil {
 		log.Fatal("failed to ping db")
 	}
+
+	//Upgrade old database
+	var exists int
+	db.Get(&exists,`SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_NAME = 'crash_reports' AND COLUMN_NAME = 'duplicate'`)
+	if exists == 0 {
+		db.Exec(`ALTER TABLE crash_reports ADD COLUMN duplicate BOOL NOT NULL DEFAULT FALSE`)
+	}
+
 	return &DB{db}, nil
 }
 
 var queryInsertReport = `INSERT INTO crash_reports
-		(plugin, version, build, file, message, line, type, os, reportType, submitDate, reportDate)
+		(plugin, version, build, file, message, line, type, os, reportType, submitDate, reportDate, duplicate)
 	VALUES
-		(:plugin, :version, :build, :file, :message, :line, :type, :os, :reportType, :submitDate, :reportDate)`
+		(:plugin, :version, :build, :file, :message, :line, :type, :os, :reportType, :submitDate, :reportDate, :duplicate)`
 
 func (db *DB) InsertReport(report *crashreport.CrashReport) (int64, error) {
 	res, err := db.NamedExec(queryInsertReport, &crashreport.Report{
@@ -48,6 +56,7 @@ func (db *DB) InsertReport(report *crashreport.CrashReport) (int64, error) {
 		ReportType: report.ReportType,
 		SubmitDate: time.Now().Unix(),
 		ReportDate: report.ReportDate.Unix(),
+		Duplicate:  report.Duplicate,
 	})
 
 	if err != nil {
@@ -61,4 +70,16 @@ func (db *DB) InsertReport(report *crashreport.CrashReport) (int64, error) {
 	}
 
 	return id, nil
+}
+
+func (db *DB) CheckDuplicate(report *crashreport.CrashReport) (int, error) {
+	queryDupe := "SELECT COUNT(id) FROM (SELECT id, message, file, line FROM crash_reports ORDER BY id DESC LIMIT 5000)sub WHERE message = ? AND file = ? and line = ?;"
+
+	var dupes int
+	err := db.Get(&dupes, queryDupe, report.Error.Message, report.Error.File, report.Error.Line)
+	if err != nil {
+		return 0, err
+	}
+
+	return dupes, nil
 }
