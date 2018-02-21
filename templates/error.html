@@ -1,10 +1,20 @@
 {{define "title"}}PocketMine Crash Archive{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
-<div class="alert alert-danger" role="alert">
-    <h4>You got an error!</h4>
-    <p>{{.Message}}</p>
-    <p><a class="btn btn btn-danger" href="{{.URL}}" role="button">Go back</a></p>
+<div class="container">
+    <div class="row">
+        <div class="col s10 offset-s1">
+            <div class="card red lighten-2 white-text" role="alert">
+                <div class="card-content">
+                    <span class="card-title">You got an error!</span>
+                    <p>{{.Message}}</p>
+                </div>
+                <div class="card-action">
+                    <a style="color: white; font-weight: bold;" onclick="history.back()">Go back</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {{end}}
 {{define "foot"}}{{end}}
