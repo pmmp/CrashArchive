@@ -2,3 +2,4 @@ bin
 tmp
 /reports
 volumes/
+config/config.json
