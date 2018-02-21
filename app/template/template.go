@@ -38,14 +38,13 @@ func LoadTemplate(name string, cfg *Config) (*template.Template, error) {
 	return tmpl, nil
 }
 
-func ExecuteErrorTemplate(w http.ResponseWriter, cfg *Config, message string, backURL string) error {
+func ExecuteErrorTemplate(w http.ResponseWriter, cfg *Config, message string) error {
 	errorTmpl, err := LoadTemplate("error", cfg)
 	if err != nil {
 		return err
 	}
 	errorTmpl.ExecuteTemplate(w, "base.html", map[string]interface{}{
 		"Message": message,
-		"URL":     backURL,
 	})
 	return nil
 }

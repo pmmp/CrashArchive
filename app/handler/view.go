@@ -20,27 +20,15 @@ func ViewIDGet(app *app.App) http.HandlerFunc {
 		log.Fatalf("failed to load template %s: %v\n", name, err)
 	}
 
-	name = "error"
-	errorTmpl, err := template.LoadTemplate(name, app.Config.Template)
-	if err != nil {
-		log.Fatalf("failed to load template %s: %v\n", name, err)
-	}
-
 	return func(w http.ResponseWriter, r *http.Request) {
 		reportID, err := strconv.Atoi(chi.URLParam(r, "reportID"))
 		if err != nil {
-			errorTmpl.ExecuteTemplate(w, "base.html", map[string]interface{}{
-				"Message": "Please specify a report",
-				"URL":     "/",
-			})
+			template.ExecuteErrorTemplate(w, app.Config.Template, "Please specify a report")
 			return
 		}
 		report, jsonData, err := crashreport.ReadFile(int64(reportID))
 		if err != nil {
-			errorTmpl.ExecuteTemplate(w, "base.html", map[string]interface{}{
-				"Message": "Report not found",
-				"URL":     "/",
-			})
+			template.ExecuteErrorTemplate(w, app.Config.Template, "Report not found")
 			return
 		}
 

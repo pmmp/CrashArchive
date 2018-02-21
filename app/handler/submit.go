@@ -28,11 +28,6 @@ func SubmitGet(app *app.App) http.HandlerFunc {
 }
 
 func SubmitPost(app *app.App) http.HandlerFunc {
-	name := "error"
-	errorTmpl, err := template.LoadTemplate(name, app.Config.Template)
-	if err != nil {
-		log.Fatalf("failed to load template %s: %v\n", name, err)
-	}
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.FormValue("report") != "yes" {
 			http.Redirect(w, r, "/submit", http.StatusMovedPermanently)
@@ -52,10 +47,7 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 
 		report, err := crashreport.Parse(reportStr)
 		if err != nil {
-			errorTmpl.ExecuteTemplate(w, "base.html", map[string]interface{}{
-				"Message": "This crash report is not valid",
-				"URL":     "/submit",
-			})
+			template.ExecuteErrorTemplate(w, app.Config.Template, "This crash report is not valid")
 			return
 		}
 
@@ -79,10 +71,7 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 
 		id, err := app.Database.InsertReport(report)
 		if err != nil {
-			errorTmpl.ExecuteTemplate(w, "base.html", map[string]interface{}{
-				"Message": "Internal error",
-				"URL":     "/submit",
-			})
+			template.ExecuteErrorTemplate(w, app.Config.Template, "Internal error")
 			return
 		}
 
@@ -90,10 +79,7 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 		email := r.FormValue("email")
 		if err = report.WriteFile(id, name, email); err != nil {
 			log.Printf("failed to write file: %d\n", id)
-			errorTmpl.ExecuteTemplate(w, "base.html", map[string]interface{}{
-				"Message": "Internal error",
-				"URL":     "/submit",
-			})
+			template.ExecuteErrorTemplate(w, app.Config.Template, "Internal error")
 			return
 		}
 
