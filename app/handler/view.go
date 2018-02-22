@@ -17,15 +17,17 @@ func ViewIDGet(w http.ResponseWriter, r *http.Request) {
 		template.ErrorTemplate(w, "Please specify a report", http.StatusNotFound)
 		return
 	}
-	report, jsonData, err := crashreport.ReadFile(int64(reportID))
+	report, err := crashreport.ReadFile(int64(reportID))
 	if err != nil {
 		template.ErrorTemplate(w, "Report not found", http.StatusNotFound)
 		return
 	}
 
+	report.ParseExtraStuff()
+
 	v := make(map[string]interface{})
 	v["Report"] = report
-	v["Name"] = clean(jsonData["name"].(string))
+	v["Name"] = "PocketMine-MP"//clean(jsonData["name"].(string))
 	v["PocketMineVersion"] = report.Version.Get(true)
 	v["AttachedIssue"] = "None"
 	v["ReportID"] = reportID

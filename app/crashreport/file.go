@@ -3,67 +3,45 @@ package crashreport
 import (
 	"crypto/sha1"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"log"
 	"os"
+	"io/ioutil"
 )
 
 var (
 	salt string = "pepper"
 )
 
-func ReadFile(id int64) (*CrashReport, map[string]interface{}, error) {
+func ReadFile(id int64) (*CrashReport, error) {
 	var err error
 
-	var jsonData map[string]interface{}
-	filePath := fmt.Sprintf("reports/%s.log", filenameHash(id))
+	filePath := fmt.Sprintf("reports/%s.bin", filenameHash(id))
 	if _, err = os.Stat(filePath); os.IsNotExist(err) {
 		log.Printf("%v\n", err)
-		//app.tmpl.ExecuteTemplate(w, "error", map[string]interface{}{
-		//	"Message": "Report not found",
-		//	"URL":     "/home",
-		//})
-		return nil, jsonData, err
+		return nil, err
 	}
 
-	fin, err := os.Open(filePath)
+	bytes, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		log.Printf("%v\n", err)
-		return nil, jsonData, err
-	}
-	err = json.NewDecoder(fin).Decode(&jsonData)
-	if err != nil {
-		log.Printf("%v\n", err)
-		return nil, jsonData, err
-	}
-	// report, err := app.DB.GetReport(reportID)
-	//log.Printf("%#v\n", jsonData)
-
-	report, err := Parse(jsonData["report"].(string))
-	if err != nil {
-		log.Printf("%v\n", err)
-		return nil, jsonData, err
+		return nil, err
 	}
 
-	return report, jsonData, nil
+	var report CrashReport
+	err = report.ReadZlib(bytes)
+
+	if err != nil {
+		log.Printf("%v\n", err)
+		return nil, err
+	}
+
+	return &report, nil
 }
 func (r *CrashReport) WriteFile(id int64, name, email string) error {
-	data := map[string]interface{}{
-		"report":        r.Encoded(),
-		"reportId":      id,
-		"name":          name,
-		"email":         email,
-		"attachedIssue": false,
-	}
+	filePath := fmt.Sprintf("./reports/%s.bin", filenameHash(id))
 
-	fout, err := os.Create(fmt.Sprintf("./reports/%s.log", filenameHash(id)))
-	if err != nil {
-		return err
-	}
-	defer fout.Close()
-
-	return json.NewEncoder(fout).Encode(data)
+	return ioutil.WriteFile(filePath, r.WriteZlib(), os.ModePerm)
 }
 
 func filenameHash(id int64) string {

@@ -23,15 +23,19 @@ const (
 func Parse(data string) (*CrashReport, error) {
 	var r CrashReport
 
-	if err := r.ReadCompressed(data); err != nil {
+	if err := r.ReadCrashLog(data); err != nil {
 		return nil, fmt.Errorf("failed to read compressed data: %v", err)
 	}
 
+	r.ParseExtraStuff()
+	return &r, nil
+}
+
+func (r *CrashReport) ParseExtraStuff() {
 	r.parseDate()
 	r.parseError()
 	r.parseVersion()
 	r.classifyMessage()
-	return &r, nil
 }
 
 // ParseDate parses  the unix date to time.Time
@@ -97,15 +101,24 @@ func extractBase64(data string) string {
 	return strings.Trim(data[reportBeginIndex+len(reportBegin):reportEndIndex], "\r\n\t` ")
 }
 
-// ReadCompressed reads the base64 encoded and zlib compressed report
-func (r *CrashReport) ReadCompressed(report string) error {
+// clean is shoghi magic
+func clean(v string) string {
+	var re = regexp.MustCompile(`[^A-Za-z0-9_\-\.\,\;\:/\#\(\)\\ ]`)
+	return re.ReplaceAllString(v, "")
+}
+
+// ReadCrashLog reads the base64 encoded and zlib compressed report
+func (r *CrashReport) ReadCrashLog(report string) error {
 	zlibBytes, err := base64.StdEncoding.DecodeString(extractBase64(report))
 	if err != nil {
 		return err
 	}
 
-	br := bytes.NewReader(zlibBytes)
-	zr, err := zlib.NewReader(br)
+	return r.ReadZlib(zlibBytes)
+}
+
+func (r *CrashReport) ReadZlib(zlibBytes []byte) error {
+	zr, err := zlib.NewReader(bytes.NewReader(zlibBytes))
 	if err != nil {
 		return err
 	}
@@ -115,14 +128,13 @@ func (r *CrashReport) ReadCompressed(report string) error {
 	return err
 }
 
-// clean is shoghi magic
-func clean(v string) string {
-	var re = regexp.MustCompile(`[^A-Za-z0-9_\-\.\,\;\:/\#\(\)\\ ]`)
-	return re.ReplaceAllString(v, "")
+// WriteCrashLog generates a crashdump log file
+func (r *CrashReport) WriteCrashLog() string {
+	return fmt.Sprintf("%s\n%s\n%s", reportBegin, base64.StdEncoding.EncodeToString(r.WriteZlib()), reportEnd)
 }
 
-// Encoded ...
-func (r *CrashReport) Encoded() string {
+// WriteZlib json-encodes and zlib-compresses the crash report
+func (r *CrashReport) WriteZlib() []byte {
 	var jsonBuf bytes.Buffer
 	jw := json.NewEncoder(&jsonBuf)
 	err := jw.Encode(r.Data)
@@ -139,5 +151,5 @@ func (r *CrashReport) Encoded() string {
 
 	zw.Close()
 
-	return fmt.Sprintf("%s\n%s\n%s", reportBegin, base64.StdEncoding.EncodeToString(zlibBuf.Bytes()), reportEnd)
+	return zlibBuf.Bytes()
 }

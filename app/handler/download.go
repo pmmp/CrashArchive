@@ -17,14 +17,16 @@ func DownloadGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, jsonData, err := crashreport.ReadFile(int64(reportID))
+	report, err := crashreport.ReadFile(int64(reportID))
 	if err != nil {
 		template.ErrorTemplate(w, "Report not found", http.StatusNotFound)
 		return
 	}
 
+	reportBytes := report.WriteCrashLog()
+
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%d.log", reportID))
-	w.Header().Set("Content-Length", strconv.Itoa(len(jsonData["report"].(string))))
-	w.Write([]byte(jsonData["report"].(string)))
+	w.Header().Set("Content-Length", strconv.Itoa(len(reportBytes)))
+	w.Write([]byte(reportBytes))
 }
