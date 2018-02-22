@@ -5,7 +5,6 @@ import "time"
 // CrashReport ...
 type CrashReport struct {
 	ReportType   string
-	ErrorMessage string
 	Valid        bool
 	Duplicate    bool
 

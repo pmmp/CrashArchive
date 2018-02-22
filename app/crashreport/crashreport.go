@@ -109,16 +109,10 @@ func (r *CrashReport) classifyMessage() {
 		r.ReportType = TypeClassNotFound
 	} else if strings.HasPrefix(m, "Argument") {
 		r.ReportType = TypeInvalidArgument
-		line := strings.Replace(r.Error.Message, "\\\\", "\\", -1)
-		index1 := strings.Index(line, "called in")
 
-		var index int
-		if index = strings.Index(line, "src/"); index > 0 {
-			r.ErrorMessage = fmt.Sprintf("%s %s", line[0:index1+10], line[:index])
-		} else if index = strings.Index(line, "plugins/"); index > 0 {
-			r.ErrorMessage = fmt.Sprintf("%s %s", line[0:index1+10], line[:index])
-			r.CausedByPlugin = true
-		}
+		line := strings.Replace(r.Error.Message, "\\\\", "\\", -1)
+		index1 := strings.Index(line, ", called in")
+		r.Error.Message = line[0:index1]
 	} else if r.Error.Type != "E_ERROR" &&
 		r.Error.Type != "E_USER_ERROR" &&
 		r.Error.Type != "1" {
