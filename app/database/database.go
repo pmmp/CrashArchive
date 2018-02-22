@@ -60,7 +60,7 @@ func (db *DB) InsertReport(report *crashreport.CrashReport) (int64, error) {
 	})
 
 	if err != nil {
-		return -1, errors.New("failed to insert report")
+		return -1, err
 	}
 
 	id, err := res.LastInsertId()

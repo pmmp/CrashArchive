@@ -71,6 +71,7 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 
 		id, err := app.Database.InsertReport(report)
 		if err != nil {
+			log.Printf("failed to insert report into database: %v", err)
 			template.ExecuteErrorTemplate(w, app.Config.Template, "Internal error")
 			return
 		}
