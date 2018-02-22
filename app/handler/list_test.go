@@ -10,7 +10,7 @@ import (
 )
 
 func TestListGet(t *testing.T) {
-	app := &app.App{
+	context := &app.App{
 		Config: &app.Config{
 			Template: &template.Config{
 				Folder:    "../../templates",
@@ -24,7 +24,7 @@ func TestListGet(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ListGet(app))
+	handler := http.HandlerFunc(ListGet(context))
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {

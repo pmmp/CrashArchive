@@ -9,14 +9,14 @@ import (
 )
 
 func TestSearchGet(t *testing.T) {
-	app := &app.App{}
+	context := &app.App{}
 	req, err := http.NewRequest("GET", "/search", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SearchGet(app))
+	handler := http.HandlerFunc(SearchGet(context))
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -26,14 +26,14 @@ func TestSearchGet(t *testing.T) {
 
 }
 func TestSearchIDPost(t *testing.T) {
-	app := &app.App{}
+	context := &app.App{}
 	req, err := http.NewRequest("GET", "/list", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SearchIDGet(app))
+	handler := http.HandlerFunc(SearchIDGet(context))
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -43,14 +43,14 @@ func TestSearchIDPost(t *testing.T) {
 
 }
 func TestSearchPluginPost(t *testing.T) {
-	app := &app.App{}
+	context := &app.App{}
 	req, err := http.NewRequest("GET", "/list", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SearchPluginGet(app))
+	handler := http.HandlerFunc(SearchPluginGet(context))
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -60,14 +60,14 @@ func TestSearchPluginPost(t *testing.T) {
 
 }
 func TestSearchBuildPost(t *testing.T) {
-	app := &app.App{}
+	context := &app.App{}
 	req, err := http.NewRequest("GET", "/list", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SearchBuildGet(app))
+	handler := http.HandlerFunc(SearchBuildGet(context))
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -77,14 +77,14 @@ func TestSearchBuildPost(t *testing.T) {
 
 }
 func TestSearchReportPost(t *testing.T) {
-	app := &app.App{}
+	context := &app.App{}
 	req, err := http.NewRequest("GET", "/list", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SearchReportGet(app))
+	handler := http.HandlerFunc(SearchReportGet(context))
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {

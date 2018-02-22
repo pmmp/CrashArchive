@@ -10,7 +10,7 @@ import (
 )
 
 func TestHomeGet(t *testing.T) {
-	app := &app.App{
+	context := &app.App{
 		Config: &app.Config{
 			Template: &template.Config{
 				Folder:    "../../templates",
@@ -24,7 +24,7 @@ func TestHomeGet(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(HomeGet(app))
+	handler := http.HandlerFunc(HomeGet(context))
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {

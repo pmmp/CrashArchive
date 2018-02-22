@@ -9,14 +9,14 @@ import (
 )
 
 func TestSubmitGet(t *testing.T) {
-	app := &app.App{}
+	context := &app.App{}
 	req, err := http.NewRequest("GET", "/submit", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SubmitGet(app))
+	handler := http.HandlerFunc(SubmitGet(context))
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -27,14 +27,14 @@ func TestSubmitGet(t *testing.T) {
 }
 
 func TestSubmitPost(t *testing.T) {
-	app := &app.App{}
+	context := &app.App{}
 	req, err := http.NewRequest("POST", "/submit", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SubmitPost(app))
+	handler := http.HandlerFunc(SubmitPost(context))
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
