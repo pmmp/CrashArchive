@@ -97,13 +97,13 @@ func (r *CrashReport) classifyMessage() {
 		r.ReportType = TypeOutOfMemory
 	} else if strings.HasPrefix(m, "Call to undefined") ||
 		strings.HasPrefix(m, "Call to a member") ||
-		strings.HasPrefix(m, "Trying to get property of non-onject") ||
-		strings.HasPrefix(m, "Acces to undeclared static property") {
+		strings.HasPrefix(m, "Trying to get property of non-object") ||
+		strings.HasPrefix(m, "Access to undeclared static property") {
 		r.ReportType = TypeUndefinedCall
 	} else if strings.HasPrefix(m, "Call to private method") ||
 		strings.HasPrefix(m, "Call to protected method") ||
 		strings.HasPrefix(m, "Cannot access private property") ||
-		strings.HasPrefix(m, "Cannot access protected propery") {
+		strings.HasPrefix(m, "Cannot access protected property") {
 		r.ReportType = TypeClassVisibility
 	} else if strings.HasSuffix(m, " not found") {
 		r.ReportType = TypeClassNotFound
