@@ -11,6 +11,7 @@ import (
 
 	"github.com/pmmp/CrashArchive/app"
 	"github.com/pmmp/CrashArchive/app/handler"
+	"github.com/pmmp/CrashArchive/app/template"
 )
 
 func New(app *app.App) *chi.Mux {
@@ -26,6 +27,11 @@ func New(app *app.App) *chi.Mux {
 	r.Route("/", func(r chi.Router) {
 		r.Use(RealIP)
 		r.Use(middleware.Logger)
+
+		r.NotFound(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNotFound)
+			template.ExecuteErrorTemplate(w, app.Config.Template, "Page not found")
+		})
 
 		r.Get("/", handler.HomeGet(app))
 		r.Get("/list", handler.ListGet(app))
