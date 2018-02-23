@@ -5,7 +5,6 @@ import "time"
 // CrashReport ...
 type CrashReport struct {
 	ReportType   string
-	Valid        bool
 	Duplicate    bool
 
 	CausedByPlugin bool

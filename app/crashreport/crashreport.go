@@ -5,6 +5,7 @@ import (
 	"compress/zlib"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"regexp"
@@ -31,7 +32,6 @@ func Parse(data string) (*CrashReport, error) {
 	var r CrashReport
 	r.ReportType = TypeGeneric
 	r.CausedByPlugin = false
-	r.Valid = true
 
 	if err := r.ReadCompressed(data); err != nil {
 		return nil, fmt.Errorf("failed to read compressed data: %v", err)
@@ -71,8 +71,7 @@ func (r *CrashReport) parseError() {
 // ParseVersion ...
 func (r *CrashReport) parseVersion() {
 	if r.Data.General.Version == "" {
-		r.Valid = false
-		return
+		panic(errors.New("version is null"))
 	}
 
 	general := r.Data.General
@@ -83,8 +82,7 @@ func (r *CrashReport) parseVersion() {
 // ClassifyMessage ...
 func (r *CrashReport) classifyMessage() {
 	if r.Error.Message == "" {
-		r.Valid = false
-		return
+		panic(errors.New("error message is empty"))
 	}
 	m := r.Error.Message
 	if strings.HasPrefix(m, "Unsupported operand types") {
