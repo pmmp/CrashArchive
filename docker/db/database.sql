@@ -8,7 +8,6 @@ CREATE TABLE crash_reports (
       line INT NOT NULL,
       type VARCHAR(32),
       os VARCHAR(16),
-      reportType VARCHAR(128),
       submitDate INT,
       reportDate INT,
       duplicate BOOL,

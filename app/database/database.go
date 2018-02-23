@@ -35,13 +35,18 @@ func New(config *Config) (*DB, error) {
 		db.Exec(`ALTER TABLE crash_reports ADD COLUMN duplicate BOOL NOT NULL DEFAULT FALSE`)
 	}
 
+	db.Get(&exists,`SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_NAME = 'crash_reports' AND COLUMN_NAME = 'reportType'`)
+	if exists > 0 {
+		db.Exec(`ALTER TABLE crash_reports DROP COLUMN reportType`)
+	}
+
 	return &DB{db}, nil
 }
 
 var queryInsertReport = `INSERT INTO crash_reports
-		(plugin, version, build, file, message, line, type, os, reportType, submitDate, reportDate, duplicate)
+		(plugin, version, build, file, message, line, type, os, submitDate, reportDate, duplicate)
 	VALUES
-		(:plugin, :version, :build, :file, :message, :line, :type, :os, :reportType, :submitDate, :reportDate, :duplicate)`
+		(:plugin, :version, :build, :file, :message, :line, :type, :os, :submitDate, :reportDate, :duplicate)`
 
 func (db *DB) InsertReport(report *crashreport.CrashReport) (int64, error) {
 	res, err := db.NamedExec(queryInsertReport, &crashreport.Report{
@@ -53,7 +58,6 @@ func (db *DB) InsertReport(report *crashreport.CrashReport) (int64, error) {
 		Line:       report.Error.Line,
 		Type:       report.Error.Type,
 		OS:         report.Data.General.OS,
-		ReportType: report.ReportType,
 		SubmitDate: time.Now().Unix(),
 		ReportDate: report.ReportDate.Unix(),
 		Duplicate:  report.Duplicate,

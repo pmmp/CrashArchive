@@ -4,7 +4,6 @@ import "time"
 
 // CrashReport ...
 type CrashReport struct {
-	ReportType   string
 	Duplicate    bool
 
 	CausedByPlugin bool
@@ -63,7 +62,6 @@ type Report struct {
 	Line       int
 	Type       string
 	OS         string
-	ReportType string `db:"reportType"`
 	SubmitDate int64  `db:"submitDate"`
 	ReportDate int64  `db:"reportDate"`
 	Duplicate  bool
