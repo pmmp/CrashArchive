@@ -36,8 +36,6 @@ func ViewIDGet(app *app.App) http.HandlerFunc {
 			return
 		}
 
-		report.ParseExtraStuff()
-
 		v := make(map[string]interface{})
 		v["Report"] = report
 		v["Name"] = clean(reporterName)

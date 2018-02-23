@@ -27,15 +27,7 @@ func Parse(data string) (*CrashReport, error) {
 		return nil, fmt.Errorf("failed to read compressed data: %v", err)
 	}
 
-	r.ParseExtraStuff()
 	return &r, nil
-}
-
-func (r *CrashReport) ParseExtraStuff() {
-	r.parseDate()
-	r.parseError()
-	r.parseVersion()
-	r.classifyMessage()
 }
 
 // ParseDate parses  the unix date to time.Time
@@ -125,6 +117,13 @@ func (r *CrashReport) ReadZlib(zlibBytes []byte) error {
 	defer zr.Close()
 
 	err = json.NewDecoder(zr).Decode(&r.Data)
+	if err == nil {
+		r.parseDate()
+		r.parseError()
+		r.parseVersion()
+		r.classifyMessage()
+	}
+
 	return err
 }
 
