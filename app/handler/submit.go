@@ -45,11 +45,22 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 			return
 		}
 
+		defer func() {
+			if recovered := recover(); recovered != nil {
+				err, ok := recovered.(error)
+				if !ok {
+					err = fmt.Errorf("%v", recovered)
+				}
+
+				log.Printf("got invalid crash report from: %s (%v)", r.RemoteAddr, err)
+				template.ExecuteErrorTemplate(w, app.Config.Template, "This crash report is not valid")
+			}
+		}()
+
 		report, err := crashreport.Parse(reportStr)
 		if err != nil {
-			log.Printf("got invalid crash report from: %s (%v)", r.RemoteAddr, err)
-			template.ExecuteErrorTemplate(w, app.Config.Template, "This crash report is not valid")
-			return
+			//this panic will be recovered in the above deferred function
+			log.Panic(err)
 		}
 
 		if report.Data.General.Name != "PocketMine-MP" {
