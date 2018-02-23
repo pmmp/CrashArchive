@@ -17,13 +17,13 @@ func DownloadGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	report, err := crashreport.ReadFile(int64(reportID))
+	zlibBytes, err := crashreport.ReadRawFile(int64(reportID))
 	if err != nil {
 		template.ErrorTemplate(w, "Report not found", http.StatusNotFound)
 		return
 	}
 
-	reportBytes := report.WriteCrashLog()
+	reportBytes := crashreport.WriteCrashLog(zlibBytes)
 
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%d.log", reportID))

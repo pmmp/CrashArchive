@@ -128,8 +128,8 @@ func (r *CrashReport) ReadZlib(zlibBytes []byte) error {
 }
 
 // WriteCrashLog generates a crashdump log file
-func (r *CrashReport) WriteCrashLog() string {
-	return fmt.Sprintf("%s\n%s\n%s", reportBegin, base64.StdEncoding.EncodeToString(r.WriteZlib()), reportEnd)
+func WriteCrashLog(zlibBytes []byte) string {
+	return fmt.Sprintf("%s\n%s\n%s", reportBegin, base64.StdEncoding.EncodeToString(zlibBytes), reportEnd)
 }
 
 // WriteZlib json-encodes and zlib-compresses the crash report

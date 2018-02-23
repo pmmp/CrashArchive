@@ -10,19 +10,13 @@ import (
 )
 
 var (
-	salt string = "pepper"
+	salt             = "pepper"
+	reportPathFormat = "reports/%s.bin"
 )
 
+// ReadFile reads a zlib blob from disk and decodes it into a CrashReport struct
 func ReadFile(id int64) (*CrashReport, error) {
-	var err error
-
-	filePath := fmt.Sprintf("reports/%s.bin", filenameHash(id))
-	if _, err = os.Stat(filePath); os.IsNotExist(err) {
-		log.Printf("%v\n", err)
-		return nil, err
-	}
-
-	bytes, err := ioutil.ReadFile(filePath)
+	bytes, err := ReadRawFile(id)
 	if err != nil {
 		log.Printf("%v\n", err)
 		return nil, err
@@ -38,8 +32,22 @@ func ReadFile(id int64) (*CrashReport, error) {
 
 	return &report, nil
 }
+
+// ReadRawFile returns the raw zlib-compressed crashdump bytes stored on disk
+func ReadRawFile(id int64) ([]byte, error) {
+	var err error
+
+	filePath := fmt.Sprintf(reportPathFormat, filenameHash(id))
+	if _, err = os.Stat(filePath); os.IsNotExist(err) {
+		log.Printf("%v\n", err)
+		return nil, err
+	}
+
+	return ioutil.ReadFile(filePath)
+}
+
 func (r *CrashReport) WriteFile(id int64) error {
-	filePath := fmt.Sprintf("./reports/%s.bin", filenameHash(id))
+	filePath := fmt.Sprintf(reportPathFormat, filenameHash(id))
 
 	return ioutil.WriteFile(filePath, r.WriteZlib(), os.ModePerm)
 }
