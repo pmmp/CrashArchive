@@ -38,7 +38,7 @@ func ReadFile(id int64) (*CrashReport, error) {
 
 	return &report, nil
 }
-func (r *CrashReport) WriteFile(id int64, name, email string) error {
+func (r *CrashReport) WriteFile(id int64) error {
 	filePath := fmt.Sprintf("./reports/%s.bin", filenameHash(id))
 
 	return ioutil.WriteFile(filePath, r.WriteZlib(), os.ModePerm)

@@ -34,7 +34,7 @@ func New(app *app.App) *chi.Mux {
 
 		r.Get("/", handler.HomeGet)
 		r.Get("/list", handler.ListGet(app))
-		r.Get("/view/{reportID}", handler.ViewIDGet)
+		r.Get("/view/{reportID}", handler.ViewIDGet(app))
 		r.Get("/download/{reportID}", handler.DownloadGet)
 
 		r.Route("/search", func(r chi.Router) {

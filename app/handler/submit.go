@@ -75,16 +75,17 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 			log.Printf("found %d duplicates of report from: %s", dupes, r.RemoteAddr)
 		}
 
-		id, err := app.Database.InsertReport(report)
+		name := r.FormValue("name")
+		email := r.FormValue("email")
+
+		id, err := app.Database.InsertReport(report, name, email)
 		if err != nil {
 			log.Printf("failed to insert report into database: %v", err)
 			sendError(w, "", http.StatusInternalServerError, isAPI)
 			return
 		}
 
-		name := r.FormValue("name")
-		email := r.FormValue("email")
-		if err = report.WriteFile(id, name, email); err != nil {
+		if err = report.WriteFile(id); err != nil {
 			log.Printf("failed to write file: %d\n", id)
 			sendError(w,"", http.StatusInternalServerError, isAPI)
 			return
