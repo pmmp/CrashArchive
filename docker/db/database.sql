@@ -11,6 +11,8 @@ CREATE TABLE crash_reports (
       submitDate INT,
       reportDate INT,
       duplicate BOOL,
+      reporterName VARCHAR(127),
+      reporterEmail VARCHAR(127),
       PRIMARY KEY (id),
       INDEX(plugin(10)),
       INDEX(message(32)),
