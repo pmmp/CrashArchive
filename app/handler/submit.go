@@ -47,6 +47,7 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 
 		report, err := crashreport.Parse(reportStr)
 		if err != nil {
+			log.Printf("got invalid crash report from: %s (%v)", r.RemoteAddr, err)
 			template.ExecuteErrorTemplate(w, app.Config.Template, "This crash report is not valid")
 			return
 		}
