@@ -59,11 +59,10 @@ func (r *CrashReport) parseDate() {
 func (r *CrashReport) parseError() {
 	switch plugin := r.Data.Plugin.(type) {
 	case bool:
-		if plugin {
-			r.CausedByPlugin = true
-		}
+		r.CausedByPlugin = plugin
 	case string:
 		r.CausingPlugin = clean(plugin)
+		r.CausedByPlugin = true
 	}
 
 	r.Error.Type = r.Data.Error.Type
