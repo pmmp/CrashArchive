@@ -29,7 +29,6 @@ func (a *App) ReportToSlack(name string, id int64, msg string) {
 	}
 
 	if !a.slackTime.IsZero() && time.Now().Sub(a.slackTime).Minutes() < 5.0 {
-		log.Println("zero")
 		return
 	}
 
@@ -48,8 +47,6 @@ func (a *App) ReportToSlack(name string, id int64, msg string) {
 	enc := json.NewEncoder(buf)
 	enc.Encode(data)
 
-	fmt.Println(hex.Dump(buf.Bytes()))
-
 	req, err := http.NewRequest("POST", a.Config.SlackURL, buf)
 	req.Header.Set("Content-Type", "application/json")
 
@@ -60,10 +57,17 @@ func (a *App) ReportToSlack(name string, id int64, msg string) {
 	}
 	defer resp.Body.Close()
 
-	fmt.Println("response Status:", resp.Status)
-	fmt.Println("response Headers:", resp.Header)
-	body, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println("response Body:", string(body))
+	if resp.StatusCode != http.StatusOK {
+		log.Println("error happened posting update to webhook")
+		log.Println(hex.Dump(buf.Bytes()))
+		log.Println("response Status:", resp.Status)
+		log.Println("response Headers:", resp.Header)
+		body, _ := ioutil.ReadAll(resp.Body)
+		log.Println("response Body:", string(body))
+	} else {
+		log.Println("posted update to webhook successfully")
+	}
+
 	a.mux.Lock()
 	a.slackTime = time.Now()
 	a.mux.Unlock()
