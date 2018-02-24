@@ -37,7 +37,7 @@ func Parse(data string) (*CrashReport, error) {
 	r.Valid = true
 
 	if err := r.ReadCompressed(report); err != nil {
-		return nil, fmt.Errorf("failed to read compressed data: %v\n", err)
+		return nil, fmt.Errorf("failed to read compressed data: %v", err)
 	}
 
 	r.parseDate()
