@@ -53,7 +53,8 @@ func (a *App) ReportToSlack(name string, id int64, msg string) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		log.Printf("error happened when posting to webhook: %v", err)
+		return
 	}
 	defer resp.Body.Close()
 
