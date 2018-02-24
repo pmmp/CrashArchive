@@ -4,11 +4,12 @@ import (
 	"log"
 	"net/http"
 
+	"fmt"
+	"strconv"
+
 	"github.com/pmmp/CrashArchive/app"
 	"github.com/pmmp/CrashArchive/app/crashreport"
 	"github.com/pmmp/CrashArchive/app/template"
-	"strconv"
-	"fmt"
 )
 
 func ListGet(app *app.App) http.HandlerFunc {
@@ -34,7 +35,7 @@ func ListGet(app *app.App) http.HandlerFunc {
 		pageParam := params.Get("page")
 		if pageParam != "" {
 			pageId, err = strconv.Atoi(pageParam)
-			if err != nil || pageId <= 0 || (pageId - 1) * pageSize > total {
+			if err != nil || pageId <= 0 || (pageId-1)*pageSize > total {
 				http.Error(w, http.StatusText(404), 404)
 				return
 			}
@@ -52,6 +53,6 @@ func ListGet(app *app.App) http.HandlerFunc {
 			return
 		}
 
-		template.ExecuteListTemplate(w, app.Config.Template, reports, r.URL.String(), pageId, rangeStart, total)
+		template.ExecuteListTemplate(w, reports, r.URL.String(), pageId, rangeStart, total)
 	}
 }

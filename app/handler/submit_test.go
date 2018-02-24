@@ -9,14 +9,13 @@ import (
 )
 
 func TestSubmitGet(t *testing.T) {
-	context := &app.App{}
 	req, err := http.NewRequest("GET", "/submit", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SubmitGet(context))
+	handler := http.HandlerFunc(SubmitGet())
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {

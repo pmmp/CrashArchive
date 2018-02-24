@@ -9,14 +9,13 @@ import (
 )
 
 func TestSearchGet(t *testing.T) {
-	context := &app.App{}
 	req, err := http.NewRequest("GET", "/search", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SearchGet(context))
+	handler := http.HandlerFunc(SearchGet())
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -26,14 +25,13 @@ func TestSearchGet(t *testing.T) {
 
 }
 func TestSearchIDPost(t *testing.T) {
-	context := &app.App{}
 	req, err := http.NewRequest("GET", "/list", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SearchIDGet(context))
+	handler := http.HandlerFunc(SearchIDGet())
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
