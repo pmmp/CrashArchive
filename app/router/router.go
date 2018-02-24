@@ -33,21 +33,21 @@ func New(app *app.App) *chi.Mux {
 			template.ErrorTemplate(w, "Page not found")
 		})
 
-		r.Get("/", handler.HomeGet())
+		r.Get("/", handler.HomeGet)
 		r.Get("/list", handler.ListGet(app))
-		r.Get("/view/{reportID}", handler.ViewIDGet())
-		r.Get("/download/{reportID}", handler.DownloadGet())
+		r.Get("/view/{reportID}", handler.ViewIDGet)
+		r.Get("/download/{reportID}", handler.DownloadGet)
 
 		r.Route("/search", func(r chi.Router) {
-			r.Get("/", handler.SearchGet())
-			r.Get("/id", handler.SearchIDGet())
+			r.Get("/", handler.SearchGet)
+			r.Get("/id", handler.SearchIDGet)
 			r.Get("/plugin", handler.SearchPluginGet(app))
 			r.Get("/build", handler.SearchBuildGet(app))
 			r.Get("/report", handler.SearchReportGet(app))
 		})
 
 		r.Route("/submit", func(r chi.Router) {
-			r.Get("/", handler.SubmitGet())
+			r.Get("/", handler.SubmitGet)
 			r.Post("/", handler.SubmitPost(app))
 			r.Post("/api", handler.SubmitPost(app))
 		})

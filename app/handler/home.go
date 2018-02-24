@@ -6,8 +6,6 @@ import (
 	"github.com/pmmp/CrashArchive/app/template"
 )
 
-func HomeGet() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		template.ExecuteTemplate(w, "home", nil)
-	}
+func HomeGet(w http.ResponseWriter, r *http.Request) {
+	template.ExecuteTemplate(w, "home", nil)
 }

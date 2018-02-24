@@ -11,21 +11,17 @@ import (
 	"github.com/pmmp/CrashArchive/app/template"
 )
 
-func SearchGet() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		template.ExecuteTemplate(w, "search", nil)
-	}
+func SearchGet(w http.ResponseWriter, r *http.Request) {
+	template.ExecuteTemplate(w, "search", nil)
 }
 
-func SearchIDGet() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		reportID, err := strconv.Atoi(r.URL.Query().Get("id"))
-		if err != nil {
-			http.Error(w, http.StatusText(404), 404)
-			return
-		}
-		http.Redirect(w, r, fmt.Sprintf("/view/%d", reportID), http.StatusMovedPermanently)
+func SearchIDGet(w http.ResponseWriter, r *http.Request) {
+	reportID, err := strconv.Atoi(r.URL.Query().Get("id"))
+	if err != nil {
+		http.Error(w, http.StatusText(404), 404)
+		return
 	}
+	http.Redirect(w, r, fmt.Sprintf("/view/%d", reportID), http.StatusMovedPermanently)
 }
 
 func SearchPluginGet(app *app.App) http.HandlerFunc {
