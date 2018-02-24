@@ -11,13 +11,13 @@ import (
 	"github.com/pmmp/CrashArchive/app/template"
 )
 
-func SearchGet(app *app.App) http.HandlerFunc {
+func SearchGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		template.ExecuteTemplate(w, "search", nil)
 	}
 }
 
-func SearchIDGet(app *app.App) http.HandlerFunc {
+func SearchIDGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		reportID, err := strconv.Atoi(r.URL.Query().Get("id"))
 		if err != nil {

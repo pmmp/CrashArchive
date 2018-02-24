@@ -6,12 +6,11 @@ import (
 	"strconv"
 
 	"github.com/go-chi/chi"
-	"github.com/pmmp/CrashArchive/app"
 	"github.com/pmmp/CrashArchive/app/crashreport"
 	"github.com/pmmp/CrashArchive/app/template"
 )
 
-func DownloadGet(app *app.App) http.HandlerFunc {
+func DownloadGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		reportID, err := strconv.Atoi(chi.URLParam(r, "reportID"))
 		if err != nil {

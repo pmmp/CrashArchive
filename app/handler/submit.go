@@ -15,7 +15,7 @@ import (
 	"github.com/pmmp/CrashArchive/app/template"
 )
 
-func SubmitGet(app *app.App) http.HandlerFunc {
+func SubmitGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		template.ExecuteTemplate(w, "submit", nil)
 	}
