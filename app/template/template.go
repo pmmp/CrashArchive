@@ -52,7 +52,7 @@ func ExecuteTemplate(w io.Writer, name string, data interface{}) error {
 }
 
 func ErrorTemplate(w io.Writer, message string) error {
-	return t["error"].Execute(w, struct{ Message string }{message})
+	return t["error"].ExecuteTemplate(w, "base.html", struct{ Message string }{message})
 }
 
 func ExecuteListTemplate(w http.ResponseWriter, reports []crashreport.Report, url string, id int, start int, total int) {
