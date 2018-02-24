@@ -85,7 +85,8 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 			return
 		}
 
-		if err = report.WriteFile(id); err != nil {
+		zlibBytes, _ := crashreport.ReadZlibDataFromCrashLog(reportStr) //ignore error, we should have gotten one from Parse() earlier
+		if err = crashreport.WriteRawFile(id, zlibBytes); err != nil {
 			log.Printf("failed to write file: %d\n", id)
 			sendError(w,"", http.StatusInternalServerError, isAPI)
 			return

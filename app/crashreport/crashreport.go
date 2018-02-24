@@ -23,11 +23,14 @@ const (
 func Parse(data string) (*CrashReport, error) {
 	var r CrashReport
 
-	if err := r.ReadCrashLog(data); err != nil {
+	zlibBytes, err := ReadZlibDataFromCrashLog(data)
+	if err != nil {
 		return nil, fmt.Errorf("failed to read compressed data: %v", err)
 	}
 
-	return &r, nil
+	err = r.ReadZlib(zlibBytes)
+
+	return &r, err
 }
 
 // ParseDate parses  the unix date to time.Time
@@ -99,14 +102,14 @@ func clean(v string) string {
 	return re.ReplaceAllString(v, "")
 }
 
-// ReadCrashLog reads the base64 encoded and zlib compressed report
-func (r *CrashReport) ReadCrashLog(report string) error {
-	zlibBytes, err := base64.StdEncoding.DecodeString(extractBase64(report))
-	if err != nil {
-		return err
-	}
+// ReadZlibDataFromCrashLog reads the base64 encoded and zlib compressed report
+func ReadZlibDataFromCrashLog(report string) ([]byte, error) {
+	return base64.StdEncoding.DecodeString(extractBase64(report))
+}
 
-	return r.ReadZlib(zlibBytes)
+// WriteZlibDataToCrashLog generates a crashdump log file
+func WriteZlibDataToCrashLog(zlibBytes []byte) string {
+	return fmt.Sprintf("%s\n%s\n%s", reportBegin, base64.StdEncoding.EncodeToString(zlibBytes), reportEnd)
 }
 
 func (r *CrashReport) ReadZlib(zlibBytes []byte) error {
@@ -127,10 +130,6 @@ func (r *CrashReport) ReadZlib(zlibBytes []byte) error {
 	return err
 }
 
-// WriteCrashLog generates a crashdump log file
-func WriteCrashLog(zlibBytes []byte) string {
-	return fmt.Sprintf("%s\n%s\n%s", reportBegin, base64.StdEncoding.EncodeToString(zlibBytes), reportEnd)
-}
 
 // WriteZlib json-encodes and zlib-compresses the crash report
 func (r *CrashReport) WriteZlib() []byte {

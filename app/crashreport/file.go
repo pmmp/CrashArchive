@@ -46,10 +46,11 @@ func ReadRawFile(id int64) ([]byte, error) {
 	return ioutil.ReadFile(filePath)
 }
 
-func (r *CrashReport) WriteFile(id int64) error {
+// WriteRawFile writes zlib-compressed crashdump bytes to a file on disk
+func WriteRawFile(id int64, zlibBytes []byte) error {
 	filePath := fmt.Sprintf(reportPathFormat, filenameHash(id))
 
-	return ioutil.WriteFile(filePath, r.WriteZlib(), os.ModePerm)
+	return ioutil.WriteFile(filePath, zlibBytes, os.ModePerm)
 }
 
 func filenameHash(id int64) string {

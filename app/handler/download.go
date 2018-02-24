@@ -23,7 +23,7 @@ func DownloadGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	reportBytes := crashreport.WriteCrashLog(zlibBytes)
+	reportBytes := crashreport.WriteZlibDataToCrashLog(zlibBytes)
 
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%d.log", reportID))
