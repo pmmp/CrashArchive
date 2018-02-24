@@ -30,9 +30,7 @@ func ViewIDGet(w http.ResponseWriter, r *http.Request) {
 	v["AttachedIssue"] = "None"
 	v["ReportID"] = reportID
 
-	if err = template.ExecuteTemplate(w, "view", v); err != nil {
-		return
-	}
+	template.ExecuteTemplate(w, "view", v)
 }
 
 var cleanRE = regexp.MustCompile(`[^A-Za-z0-9_\-\.\,\;\:/\#\(\)\\ ]`)
