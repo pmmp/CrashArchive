@@ -30,7 +30,7 @@ func New(app *app.App) *chi.Mux {
 
 		r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
-			template.ExecuteErrorTemplate(w, app.Config.Template, "Page not found")
+			template.ErrorTemplate(w, "Page not found")
 		})
 
 		r.Get("/", handler.HomeGet(app))

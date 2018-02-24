@@ -10,6 +10,7 @@ import (
 	"github.com/pmmp/CrashArchive/app"
 	"github.com/pmmp/CrashArchive/app/database"
 	"github.com/pmmp/CrashArchive/app/router"
+	"github.com/pmmp/CrashArchive/app/template"
 )
 
 const dbRetry = 5
@@ -28,6 +29,9 @@ func main() {
 		os.Exit(1)
 	}
 
+	if err := template.Preload(context.Config.Template); err != nil {
+		log.Fatal(err)
+	}
 	var retry int
 loop:
 	for {

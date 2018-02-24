@@ -12,16 +12,11 @@ import (
 )
 
 func SearchGet(app *app.App) http.HandlerFunc {
-	const name = "search"
-	tmpl, err := template.LoadTemplate(name, app.Config.Template)
-	if err != nil {
-		log.Fatalf("failed to load template %s: %v\n", name, err)
-	}
-
 	return func(w http.ResponseWriter, r *http.Request) {
-		tmpl.ExecuteTemplate(w, "base.html", nil)
+		template.ExecuteTemplate(w, "search", nil)
 	}
 }
+
 func SearchIDGet(app *app.App) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		reportID, err := strconv.Atoi(r.URL.Query().Get("id"))
@@ -32,6 +27,7 @@ func SearchIDGet(app *app.App) http.HandlerFunc {
 		http.Redirect(w, r, fmt.Sprintf("/view/%d", reportID), http.StatusMovedPermanently)
 	}
 }
+
 func SearchPluginGet(app *app.App) http.HandlerFunc {
 	query := "SELECT id, version, message FROM crash_reports WHERE plugin = ? ORDER BY id DESC"
 	queryTotal := "SELECT COUNT(*) FROM crash_reports"
@@ -55,9 +51,10 @@ func SearchPluginGet(app *app.App) http.HandlerFunc {
 			return
 		}
 
-		template.ExecuteListTemplate(w, app.Config.Template, reports, r.URL.String(), 1, 0, len(reports))
+		template.ExecuteListTemplate(w, reports, r.URL.String(), 1, 0, len(reports))
 	}
 }
+
 func SearchBuildGet(app *app.App) http.HandlerFunc {
 	query := "SELECT id, version, message FROM crash_reports WHERE build"
 	queryTotal := "SELECT COUNT(*) FROM crash_reports"
@@ -91,7 +88,7 @@ func SearchBuildGet(app *app.App) http.HandlerFunc {
 			return
 		}
 
-		template.ExecuteListTemplate(w, app.Config.Template, reports, r.URL.String(), 1, 0, len(reports))
+		template.ExecuteListTemplate(w, reports, r.URL.String(), 1, 0, len(reports))
 	}
 }
 func SearchReportGet(app *app.App) http.HandlerFunc {
@@ -126,6 +123,6 @@ func SearchReportGet(app *app.App) http.HandlerFunc {
 			return
 		}
 
-		template.ExecuteListTemplate(w, app.Config.Template, reports, r.URL.String(), 1, 0, len(reports))
+		template.ExecuteListTemplate(w, reports, r.URL.String(), 1, 0, len(reports))
 	}
 }

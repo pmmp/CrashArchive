@@ -16,14 +16,8 @@ import (
 )
 
 func SubmitGet(app *app.App) http.HandlerFunc {
-	const name = "submit"
-	tmpl, err := template.LoadTemplate(name, app.Config.Template)
-	if err != nil {
-		log.Fatalf("failed to load template %s: %v\n", name, err)
-	}
-
 	return func(w http.ResponseWriter, r *http.Request) {
-		tmpl.ExecuteTemplate(w, "base.html", nil)
+		template.ExecuteTemplate(w, "submit", nil)
 	}
 }
 
@@ -53,7 +47,7 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 				}
 
 				log.Printf("got invalid crash report from: %s (%v)", r.RemoteAddr, err)
-				template.ExecuteErrorTemplate(w, app.Config.Template, "This crash report is not valid")
+				template.ErrorTemplate(w, "This crash report is not valid")
 			}
 		}()
 
@@ -84,7 +78,7 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 		id, err := app.Database.InsertReport(report)
 		if err != nil {
 			log.Printf("failed to insert report into database: %v", err)
-			template.ExecuteErrorTemplate(w, app.Config.Template, "Internal error")
+			template.ErrorTemplate(w, "Internal error")
 			return
 		}
 
@@ -92,7 +86,7 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 		email := r.FormValue("email")
 		if err = report.WriteFile(id, name, email); err != nil {
 			log.Printf("failed to write file: %d\n", id)
-			template.ExecuteErrorTemplate(w, app.Config.Template, "Internal error")
+			template.ErrorTemplate(w, "Internal error")
 			return
 		}
 
