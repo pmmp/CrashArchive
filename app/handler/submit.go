@@ -51,7 +51,7 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 			}
 		}()
 
-		report, err := crashreport.Parse(reportStr)
+		report, err := crashreport.DecodeCrashReport(reportStr)
 		if err != nil {
 			//this panic will be recovered in the above deferred function
 			log.Panic(err)
@@ -78,17 +78,12 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 		name := r.FormValue("name")
 		email := r.FormValue("email")
 
-		id, err := app.Database.InsertReport(report, name, email)
+		jsonBytes, _ := crashreport.JsonFromCrashLog(reportStr) //ignore error, we should have gotten one from DecodeCrashReport() earlier
+
+		id, err := app.Database.InsertReport(report, name, email, jsonBytes)
 		if err != nil {
 			log.Printf("failed to insert report into database: %v", err)
 			sendError(w, "", http.StatusInternalServerError, isAPI)
-			return
-		}
-
-		zlibBytes, _ := crashreport.ReadZlibDataFromCrashLog(reportStr) //ignore error, we should have gotten one from Parse() earlier
-		if err = crashreport.WriteRawFile(id, zlibBytes); err != nil {
-			log.Printf("failed to write file: %d\n", id)
-			sendError(w,"", http.StatusInternalServerError, isAPI)
 			return
 		}
 

@@ -30,9 +30,17 @@ func ViewIDGet(app *app.App) http.HandlerFunc {
 			return
 		}
 
-		report, err := crashreport.ReadFile(int64(reportID))
+		reportJson, err := app.Database.FetchReportJson(int64(reportID))
 		if err != nil {
 			template.ErrorTemplate(w, "Report not found", http.StatusNotFound)
+			return
+		}
+
+		report, err := crashreport.FromJson(reportJson)
+		if err != nil {
+			log.Printf("failed to decode report from db: %v", err)
+			log.Printf("json: ")
+			template.ErrorTemplate(w, "", http.StatusInternalServerError)
 			return
 		}
 

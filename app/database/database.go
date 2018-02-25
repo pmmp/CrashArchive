@@ -36,7 +36,9 @@ var queryInsertReport = `INSERT INTO crash_reports
 	VALUES
 		(:plugin, :version, :build, :file, :message, :line, :type, :os, :submitDate, :reportDate, :duplicate, :reporterName, :reporterEmail)`
 
-func (db *DB) InsertReport(report *crashreport.CrashReport, reporterName string, reporterEmail string) (int64, error) {
+const queryInsertBlob = `INSERT INTO crash_report_blobs (id, crash_report_json) VALUES (?, ?)`
+
+func (db *DB) InsertReport(report *crashreport.CrashReport, reporterName string, reporterEmail string, originalJson []byte) (int64, error) {
 	res, err := db.NamedExec(queryInsertReport, &crashreport.Report{
 		Plugin:        report.CausingPlugin,
 		Version:       report.Version.Get(true),
@@ -63,6 +65,18 @@ func (db *DB) InsertReport(report *crashreport.CrashReport, reporterName string,
 		return 0, fmt.Errorf("failed to get last insert ID: %d", id)
 	}
 
+	stmt, err := db.Preparex(queryInsertBlob)
+	if err != nil {
+		return -1, err
+	}
+
+	//we store the original json to avoid losing any data that the archive doesn't understand yet
+	_, err = stmt.Exec(id, originalJson)
+	defer stmt.Close()
+	if err != nil {
+		return -1, fmt.Errorf("failed to execute prepared statement: %v", err)
+	}
+
 	return id, nil
 }
 
@@ -76,4 +90,12 @@ func (db *DB) CheckDuplicate(report *crashreport.CrashReport) (int, error) {
 	}
 
 	return dupes, nil
+}
+
+func (db *DB) FetchReportJson(id int64) ([]byte, error) {
+	query := "SELECT crash_report_json FROM crash_report_blobs WHERE id = ?;"
+
+	var reportJson []byte
+	err := db.Get(&reportJson, query, id)
+	return reportJson, err
 }
