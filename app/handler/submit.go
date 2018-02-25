@@ -37,6 +37,8 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 			return
 		}
 
+		isAPI := strings.HasSuffix(r.RequestURI, "/api")
+
 		defer func() {
 			if recovered := recover(); recovered != nil {
 				err, ok := recovered.(error)
@@ -45,7 +47,7 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 				}
 
 				log.Printf("got invalid crash report from: %s (%v)", r.RemoteAddr, err)
-				template.ErrorTemplate(w, "This crash report is not valid")
+				sendError(w, "This crash report is not valid", isAPI)
 			}
 		}()
 
@@ -76,7 +78,7 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 		id, err := app.Database.InsertReport(report)
 		if err != nil {
 			log.Printf("failed to insert report into database: %v", err)
-			template.ErrorTemplate(w, "Internal error")
+			sendError(w, "Internal error", isAPI)
 			return
 		}
 
@@ -84,7 +86,7 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 		email := r.FormValue("email")
 		if err = report.WriteFile(id, name, email); err != nil {
 			log.Printf("failed to write file: %d\n", id)
-			template.ErrorTemplate(w, "Internal error")
+			sendError(w, "Internal error", isAPI)
 			return
 		}
 
@@ -92,16 +94,25 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 			go app.ReportToSlack(name, id, report.Error.Message)
 		}
 
-		if !strings.HasSuffix(r.RequestURI, "/api") {
+		if isAPI {
+			jsonResponse(w, map[string]interface{}{
+				"crashId":  id,
+				"crashUrl": fmt.Sprintf("https://crash.pmmp.io/view/%d", id),
+			})
+		} else {
 			http.Redirect(w, r, fmt.Sprintf("/view/%d", id), http.StatusMovedPermanently)
-			return
 		}
 
-		jsonResponse(w, map[string]interface{}{
-			"crashId":  id,
-			"crashUrl": fmt.Sprintf("https://crash.pmmp.io/view/%d", id),
-		})
+	}
+}
 
+func sendError(w http.ResponseWriter, error string, isAPI bool) {
+	if isAPI {
+		jsonResponse(w, map[string]interface{}{
+			"error": error,
+		})
+	} else {
+		template.ErrorTemplate(w, error)
 	}
 }
 
