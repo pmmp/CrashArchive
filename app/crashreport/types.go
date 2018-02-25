@@ -34,7 +34,7 @@ type ReportData struct {
 		Uname    string
 		PHP      string
 		Zend     string
-		PHPOS    string
+		PHPOS    string `json:"php_os"`
 		OS       string
 	}
 	Error            ReportError
