@@ -59,13 +59,14 @@ func ExecuteListTemplate(w http.ResponseWriter, reports []crashreport.Report, ur
 	cnt := len(reports)
 
 	data := map[string]interface{}{
+		"RangeStart": 0,
 		"RangeEnd":   start + cnt,
 		"ShowCount":  cnt,
 		"TotalCount": total,
 		"SearchUrl":  url,
 		"Data":       reports,
-		"RangeStart": 0,
 		"PrevPage":   0,
+		"NextPage":   0,
 	}
 
 	if cnt > 0 {
@@ -76,9 +77,7 @@ func ExecuteListTemplate(w http.ResponseWriter, reports []crashreport.Report, ur
 		data["PrevPage"] = id - 1
 	}
 
-	if start+cnt >= total {
-		data["NextPage"] = 0
-	} else {
+	if start+cnt < total {
 		data["NextPage"] = id + 1
 	}
 	ExecuteTemplate(w, "list", data)
