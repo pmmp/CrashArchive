@@ -15,7 +15,7 @@ func TestSearchGet(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SearchGet())
+	handler := http.HandlerFunc(SearchGet)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -31,7 +31,7 @@ func TestSearchIDPost(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SearchIDGet())
+	handler := http.HandlerFunc(SearchIDGet)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {

@@ -15,7 +15,7 @@ func TestSubmitGet(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SubmitGet())
+	handler := http.HandlerFunc(SubmitGet)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {

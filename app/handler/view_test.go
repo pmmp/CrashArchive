@@ -13,7 +13,7 @@ func TestViewIDGet(t *testing.T) {
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ViewIDGet())
+	handler := http.HandlerFunc(ViewIDGet)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
