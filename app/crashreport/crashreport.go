@@ -31,7 +31,6 @@ const (
 func Parse(data string) (*CrashReport, error) {
 	var r CrashReport
 	r.ReportType = TypeGeneric
-	r.CausedByPlugin = false
 
 	if err := r.ReadCompressed(data); err != nil {
 		return nil, fmt.Errorf("failed to read compressed data: %v", err)
