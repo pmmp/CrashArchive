@@ -5,7 +5,6 @@ import (
 	"compress/zlib"
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"regexp"
@@ -23,20 +22,18 @@ const (
 	TypeInvalidArgument = "invalid_argument"
 	TypeClassNotFound   = "class_not_found"
 	TypeUnknown         = "unknown"
+
+	reportBegin = "===BEGIN CRASH DUMP==="
+	reportEnd   = "===END CRASH DUMP==="
 )
 
 func Parse(data string) (*CrashReport, error) {
-	report := trimHead(data)
-	if report == "" {
-		return nil, errors.New("report is empty")
-	}
-
 	var r CrashReport
 	r.ReportType = TypeGeneric
 	r.CausedByPlugin = false
 	r.Valid = true
 
-	if err := r.ReadCompressed(report); err != nil {
+	if err := r.ReadCompressed(data); err != nil {
 		return nil, fmt.Errorf("failed to read compressed data: %v", err)
 	}
 
@@ -119,26 +116,28 @@ func (r *CrashReport) classifyMessage() {
 	}
 }
 
-func trimHead(data string) string {
-	x := strings.Trim(data, "\r\n\t` ")
-	i := strings.Index(x, "===BEGIN CRASH DUMP===")
-	if i == -1 {
+// extractBase64 returns the base64 between ===BEGIN CRASH DUMP=== and ===END CRASH DUMP===
+func extractBase64(data string) string {
+	reportBeginIndex := strings.Index(data, reportBegin)
+	if reportBeginIndex == -1 {
 		return data
 	}
-	x = x[i:]
-	return x
+	reportEndIndex := strings.Index(data, reportEnd)
+	if reportEndIndex == -1 {
+		return data
+	}
+
+	return strings.Trim(data[reportBeginIndex+len(reportBegin):reportEndIndex], "\r\n\t` ")
 }
 
 // ReadCompressed reads the base64 encoded and zlib compressed report
 func (r *CrashReport) ReadCompressed(report string) error {
-	b64Enc := strings.Replace(report, "===BEGIN CRASH DUMP===", "", -1)
-	b64Enc = strings.Replace(b64Enc, "===END CRASH DUMP===", "", -1)
-	b64Dec, err := base64.StdEncoding.DecodeString(b64Enc)
+	zlibBytes, err := base64.StdEncoding.DecodeString(extractBase64(report))
 	if err != nil {
 		return err
 	}
 
-	br := bytes.NewReader(b64Dec)
+	br := bytes.NewReader(zlibBytes)
 	zr, err := zlib.NewReader(br)
 	if err != nil {
 		return err
@@ -173,5 +172,5 @@ func (r *CrashReport) Encoded() string {
 
 	zw.Close()
 
-	return fmt.Sprintf("===BEGIN CRASH DUMP===\n%s\n===END CRASH DUMP===", base64.StdEncoding.EncodeToString(zlibBuf.Bytes()))
+	return fmt.Sprintf("%s\n%s\n%s", reportBegin, base64.StdEncoding.EncodeToString(zlibBuf.Bytes()), reportEnd)
 }
