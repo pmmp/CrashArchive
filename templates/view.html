@@ -73,9 +73,17 @@
                         <div class="col s12">
                             <div class="card-panel">
                                 <h3>Error information</h3>
-                                <strong>{{.Report.Error.Message}}</strong><br/>
+                                {{if .Report.CausedByPlugin}}
+                                <div class="card-panel red lighten-2 white-text z-depth-0">
+                                    Warning: This crash was caused by {{if ne .Report.CausingPlugin ""}}the <strong>{{.Report.CausingPlugin}}</strong>{{else}}a{{end}} plugin. Please contact the plugin author.
+                                </div>
+                                {{end}}
                                 <table>
                                     <tbody>
+                                    <tr>
+                                        <th>Message:</th>
+                                        <td>{{.Report.Error.Message}}</td>
+                                    </tr>
                                     <tr>
                                         <th>File:</th>
                                         <td>{{.Report.Error.File}}</td>
