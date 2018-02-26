@@ -2,7 +2,6 @@ package template
 
 import (
 	"html/template"
-	"io"
 	"net/http"
 	"path/filepath"
 
@@ -44,14 +43,18 @@ func Preload(cfg *Config) error {
 	return nil
 }
 
-func ExecuteTemplate(w io.Writer, name string, data interface{}) error {
+func ExecuteTemplate(w http.ResponseWriter, name string, data interface{}) error {
 	if tmpl, ok := t[name]; ok {
 		return tmpl.ExecuteTemplate(w, "base.html", data)
 	}
-	return ErrorTemplate(w, "whoops")
+	return ErrorTemplate(w, "", http.StatusInternalServerError)
 }
 
-func ErrorTemplate(w io.Writer, message string) error {
+func ErrorTemplate(w http.ResponseWriter, message string, status int) error {
+	w.WriteHeader(status)
+	if message == "" {
+		message = http.StatusText(status)
+	}
 	return t["error"].ExecuteTemplate(w, "base.html", struct{ Message string }{message})
 }
 

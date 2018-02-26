@@ -29,8 +29,7 @@ func New(app *app.App) *chi.Mux {
 		r.Use(middleware.Logger)
 
 		r.NotFound(func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusNotFound)
-			template.ErrorTemplate(w, "Page not found")
+			template.ErrorTemplate(w, "", http.StatusNotFound)
 		})
 
 		r.Get("/", handler.HomeGet)

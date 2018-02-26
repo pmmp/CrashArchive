@@ -80,7 +80,7 @@ func SearchReportGet(app *app.App) http.HandlerFunc {
 
 		reportID, err := strconv.Atoi(r.URL.Query().Get("id"))
 		if err != nil {
-			http.Error(w, http.StatusText(404), 404)
+			template.ErrorTemplate(w, "", http.StatusNotFound)
 			return
 		}
 

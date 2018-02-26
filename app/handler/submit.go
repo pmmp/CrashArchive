@@ -47,7 +47,7 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 				}
 
 				log.Printf("got invalid crash report from: %s (%v)", r.RemoteAddr, err)
-				sendError(w, "This crash report is not valid", isAPI)
+				sendError(w, "This crash report is not valid", http.StatusUnprocessableEntity, isAPI)
 			}
 		}()
 
@@ -59,13 +59,13 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 
 		if report.Data.General.Name != "PocketMine-MP" {
 			log.Printf("spoon detected from: %s\n", r.RemoteAddr)
-			http.Error(w, http.StatusText(http.StatusTeapot), http.StatusTeapot)
+			sendError(w, "", http.StatusTeapot, isAPI)
 			return
 		}
 
 		if report.Data.General.GIT == strings.Repeat("00", 20) || strings.HasSuffix(report.Data.General.GIT, "-dirty") {
 			log.Printf("invalid git hash %s in report from: %s\n", report.Data.General.GIT, r.RemoteAddr)
-			http.Error(w, http.StatusText(http.StatusTeapot), http.StatusTeapot)
+			sendError(w, "", http.StatusTeapot, isAPI)
 			return
 		}
 
@@ -78,7 +78,7 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 		id, err := app.Database.InsertReport(report)
 		if err != nil {
 			log.Printf("failed to insert report into database: %v", err)
-			sendError(w, "Internal error", isAPI)
+			sendError(w, "", http.StatusInternalServerError, isAPI)
 			return
 		}
 
@@ -86,7 +86,7 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 		email := r.FormValue("email")
 		if err = report.WriteFile(id, name, email); err != nil {
 			log.Printf("failed to write file: %d\n", id)
-			sendError(w, "Internal error", isAPI)
+			sendError(w,"", http.StatusInternalServerError, isAPI)
 			return
 		}
 
@@ -106,13 +106,17 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 	}
 }
 
-func sendError(w http.ResponseWriter, error string, isAPI bool) {
+func sendError(w http.ResponseWriter, message string, status int, isAPI bool) {
 	if isAPI {
+		w.WriteHeader(status)
+		if message == "" {
+			message = http.StatusText(status)
+		}
 		jsonResponse(w, map[string]interface{}{
-			"error": error,
+			"error": message,
 		})
 	} else {
-		template.ErrorTemplate(w, error)
+		template.ErrorTemplate(w, message, status)
 	}
 }
 

@@ -14,12 +14,12 @@ import (
 func ViewIDGet(w http.ResponseWriter, r *http.Request) {
 	reportID, err := strconv.Atoi(chi.URLParam(r, "reportID"))
 	if err != nil {
-		template.ErrorTemplate(w, "Please specify a report")
+		template.ErrorTemplate(w, "Please specify a report", http.StatusNotFound)
 		return
 	}
 	report, jsonData, err := crashreport.ReadFile(int64(reportID))
 	if err != nil {
-		template.ErrorTemplate(w, "Report not found")
+		template.ErrorTemplate(w, "Report not found", http.StatusNotFound)
 		return
 	}
 
