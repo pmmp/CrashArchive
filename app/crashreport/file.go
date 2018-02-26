@@ -40,7 +40,7 @@ func ReadFile(id int64) (*CrashReport, map[string]interface{}, error) {
 	// report, err := app.DB.GetReport(reportID)
 	//log.Printf("%#v\n", jsonData)
 
-	report, err := Parse(jsonData["report"].(string))
+	report, err := DecodeCrashReport(jsonData["report"].(string))
 	if err != nil {
 		log.Printf("%v\n", err)
 		return nil, jsonData, err
@@ -50,7 +50,7 @@ func ReadFile(id int64) (*CrashReport, map[string]interface{}, error) {
 }
 func (r *CrashReport) WriteFile(id int64, name, email string) error {
 	data := map[string]interface{}{
-		"report":        r.Encoded(),
+		"report":        r.EncodeCrashReport(),
 		"reportId":      id,
 		"name":          name,
 		"email":         email,

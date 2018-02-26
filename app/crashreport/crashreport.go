@@ -20,20 +20,6 @@ const (
 	reportEnd   = "===END CRASH DUMP==="
 )
 
-func Parse(data string) (*CrashReport, error) {
-	var r CrashReport
-
-	if err := r.ReadCompressed(data); err != nil {
-		return nil, fmt.Errorf("failed to read compressed data: %v", err)
-	}
-
-	r.parseDate()
-	r.parseError()
-	r.parseVersion()
-	r.classifyMessage()
-	return &r, nil
-}
-
 // ParseDate parses  the unix date to time.Time
 func (r *CrashReport) parseDate() {
 	if r.Data.Time == 0 {
@@ -97,32 +83,41 @@ func extractBase64(data string) string {
 	return strings.Trim(data[reportBeginIndex+len(reportBegin):reportEndIndex], "\r\n\t` ")
 }
 
-// ReadCompressed reads the base64 encoded and zlib compressed report
-func (r *CrashReport) ReadCompressed(report string) error {
-	zlibBytes, err := base64.StdEncoding.DecodeString(extractBase64(report))
-	if err != nil {
-		return err
-	}
-
-	br := bytes.NewReader(zlibBytes)
-	zr, err := zlib.NewReader(br)
-	if err != nil {
-		return err
-	}
-	defer zr.Close()
-
-	err = json.NewDecoder(zr).Decode(&r.Data)
-	return err
-}
-
 // clean is shoghi magic
 func clean(v string) string {
 	var re = regexp.MustCompile(`[^A-Za-z0-9_\-\.\,\;\:/\#\(\)\\ ]`)
 	return re.ReplaceAllString(v, "")
 }
 
-// Encoded ...
-func (r *CrashReport) Encoded() string {
+func DecodeCrashReport(data string) (*CrashReport, error) {
+	var r CrashReport
+
+	zlibBytes, err := base64.StdEncoding.DecodeString(extractBase64(data))
+	if err != nil {
+		return nil, err
+	}
+
+	br := bytes.NewReader(zlibBytes)
+	zr, err := zlib.NewReader(br)
+	if err != nil {
+		return nil, err
+	}
+	defer zr.Close()
+
+	if err := json.NewDecoder(zr).Decode(&r.Data); err != nil {
+		return nil, fmt.Errorf("failed to read compressed data: %v", err)
+	}
+
+	r.parseDate()
+	r.parseError()
+	r.parseVersion()
+	r.classifyMessage()
+
+	return &r, nil
+}
+
+// EncodeCrashReport ...
+func (r *CrashReport) EncodeCrashReport() string {
 	var jsonBuf bytes.Buffer
 	jw := json.NewEncoder(&jsonBuf)
 	err := jw.Encode(r.Data)

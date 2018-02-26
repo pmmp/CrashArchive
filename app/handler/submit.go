@@ -51,7 +51,7 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 			}
 		}()
 
-		report, err := crashreport.Parse(reportStr)
+		report, err := crashreport.DecodeCrashReport(reportStr)
 		if err != nil {
 			//this panic will be recovered in the above deferred function
 			log.Panic(err)
