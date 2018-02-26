@@ -26,7 +26,6 @@ func SearchIDGet(w http.ResponseWriter, r *http.Request) {
 
 func SearchPluginGet(app *app.App) http.HandlerFunc {
 	query := "SELECT id, version, message FROM crash_reports WHERE plugin = ? ORDER BY id DESC"
-	queryTotal := "SELECT COUNT(*) FROM crash_reports"
 	return func(w http.ResponseWriter, r *http.Request) {
 		plugin := r.URL.Query().Get("plugin")
 		if plugin == "" {
@@ -40,12 +39,6 @@ func SearchPluginGet(app *app.App) http.HandlerFunc {
 			log.Println(err)
 			return
 		}
-		var total int
-		err = app.Database.Get(&total, queryTotal)
-		if err != nil {
-			log.Println(err)
-			return
-		}
 
 		template.ExecuteListTemplate(w, reports, r.URL.String(), 1, 0, len(reports))
 	}
@@ -53,7 +46,6 @@ func SearchPluginGet(app *app.App) http.HandlerFunc {
 
 func SearchBuildGet(app *app.App) http.HandlerFunc {
 	query := "SELECT id, version, message FROM crash_reports WHERE build"
-	queryTotal := "SELECT COUNT(*) FROM crash_reports"
 	return func(w http.ResponseWriter, r *http.Request) {
 		params := r.URL.Query()
 		buildID, err := strconv.Atoi(params.Get("build"))
@@ -77,12 +69,6 @@ func SearchBuildGet(app *app.App) http.HandlerFunc {
 			log.Println(err)
 			return
 		}
-		var total int
-		err = app.Database.Get(&total, queryTotal)
-		if err != nil {
-			log.Println(err)
-			return
-		}
 
 		template.ExecuteListTemplate(w, reports, r.URL.String(), 1, 0, len(reports))
 	}
@@ -90,7 +76,6 @@ func SearchBuildGet(app *app.App) http.HandlerFunc {
 func SearchReportGet(app *app.App) http.HandlerFunc {
 	query := "SELECT * FROM crash_reports WHERE id = ?"
 	queryDupe := "SELECT id, version, message FROM crash_reports WHERE message = ? AND file = ? and line = ? ORDER BY id DESC"
-	queryTotal := "SELECT COUNT(*) FROM crash_reports"
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		reportID, err := strconv.Atoi(r.URL.Query().Get("id"))
@@ -108,12 +93,6 @@ func SearchReportGet(app *app.App) http.HandlerFunc {
 
 		var reports []crashreport.Report
 		err = app.Database.Select(&reports, queryDupe, report.Message, report.File, report.Line)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		var total int
-		err = app.Database.Get(&total, queryTotal)
 		if err != nil {
 			log.Println(err)
 			return
