@@ -76,9 +76,10 @@ func (r *CrashReport) classifyMessage() {
 	}
 
 	if strings.HasPrefix(r.Error.Message, "Argument") {
-		line := strings.Replace(r.Error.Message, "\\\\", "\\", -1)
-		index1 := strings.Index(line, ", called in")
-		r.Error.Message = line[0:index1]
+		index1 := strings.Index(r.Error.Message, ", called in")
+		if index1 != -1 {
+			r.Error.Message = r.Error.Message[0:index1]
+		}
 	}
 }
 
