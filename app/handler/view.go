@@ -39,7 +39,6 @@ func ViewIDGet(app *app.App) http.HandlerFunc {
 		report, err := crashreport.FromJson(reportJson)
 		if err != nil {
 			log.Printf("failed to decode report from db: %v", err)
-			log.Printf("json: ")
 			template.ErrorTemplate(w, "", http.StatusInternalServerError)
 			return
 		}
