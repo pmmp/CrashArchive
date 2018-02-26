@@ -8,12 +8,14 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/pmmp/CrashArchive/app/crashreport"
 	"github.com/pmmp/CrashArchive/app/template"
+	"log"
 )
 
 func DownloadGet(w http.ResponseWriter, r *http.Request) {
 	reportID, err := strconv.Atoi(chi.URLParam(r, "reportID"))
 	if err != nil {
-		template.ErrorTemplate(w, "Please specify a report", http.StatusNotFound)
+		log.Println(err)
+		template.ErrorTemplate(w, "", http.StatusBadRequest)
 		return
 	}
 

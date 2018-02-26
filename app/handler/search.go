@@ -18,7 +18,8 @@ func SearchGet(w http.ResponseWriter, r *http.Request) {
 func SearchIDGet(w http.ResponseWriter, r *http.Request) {
 	reportID, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
-		http.Error(w, http.StatusText(404), 404)
+		log.Println(err)
+		template.ErrorTemplate(w, "", http.StatusBadRequest)
 		return
 	}
 	http.Redirect(w, r, fmt.Sprintf("/view/%d", reportID), http.StatusMovedPermanently)
@@ -28,7 +29,8 @@ func SearchPluginGet(app *app.App) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		plugin := r.URL.Query().Get("plugin")
 		if plugin == "" {
-			http.Error(w, http.StatusText(404), 404)
+			log.Println("empty plugin name")
+			template.ErrorTemplate(w, "", http.StatusBadRequest)
 			return
 		}
 
@@ -41,8 +43,8 @@ func SearchBuildGet(app *app.App) http.HandlerFunc {
 		params := r.URL.Query()
 		buildID, err := strconv.Atoi(params.Get("build"))
 		if err != nil {
-			http.Error(w, http.StatusText(404), 404)
 			log.Println(err)
+			template.ErrorTemplate(w, "", http.StatusBadRequest)
 			return
 		}
 
@@ -63,7 +65,8 @@ func SearchReportGet(app *app.App) http.HandlerFunc {
 
 		reportID, err := strconv.Atoi(r.URL.Query().Get("id"))
 		if err != nil {
-			template.ErrorTemplate(w, "", http.StatusNotFound)
+			log.Println(err)
+			template.ErrorTemplate(w, "", http.StatusBadRequest)
 			return
 		}
 
@@ -71,6 +74,7 @@ func SearchReportGet(app *app.App) http.HandlerFunc {
 		err = app.Database.Get(&report, query, reportID)
 		if err != nil {
 			log.Println(err)
+			template.ErrorTemplate(w, "Report not found", http.StatusNotFound)
 			return
 		}
 
