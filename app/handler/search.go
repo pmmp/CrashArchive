@@ -25,7 +25,6 @@ func SearchIDGet(w http.ResponseWriter, r *http.Request) {
 }
 
 func SearchPluginGet(app *app.App) http.HandlerFunc {
-	query := "SELECT id, version, message FROM crash_reports WHERE plugin = ? ORDER BY id DESC"
 	return func(w http.ResponseWriter, r *http.Request) {
 		plugin := r.URL.Query().Get("plugin")
 		if plugin == "" {
@@ -33,19 +32,11 @@ func SearchPluginGet(app *app.App) http.HandlerFunc {
 			return
 		}
 
-		var reports []crashreport.Report
-		err := app.Database.Select(&reports, query, plugin)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		template.ExecuteListTemplate(w, reports, r.URL.String(), 1, 0, len(reports))
+		ListFilteredReports(w, r, app.Database, "WHERE plugin = ?", plugin)
 	}
 }
 
 func SearchBuildGet(app *app.App) http.HandlerFunc {
-	query := "SELECT id, version, message FROM crash_reports WHERE build"
 	return func(w http.ResponseWriter, r *http.Request) {
 		params := r.URL.Query()
 		buildID, err := strconv.Atoi(params.Get("build"))
@@ -63,19 +54,11 @@ func SearchBuildGet(app *app.App) http.HandlerFunc {
 			operator = "<"
 		}
 
-		var reports []crashreport.Report
-		err = app.Database.Select(&reports, fmt.Sprintf("%s %s ? ORDER BY id DESC", query, operator), buildID)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		template.ExecuteListTemplate(w, reports, r.URL.String(), 1, 0, len(reports))
+		ListFilteredReports(w, r, app.Database, fmt.Sprintf("WHERE build %s ?", operator), buildID)
 	}
 }
 func SearchReportGet(app *app.App) http.HandlerFunc {
 	query := "SELECT * FROM crash_reports WHERE id = ?"
-	queryDupe := "SELECT id, version, message FROM crash_reports WHERE message = ? AND file = ? and line = ? ORDER BY id DESC"
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		reportID, err := strconv.Atoi(r.URL.Query().Get("id"))
@@ -91,13 +74,6 @@ func SearchReportGet(app *app.App) http.HandlerFunc {
 			return
 		}
 
-		var reports []crashreport.Report
-		err = app.Database.Select(&reports, queryDupe, report.Message, report.File, report.Line)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		template.ExecuteListTemplate(w, reports, r.URL.String(), 1, 0, len(reports))
+		ListFilteredReports(w, r, app.Database, "WHERE message = ? AND file = ? and line = ?", report.Message, report.File, report.Line)
 	}
 }
