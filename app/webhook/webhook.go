@@ -21,12 +21,11 @@ type Webhook struct{
 func New(slackURL string) *Webhook {
 	return &Webhook{
 		slackURL:  slackURL,
-		slackTime: time.Now(),
 	}
 }
 
 func (w *Webhook) Post(name string, id int64, msg string) {
-	if time.Now().Sub(w.slackTime).Minutes() < 5.0 {
+	if !w.slackTime.IsZero() && time.Now().Sub(w.slackTime).Minutes() < 5.0 {
 		return
 	}
 
