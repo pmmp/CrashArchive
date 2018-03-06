@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/pmmp/CrashArchive/app"
 	"github.com/pmmp/CrashArchive/app/crashreport"
 	"github.com/pmmp/CrashArchive/app/template"
+	"github.com/pmmp/CrashArchive/app/database"
 )
 
 func SearchGet(w http.ResponseWriter, r *http.Request) {
@@ -25,7 +25,7 @@ func SearchIDGet(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/view/%d", reportID), http.StatusMovedPermanently)
 }
 
-func SearchPluginGet(app *app.App) http.HandlerFunc {
+func SearchPluginGet(db *database.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		plugin := r.URL.Query().Get("plugin")
 		if plugin == "" {
@@ -34,11 +34,11 @@ func SearchPluginGet(app *app.App) http.HandlerFunc {
 			return
 		}
 
-		ListFilteredReports(w, r, app.Database, "WHERE plugin = ?", plugin)
+		ListFilteredReports(w, r, db, "WHERE plugin = ?", plugin)
 	}
 }
 
-func SearchBuildGet(app *app.App) http.HandlerFunc {
+func SearchBuildGet(db *database.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		params := r.URL.Query()
 		buildID, err := strconv.Atoi(params.Get("build"))
@@ -56,10 +56,10 @@ func SearchBuildGet(app *app.App) http.HandlerFunc {
 			operator = "<"
 		}
 
-		ListFilteredReports(w, r, app.Database, fmt.Sprintf("WHERE build %s ?", operator), buildID)
+		ListFilteredReports(w, r, db, fmt.Sprintf("WHERE build %s ?", operator), buildID)
 	}
 }
-func SearchReportGet(app *app.App) http.HandlerFunc {
+func SearchReportGet(db *database.DB) http.HandlerFunc {
 	query := "SELECT * FROM crash_reports WHERE id = ?"
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -71,13 +71,13 @@ func SearchReportGet(app *app.App) http.HandlerFunc {
 		}
 
 		var report crashreport.Report
-		err = app.Database.Get(&report, query, reportID)
+		err = db.Get(&report, query, reportID)
 		if err != nil {
 			log.Println(err)
 			template.ErrorTemplate(w, "Report not found", http.StatusNotFound)
 			return
 		}
 
-		ListFilteredReports(w, r, app.Database, "WHERE message = ? AND file = ? and line = ?", report.Message, report.File, report.Line)
+		ListFilteredReports(w, r, db, "WHERE message = ? AND file = ? and line = ?", report.Message, report.File, report.Line)
 	}
 }

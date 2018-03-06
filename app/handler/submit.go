@@ -10,16 +10,17 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/pmmp/CrashArchive/app"
 	"github.com/pmmp/CrashArchive/app/crashreport"
 	"github.com/pmmp/CrashArchive/app/template"
+	"github.com/pmmp/CrashArchive/app/database"
+	"github.com/pmmp/CrashArchive/app/webhook"
 )
 
 func SubmitGet(w http.ResponseWriter, r *http.Request) {
 	template.ExecuteTemplate(w, "submit", nil)
 }
 
-func SubmitPost(app *app.App) http.HandlerFunc {
+func SubmitPost(db *database.DB, wh *webhook.Webhook) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.FormValue("report") != "yes" {
 			http.Redirect(w, r, "/submit", http.StatusMovedPermanently)
@@ -69,13 +70,13 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 			return
 		}
 
-		dupes, err := app.Database.CheckDuplicate(report)
+		dupes, err := db.CheckDuplicate(report)
 		report.Duplicate = dupes > 0
 		if dupes > 0 {
 			log.Printf("found %d duplicates of report from: %s", dupes, r.RemoteAddr)
 		}
 
-		id, err := app.Database.InsertReport(report)
+		id, err := db.InsertReport(report)
 		if err != nil {
 			log.Printf("failed to insert report into database: %v", err)
 			sendError(w, "", http.StatusInternalServerError, isAPI)
@@ -90,8 +91,8 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 			return
 		}
 
-		if !report.Duplicate && app.Webhook != nil {
-			go app.Webhook.Post(name, id, report.Error.Message)
+		if !report.Duplicate && wh != nil {
+			go wh.Post(name, id, report.Error.Message)
 		}
 
 		if isAPI {

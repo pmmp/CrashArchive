@@ -9,12 +9,13 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 
-	"github.com/pmmp/CrashArchive/app"
 	"github.com/pmmp/CrashArchive/app/handler"
 	"github.com/pmmp/CrashArchive/app/template"
+	"github.com/pmmp/CrashArchive/app/database"
+	"github.com/pmmp/CrashArchive/app/webhook"
 )
 
-func New(app *app.App) *chi.Mux {
+func New(db *database.DB, wh *webhook.Webhook) *chi.Mux {
 	r := chi.NewRouter()
 
 	staticDirs := []string{"/css", "/js", "/fonts"}
@@ -33,22 +34,22 @@ func New(app *app.App) *chi.Mux {
 		})
 
 		r.Get("/", handler.HomeGet)
-		r.Get("/list", handler.ListGet(app))
+		r.Get("/list", handler.ListGet(db))
 		r.Get("/view/{reportID}", handler.ViewIDGet)
 		r.Get("/download/{reportID}", handler.DownloadGet)
 
 		r.Route("/search", func(r chi.Router) {
 			r.Get("/", handler.SearchGet)
 			r.Get("/id", handler.SearchIDGet)
-			r.Get("/plugin", handler.SearchPluginGet(app))
-			r.Get("/build", handler.SearchBuildGet(app))
-			r.Get("/report", handler.SearchReportGet(app))
+			r.Get("/plugin", handler.SearchPluginGet(db))
+			r.Get("/build", handler.SearchBuildGet(db))
+			r.Get("/report", handler.SearchReportGet(db))
 		})
 
 		r.Route("/submit", func(r chi.Router) {
 			r.Get("/", handler.SubmitGet)
-			r.Post("/", handler.SubmitPost(app))
-			r.Post("/api", handler.SubmitPost(app))
+			r.Post("/", handler.SubmitPost(db, wh))
+			r.Post("/api", handler.SubmitPost(db, wh))
 		})
 	})
 	return r

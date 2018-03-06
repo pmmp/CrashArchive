@@ -7,15 +7,14 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/pmmp/CrashArchive/app"
 	"github.com/pmmp/CrashArchive/app/crashreport"
 	"github.com/pmmp/CrashArchive/app/database"
 	"github.com/pmmp/CrashArchive/app/template"
 )
 
-func ListGet(app *app.App) http.HandlerFunc {
+func ListGet(db *database.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		ListFilteredReports(w, r, app.Database, "WHERE duplicate = false")
+		ListFilteredReports(w, r, db, "WHERE duplicate = false")
 	}
 }
 

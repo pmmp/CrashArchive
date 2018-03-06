@@ -23,22 +23,23 @@ func main() {
 	flag.Parse()
 
 	var err error
-	context := &app.App{}
-	context.Config, err = app.LoadConfig(*configPath)
+	config, err := app.LoadConfig(*configPath)
 	if err != nil {
 		log.Printf("unable to load config: %v", err)
 		os.Exit(1)
 	}
 
-	if err := template.Preload(context.Config.Template); err != nil {
+	if err := template.Preload(config.Template); err != nil {
 		log.Fatal(err)
 	}
 
-	if context.Config.SlackURL != "" {
-		context.Webhook = webhook.New(context.Config.SlackURL)
+	var wh *webhook.Webhook = nil
+	if config.SlackURL != "" {
+		wh = webhook.New(config.SlackURL)
 	}
 
 	var retry int
+	var db *database.DB = nil
 loop:
 	for {
 		if retry == dbRetry {
@@ -46,9 +47,9 @@ loop:
 			os.Exit(1)
 		}
 
-		context.Database, err = database.New(context.Config.Database)
+		db, err = database.New(config.Database)
 		if err == nil {
-			if err := context.Database.Ping(); err != nil {
+			if err := db.Ping(); err != nil {
 				log.Println(err)
 				os.Exit(1)
 			}
@@ -61,9 +62,9 @@ loop:
 		retry++
 	}
 
-	r := router.New(context)
-	log.Printf("listening on: %s\n", context.Config.ListenAddress)
-	if err = http.ListenAndServe(context.Config.ListenAddress, r); err != nil {
+	r := router.New(db, wh)
+	log.Printf("listening on: %s\n", config.ListenAddress)
+	if err = http.ListenAndServe(config.ListenAddress, r); err != nil {
 		log.Fatal(err)
 	}
 

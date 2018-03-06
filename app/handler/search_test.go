@@ -4,8 +4,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/pmmp/CrashArchive/app"
 )
 
 func TestSearchGet(t *testing.T) {
@@ -41,14 +39,13 @@ func TestSearchIDPost(t *testing.T) {
 
 }
 func TestSearchPluginPost(t *testing.T) {
-	context := &app.App{}
 	req, err := http.NewRequest("GET", "/list", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SearchPluginGet(context))
+	handler := http.HandlerFunc(SearchPluginGet(nil))
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -58,14 +55,13 @@ func TestSearchPluginPost(t *testing.T) {
 
 }
 func TestSearchBuildPost(t *testing.T) {
-	context := &app.App{}
 	req, err := http.NewRequest("GET", "/list", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SearchBuildGet(context))
+	handler := http.HandlerFunc(SearchBuildGet(nil))
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -75,14 +71,13 @@ func TestSearchBuildPost(t *testing.T) {
 
 }
 func TestSearchReportPost(t *testing.T) {
-	context := &app.App{}
 	req, err := http.NewRequest("GET", "/list", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SearchReportGet(context))
+	handler := http.HandlerFunc(SearchReportGet(nil))
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
