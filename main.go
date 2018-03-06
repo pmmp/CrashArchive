@@ -34,7 +34,9 @@ func main() {
 		log.Fatal(err)
 	}
 
-	context.Webhook = webhook.New(context.Config.SlackURL)
+	if context.Config.SlackURL != "" {
+		context.Webhook = webhook.New(context.Config.SlackURL)
+	}
 
 	var retry int
 loop:

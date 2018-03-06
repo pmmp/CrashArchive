@@ -90,7 +90,7 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 			return
 		}
 
-		if !report.Duplicate {
+		if !report.Duplicate && app.Webhook != nil {
 			go app.Webhook.Post(name, id, report.Error.Message)
 		}
 
