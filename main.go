@@ -11,6 +11,7 @@ import (
 	"github.com/pmmp/CrashArchive/app/database"
 	"github.com/pmmp/CrashArchive/app/router"
 	"github.com/pmmp/CrashArchive/app/template"
+	"github.com/pmmp/CrashArchive/app/webhook"
 )
 
 const dbRetry = 5
@@ -32,6 +33,9 @@ func main() {
 	if err := template.Preload(context.Config.Template); err != nil {
 		log.Fatal(err)
 	}
+
+	context.Webhook = webhook.New(context.Config.SlackURL)
+
 	var retry int
 loop:
 	for {

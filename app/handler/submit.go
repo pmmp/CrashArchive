@@ -91,7 +91,7 @@ func SubmitPost(app *app.App) http.HandlerFunc {
 		}
 
 		if !report.Duplicate {
-			go app.ReportToSlack(name, id, report.Error.Message)
+			go app.Webhook.Post(name, id, report.Error.Message)
 		}
 
 		if isAPI {
