@@ -1,36 +1,36 @@
 <!DOCTYPE html>
 <html lang="en" dir="auto">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <meta name="keywords" content="PocketMine,PocketMine-MP,crash,archive,bug"/>
-        <meta name="description" content="Crash Archive and classifier for PocketMine"/>
-        <meta name="language" content="en"/>
-        <meta http-equiv="X-UA-Compatible" content="chrome=1"/>
-        <title>{{template "title" .}}</title>
-        <link rel="shortcut icon" href="https://cdn.pocketmine.net/favicon.png"/>
-        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/css/materialize.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-        <link rel="stylesheet" href="/css/crash-archive.css">
-        {{ template "head" .}}
-    </head>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="keywords" content="PocketMine,PocketMine-MP,crash,archive,bug"/>
+    <meta name="description" content="Crash Archive and classifier for PocketMine"/>
+    <meta name="language" content="en"/>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1"/>
+    <title>{{template "title" .}}</title>
+    <link rel="shortcut icon" href="https://cdn.pocketmine.net/favicon.png"/>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/crash-archive.css">
+{{ template "head" .}}
+</head>
 
-    <body>
+<body>
 
-            {{ template "menu.html" . }}
-        <main>
-            {{template "content" .}}
-        </main>
-            {{template "foot" .}}
+{{ template "menu.html" . }}
+<main>
+{{template "content" .}}
+</main>
+{{template "foot" .}}
 
-        {{ template "footer.html" .}}
-        <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/js/materialize.min.js"></script>
-        <script type="text/javascript">
-         $( document ).ready(function(){
-             $(".button-collapse").sideNav();
-         });
-        </script>
-    </body>
+{{ template "footer.html" .}}
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/js/materialize.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".button-collapse").sideNav();
+    });
+</script>
+</body>
 </html>

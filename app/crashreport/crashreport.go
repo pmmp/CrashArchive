@@ -107,7 +107,6 @@ func clean(v string) string {
 	return re.ReplaceAllString(v, "")
 }
 
-
 func JsonToCrashLog(jsonBytes []byte) (string, error) {
 	var zlibBuf bytes.Buffer
 	zw := zlib.NewWriter(&zlibBuf)

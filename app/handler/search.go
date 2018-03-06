@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/pmmp/CrashArchive/app"
 	"github.com/pmmp/CrashArchive/app/crashreport"
 	"github.com/pmmp/CrashArchive/app/template"
+	"github.com/pmmp/CrashArchive/app/database"
 )
 
 func SearchGet(w http.ResponseWriter, r *http.Request) {
@@ -18,40 +18,33 @@ func SearchGet(w http.ResponseWriter, r *http.Request) {
 func SearchIDGet(w http.ResponseWriter, r *http.Request) {
 	reportID, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
-		http.Error(w, http.StatusText(404), 404)
+		log.Println(err)
+		template.ErrorTemplate(w, "", http.StatusBadRequest)
 		return
 	}
 	http.Redirect(w, r, fmt.Sprintf("/view/%d", reportID), http.StatusMovedPermanently)
 }
 
-func SearchPluginGet(app *app.App) http.HandlerFunc {
-	query := "SELECT id, version, message FROM crash_reports WHERE plugin = ? ORDER BY id DESC"
+func SearchPluginGet(db *database.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		plugin := r.URL.Query().Get("plugin")
 		if plugin == "" {
-			http.Error(w, http.StatusText(404), 404)
+			log.Println("empty plugin name")
+			template.ErrorTemplate(w, "", http.StatusBadRequest)
 			return
 		}
 
-		var reports []crashreport.Report
-		err := app.Database.Select(&reports, query, plugin)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		template.ExecuteListTemplate(w, reports, r.URL.String(), 1, 0, len(reports))
+		ListFilteredReports(w, r, db, "WHERE plugin = ?", plugin)
 	}
 }
 
-func SearchBuildGet(app *app.App) http.HandlerFunc {
-	query := "SELECT id, version, message FROM crash_reports WHERE build"
+func SearchBuildGet(db *database.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		params := r.URL.Query()
 		buildID, err := strconv.Atoi(params.Get("build"))
 		if err != nil {
-			http.Error(w, http.StatusText(404), 404)
 			log.Println(err)
+			template.ErrorTemplate(w, "", http.StatusBadRequest)
 			return
 		}
 
@@ -63,41 +56,28 @@ func SearchBuildGet(app *app.App) http.HandlerFunc {
 			operator = "<"
 		}
 
-		var reports []crashreport.Report
-		err = app.Database.Select(&reports, fmt.Sprintf("%s %s ? ORDER BY id DESC", query, operator), buildID)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		template.ExecuteListTemplate(w, reports, r.URL.String(), 1, 0, len(reports))
+		ListFilteredReports(w, r, db, fmt.Sprintf("WHERE build %s ?", operator), buildID)
 	}
 }
-func SearchReportGet(app *app.App) http.HandlerFunc {
+func SearchReportGet(db *database.DB) http.HandlerFunc {
 	query := "SELECT * FROM crash_reports WHERE id = ?"
-	queryDupe := "SELECT id, version, message FROM crash_reports WHERE message = ? AND file = ? and line = ? ORDER BY id DESC"
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		reportID, err := strconv.Atoi(r.URL.Query().Get("id"))
 		if err != nil {
-			template.ErrorTemplate(w, "", http.StatusNotFound)
+			log.Println(err)
+			template.ErrorTemplate(w, "", http.StatusBadRequest)
 			return
 		}
 
 		var report crashreport.Report
-		err = app.Database.Get(&report, query, reportID)
+		err = db.Get(&report, query, reportID)
 		if err != nil {
 			log.Println(err)
+			template.ErrorTemplate(w, "Report not found", http.StatusNotFound)
 			return
 		}
 
-		var reports []crashreport.Report
-		err = app.Database.Select(&reports, queryDupe, report.Message, report.File, report.Line)
-		if err != nil {
-			log.Println(err)
-			return
-		}
-
-		template.ExecuteListTemplate(w, reports, r.URL.String(), 1, 0, len(reports))
+		ListFilteredReports(w, r, db, "WHERE message = ? AND file = ? and line = ?", report.Message, report.File, report.Line)
 	}
 }

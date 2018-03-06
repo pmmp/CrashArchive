@@ -8,20 +8,21 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/pmmp/CrashArchive/app/crashreport"
 	"github.com/pmmp/CrashArchive/app/template"
-	"github.com/pmmp/CrashArchive/app"
 	"log"
+	"github.com/pmmp/CrashArchive/app/database"
 )
 
-func DownloadGet(app *app.App) http.HandlerFunc {
+func DownloadGet(db *database.DB) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 		reportID, err := strconv.Atoi(chi.URLParam(r, "reportID"))
 		if err != nil {
-			template.ErrorTemplate(w, "Please specify a report", http.StatusNotFound)
+			log.Println(err)
+			template.ErrorTemplate(w, "", http.StatusBadRequest)
 			return
 		}
 
-		reportJson, err := app.Database.FetchReportJson(int64(reportID))
+		reportJson, err := db.FetchReportJson(int64(reportID))
 		if err != nil {
 			template.ErrorTemplate(w, "Report not found", http.StatusNotFound)
 			return

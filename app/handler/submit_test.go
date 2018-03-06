@@ -4,8 +4,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-
-	"github.com/pmmp/CrashArchive/app"
 )
 
 func TestSubmitGet(t *testing.T) {
@@ -26,14 +24,13 @@ func TestSubmitGet(t *testing.T) {
 }
 
 func TestSubmitPost(t *testing.T) {
-	context := &app.App{}
 	req, err := http.NewRequest("POST", "/submit", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(SubmitPost(context))
+	handler := http.HandlerFunc(SubmitPost(nil, nil))
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {

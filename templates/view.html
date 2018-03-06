@@ -2,18 +2,18 @@
 {{define "head"}}{{end}}
 {{define "content"}}
 <div class="container">
-      <div class="row">
+    <div class="row">
         <div class="col s12">
-          <div class="card">
-            <div class="card-content">
-              <span class="card-title">#{{ .ReportID}} {{shorten .Report.Error.Message}}</span>
-              <p>Submitted by {{.Name}}</p>
-                <div class="row">
-                    <div class="col s12 l6">
-                        <div class="card-panel">
-                            <h3>General information</h3>
-                            <table>
-                                <tbody>
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title truncate">#{{ .ReportID}} {{.Report.Error.Message}}</span>
+                    <p>Submitted by {{.Name}}</p>
+                    <div class="row">
+                        <div class="col s12 l6">
+                            <div class="card-panel">
+                                <h3>General information</h3>
+                                <table>
+                                    <tbody>
                                     <tr>
                                         <th>Version:</th>
                                         <td>{{.PocketMineVersion}}</td>
@@ -42,15 +42,15 @@
                                         <th>Attached Issue:</th>
                                         <td>{{.AttachedIssue}}</td>
                                     </tr>
-                                </tbody>
-                            </table>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col s12 l6">
-                        <div class="card-panel">
-                            <h3>System Information</h3>
-                            <table>
-                                <tbody>
+                        <div class="col s12 l6">
+                            <div class="card-panel">
+                                <h3>System Information</h3>
+                                <table>
+                                    <tbody>
                                     <tr>
                                         <th>PHP version:</th>
                                         <td>{{.Report.Data.General.PHP}}</td>
@@ -63,19 +63,27 @@
                                         <th>System banner</th>
                                         <td>{{.Report.Data.General.Uname}}</td>
                                     </tr>
-                                </tbody>
-                            </table>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="row">
-                    <div class="col s12">
-                        <div class="card-panel">
-                            <h3>Error information</h3>
-                            <strong>{{.Report.Error.Message}}</strong><br/>
-                            <table>
-                                <tbody>
+                    <div class="row">
+                        <div class="col s12">
+                            <div class="card-panel">
+                                <h3>Error information</h3>
+                                {{if .Report.CausedByPlugin}}
+                                <div class="card-panel red lighten-2 white-text z-depth-0">
+                                    Warning: This crash was caused by {{if ne .Report.CausingPlugin ""}}the <strong>{{.Report.CausingPlugin}}</strong>{{else}}a{{end}} plugin. Please contact the plugin author.
+                                </div>
+                                {{end}}
+                                <table>
+                                    <tbody>
+                                    <tr>
+                                        <th>Message:</th>
+                                        <td>{{.Report.Error.Message}}</td>
+                                    </tr>
                                     <tr>
                                         <th>File:</th>
                                         <td>{{.Report.Error.File}}</td>
@@ -88,61 +96,76 @@
                                         <th>Error level:</th>
                                         <td>{{.Report.Error.Type}}</td>
                                     </tr>
-                                </tbody>
-                            </table>
-                            <div class="card-panel grey lighten-2"><pre><code style="overflow: auto; word-wrap: normal; white-space: pre;">{{sortcode .Report.Data.Code}}</code></pre></div>
-                            <div class="card-panel grey lighten-2"><pre><code style="overflow: auto; word-wrap: normal; white-space: pre;">{{range .Report.Data.Trace}}{{.}}<br/>{{end}}</code></pre></div>
+                                    </tbody>
+                                </table>
+                                <div class="card-panel grey lighten-2"><pre><code style="overflow: auto; word-wrap: normal; white-space: pre;">{{sortcode .Report.Data.Code}}</code></pre></div>
+                                <div class="card-panel grey lighten-2"><pre><code style="overflow: auto; word-wrap: normal; white-space: pre;">{{range .Report.Data.Trace}}{{.}}<br/>{{end}}</code></pre></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col s12">
+                            <h3>Loaded Plugins</h3>
+                            <ul class="collapsible collapsible-accordion" data-collapsible="accordion">
+                                <li class="">
+                                    <div class="collapsible-header">Show</div>
+                                    <div class="collapsible-body" style="display: none;">
+                                        <table class="striped">
+                                            <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Version</th>
+                                                <th>State</th>
+                                                <th>Author(s)</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>{{range .Report.Data.Plugins}}
+                                            <tr>
+                                                <td>{{.name}}</td>
+                                                <td>{{.version}}</td>
+                                                <td>{{.enabled}}</td>
+                                                <td>{{$equipment := .authors}}
+                                                {{ range $index, $element := .authors}}
+                                                {{if $index}},{{end}}
+                                                {{$element}}
+                                                {{end}}</td>
+                                            </tr>{{end}}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col s12">
+                            <h3>Server Settings</h3>
+                            <ul class="collapsible collapsible-accordion" data-collapsible="accordion">
+                                <li class="">
+                                    <div class="collapsible-header">Show</div>
+                                    <div class="collapsible-body" style="display: none;">
+                                        <table class="striped">
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Value</th>
+                                            </tr>
+                                        {{split .Report.Data.ServerProperties}}
+                                        </table>
+                                    </div>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
-
-                <div class="row">
-                    <div class="col s12">
-                        <h3>Loaded Plugins</h3>
-                        <ul class="collapsible collapsible-accordion" data-collapsible="accordion">
-                            <li class="">
-                                <div class="collapsible-header">Show</div>
-                                <div class="collapsible-body" style="display: none;">
-                                    <table class="striped">
-                                        <thead><tr><th>Name</th><th>Version</th><th>State</th><th>Author(s)</th></tr></thead>
-                                        <tbody>{{range .Report.Data.Plugins}}<tr><td>{{.name}}</td><td>{{.version}}</td><td>{{.enabled}}</td>
-                                        <td>{{$equipment := .authors}}
-                                           {{ range $index, $element := .authors}}
-                                               {{if $index}},{{end}}
-                                               {{$element}}
-                                        {{end}}</td></tr>{{end}}
-                                       </tbody>
-                                    </table>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col s12">
-                        <h3>Server Settings</h3>
-                        <ul class="collapsible collapsible-accordion" data-collapsible="accordion">
-                            <li class="">
-                                <div class="collapsible-header">Show</div>
-                                <div class="collapsible-body" style="display: none;">
-                                    <table class="striped">
-                                        <tr><th>Name</th><th>Value</th></tr>
-                                        {{split .Report.Data.ServerProperties}}
-                                    </table>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
+                <div class="card-action">
+                    <a href="/search/report?id={{.ReportID}}" style="text-decoration: none;"><span class="fa fa-exchange" aria-hidden="true"></span> Find duplicates</a>
+                    <a href="/download/{{.ReportID}}" style="text-decoration: none;"><span class="fa fa-download" aria-hidden="true"></span> Download</a>
                 </div>
             </div>
-            <div class="card-action">
-              <a href="/search/report?id={{.ReportID}}" style="text-decoration: none;"><span class="fa fa-exchange" aria-hidden="true"></span> Find duplicates</a>
-              <a href="/download/{{.ReportID}}" style="text-decoration: none;"><span class="fa fa-download" aria-hidden="true"></span> Download</a>
-            </div>
-          </div>
         </div>
-      </div>
+    </div>
 </div>
 {{end}}
 {{define "foot"}}{{end}}

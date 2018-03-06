@@ -1,4 +1,4 @@
-package app
+package webhook
 
 import (
 	"bytes"
@@ -10,25 +10,22 @@ import (
 	"net/http"
 	"sync"
 	"time"
-
-	"github.com/pmmp/CrashArchive/app/database"
 )
 
-// App ...
-type App struct {
-	Config   *Config
-	Database *database.DB
-
-	mux       sync.Mutex
-	slackTime time.Time
+type Webhook struct{
+	slackURL         string
+	slackTime        time.Time
+	mux              sync.Mutex
 }
 
-func (a *App) ReportToSlack(name string, id int64, msg string) {
-	if a.Config.SlackURL == "" {
-		return
+func New(slackURL string) *Webhook {
+	return &Webhook{
+		slackURL:  slackURL,
 	}
+}
 
-	if !a.slackTime.IsZero() && time.Now().Sub(a.slackTime).Minutes() < 5.0 {
+func (w *Webhook) Post(name string, id int64, msg string) {
+	if !w.slackTime.IsZero() && time.Now().Sub(w.slackTime).Minutes() < 5.0 {
 		return
 	}
 
@@ -47,7 +44,7 @@ func (a *App) ReportToSlack(name string, id int64, msg string) {
 	enc := json.NewEncoder(buf)
 	enc.Encode(data)
 
-	req, err := http.NewRequest("POST", a.Config.SlackURL, buf)
+	req, err := http.NewRequest("POST", w.slackURL, buf)
 	req.Header.Set("Content-Type", "application/json")
 
 	client := &http.Client{}
@@ -69,14 +66,15 @@ func (a *App) ReportToSlack(name string, id int64, msg string) {
 		log.Println("posted update to webhook successfully")
 	}
 
-	a.mux.Lock()
-	a.slackTime = time.Now()
-	a.mux.Unlock()
+	w.mux.Lock()
+	w.slackTime = time.Now()
+	w.mux.Unlock()
 }
 
 type slackMessage struct {
 	Attachments []slackAttachment `json:"attachments"`
 }
+
 type slackAttachment struct {
 	AuthorName string `json:"author_name"`
 	Title      string `json:"title"`
