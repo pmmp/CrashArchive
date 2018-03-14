@@ -20,24 +20,6 @@ const (
 	reportEnd   = "===END CRASH DUMP==="
 )
 
-func DecodeCrashReport(data string) (*CrashReport, error) {
-	jsonBytes, err := JsonFromCrashLog(data)
-	if err != nil {
-		return nil, err
-	}
-
-	return FromJson(jsonBytes)
-}
-
-func (r *CrashReport) EncodeCrashReport() (string, error) {
-	jsonBytes, err := r.ToJson()
-	if err != nil {
-		return "", err
-	}
-
-	return JsonToCrashLog(jsonBytes)
-}
-
 // ParseDate parses  the unix date to time.Time
 func (r *CrashReport) parseDate() {
 	if r.Data.Time == 0 {
@@ -105,6 +87,24 @@ func extractBase64(data string) string {
 func clean(v string) string {
 	var re = regexp.MustCompile(`[^A-Za-z0-9_\-\.\,\;\:/\#\(\)\\ ]`)
 	return re.ReplaceAllString(v, "")
+}
+
+func DecodeCrashReport(data string) (*CrashReport, error) {
+	jsonBytes, err := JsonFromCrashLog(data)
+	if err != nil {
+		return nil, err
+	}
+
+	return FromJson(jsonBytes)
+}
+
+func (r *CrashReport) EncodeCrashReport() (string, error) {
+	jsonBytes, err := r.ToJson()
+	if err != nil {
+		return "", err
+	}
+
+	return JsonToCrashLog(jsonBytes)
 }
 
 func JsonToCrashLog(jsonBytes []byte) (string, error) {
