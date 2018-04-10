@@ -86,7 +86,7 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook) http.HandlerFunc {
 		name := r.FormValue("name")
 		email := r.FormValue("email")
 		if err = report.WriteFile(id, name, email); err != nil {
-			log.Printf("failed to write file: %d\n", id)
+			log.Printf("failed to write report %d: %v\n", id, err)
 			sendError(w,"", http.StatusInternalServerError, isAPI)
 			return
 		}
