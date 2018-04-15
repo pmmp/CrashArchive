@@ -68,7 +68,7 @@ func (w *Webhook) Post(entry ReportListEntry) {
 
 	messageText := make([]string, 0, 20)
 	for _, entry := range w.reportList {
-		messageText = append(messageText, fmt.Sprintf("<https://crash.pmmp.io/view/%d|%s>", entry.ReportId, entry.Message))
+		messageText = append(messageText, fmt.Sprintf("<https://crash.pmmp.io/view/%d|#%d: %s>", entry.ReportId, entry.ReportId, entry.Message))
 	}
 	t := strings.Join(messageText, "\n")
 	if w.reportCount > uint32(cap(w.reportList)) {
