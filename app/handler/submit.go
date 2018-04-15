@@ -91,8 +91,15 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook) http.HandlerFunc {
 			return
 		}
 
-		if !report.Duplicate && wh != nil {
-			go wh.Post(name, id, report.Error.Message)
+		if wh != nil {
+			if !report.Duplicate {
+				go wh.Post(webhook.ReportListEntry{
+					ReportId: uint64(id),
+					Message: report.Error.Message,
+				})
+			} else {
+				wh.BumpDupeCounter()
+			}
 		}
 
 		if isAPI {

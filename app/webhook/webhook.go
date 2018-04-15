@@ -8,35 +8,81 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
+)
+
+const (
+	reportListSize = 20
+	postTimeThrottle = 30 //minutes
 )
 
 type Webhook struct{
 	slackURL         string
 	slackTime        time.Time
 	mux              sync.Mutex
+
+	reportCount      uint32
+	dupeCount        uint32
+	reportMinId      uint64
+	reportMaxId      uint64
+	reportList       []ReportListEntry
 }
 
 func New(slackURL string) *Webhook {
 	return &Webhook{
-		slackURL:  slackURL,
+		slackURL:   slackURL,
+		slackTime:  time.Now(),
+		reportList: make([]ReportListEntry, 0, reportListSize),
 	}
 }
 
-func (w *Webhook) Post(name string, id int64, msg string) {
-	if !w.slackTime.IsZero() && time.Now().Sub(w.slackTime).Minutes() < 5.0 {
+func (w *Webhook) BumpDupeCounter() {
+	w.mux.Lock()
+	w.dupeCount += 1
+	w.mux.Unlock()
+}
+
+func (w *Webhook) Post(entry ReportListEntry) {
+	w.mux.Lock()
+	defer w.mux.Unlock()
+
+	if w.reportMinId == 0 {
+		w.reportMinId = entry.ReportId
+	}
+	if w.reportMaxId < entry.ReportId {
+		w.reportMaxId = entry.ReportId
+	}
+
+	w.reportCount += 1
+	if len(w.reportList) < cap(w.reportList) {
+		w.reportList = append(w.reportList, entry)
+	}
+
+	if !w.slackTime.IsZero() && time.Now().Sub(w.slackTime).Minutes() < postTimeThrottle {
 		return
+	}
+
+	listUrl := fmt.Sprintf("https://crash.pmmp.io/list?min=%d&max=%d", w.reportMinId, w.reportMaxId)
+
+	messageText := make([]string, 0, 20)
+	for _, entry := range w.reportList {
+		messageText = append(messageText, fmt.Sprintf("<https://crash.pmmp.io/view/%d|%s>", entry.ReportId, entry.Message))
+	}
+	t := strings.Join(messageText, "\n")
+	if w.reportCount > uint32(cap(w.reportList)) {
+		t += fmt.Sprintf("\n\n%d more reports not shown. <%s|View the full list>", w.reportCount - uint32(cap(w.reportList)), listUrl)
 	}
 
 	data := &slackMessage{
 		Attachments: []slackAttachment{
 			{
-				AuthorName: fmt.Sprintf("New report from %s", name),
-				Title:      fmt.Sprintf("Report #%d: %s", id, msg),
-				TitleLink:  fmt.Sprintf("https://crash.pmmp.io/view/%d", id),
+				AuthorName: "crash.pmmp.io",
+				Title:      fmt.Sprintf("%d new and %d duplicate reports (%d total) since %s", w.reportCount, w.dupeCount, w.reportCount + w.dupeCount, w.slackTime.Format("2 Jan 2006 15:04")),
+				TitleLink:  listUrl,
 				Color:      "#36a64f",
-				Text:       fmt.Sprintf("<https://crash.pmmp.io/download/%d|Download>", id),
+				Text:       t,
 			},
 		},
 	}
@@ -66,9 +112,17 @@ func (w *Webhook) Post(name string, id int64, msg string) {
 		log.Println("posted update to webhook successfully")
 	}
 
-	w.mux.Lock()
+	w.reportCount = 0
+	w.reportMinId = 0
+	w.reportMaxId = 0
+	w.reportList = make([]ReportListEntry, 0, reportListSize)
 	w.slackTime = time.Now()
-	w.mux.Unlock()
+	log.Println("hi")
+}
+
+type ReportListEntry struct {
+	ReportId uint64
+	Message string
 }
 
 type slackMessage struct {
