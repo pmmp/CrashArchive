@@ -2,9 +2,11 @@ package handler
 
 import (
 	"log"
+	"net/url"
 	"net/http"
 
 	"fmt"
+	"math"
 	"strconv"
 
 	"github.com/pmmp/CrashArchive/app/crashreport"
@@ -20,8 +22,48 @@ func ListGet(db *database.DB) http.HandlerFunc {
 
 const pageSize = 50
 
+func parseUintParam(v url.Values, paramName string, defaultValue uint64, w http.ResponseWriter) (uint64, error) {
+	param := v.Get(paramName)
+	if param != "" {
+		retval, err := strconv.ParseUint(param, 10, 64)
+		if err != nil {
+			log.Println(err)
+			template.ErrorTemplate(w, "", http.StatusBadRequest)
+			return 0, err
+		}
+
+		return retval, nil
+	}
+
+	return defaultValue, nil
+}
+
 func ListFilteredReports(w http.ResponseWriter, r *http.Request, db *database.DB, filter string, filterParams ...interface{}) {
 	var err error
+
+	params := r.URL.Query()
+
+	filterMinId, err := parseUintParam(params, "min", 0, w)
+	if err != nil {
+		return
+	}
+	filterMaxId, err := parseUintParam(params, "max", math.MaxUint64, w)
+	if err != nil {
+		return
+	}
+
+	if filterMinId > filterMaxId {
+		log.Println("request tried to ask for min bound larger than max bound")
+		template.ErrorTemplate(w, "", http.StatusBadRequest)
+		return
+	}
+
+	if filter != "" {
+		filter = fmt.Sprintf("%s AND id BETWEEN ? AND ?", filter)
+	} else {
+		filter = "WHERE id BETWEEN ? AND ?"
+	}
+	filterParams = append(filterParams, filterMinId, filterMaxId)
 
 	var total int
 
@@ -34,9 +76,8 @@ func ListFilteredReports(w http.ResponseWriter, r *http.Request, db *database.DB
 		return
 	}
 
-	var pageId int
 
-	params := r.URL.Query()
+	var pageId int
 
 	pageParam := params.Get("page")
 	if pageParam != "" {
