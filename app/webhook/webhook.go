@@ -117,7 +117,6 @@ func (w *Webhook) Post(entry ReportListEntry) {
 	w.reportMaxId = 0
 	w.reportList = make([]ReportListEntry, 0, reportListSize)
 	w.slackTime = time.Now()
-	log.Println("hi")
 }
 
 type ReportListEntry struct {
