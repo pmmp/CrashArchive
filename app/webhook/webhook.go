@@ -113,6 +113,7 @@ func (w *Webhook) Post(entry ReportListEntry) {
 	}
 
 	w.reportCount = 0
+	w.dupeCount = 0
 	w.reportMinId = 0
 	w.reportMaxId = 0
 	w.reportList = make([]ReportListEntry, 0, reportListSize)
