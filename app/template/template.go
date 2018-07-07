@@ -9,8 +9,8 @@ import (
 )
 
 type Config struct {
-	Folder    string
-	Extension string
+	Folder    string `json:"Folder"`
+	Extension string `json:"Extension"`
 }
 
 var t map[string]*template.Template
