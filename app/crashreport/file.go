@@ -9,8 +9,9 @@ import (
 	"io/ioutil"
 )
 
-var (
-	salt string = "pepper"
+const (
+	salt = "pepper"
+	filePathFmt = "reports/%s.log"
 )
 
 func ReadFile(id int64) (*CrashReport, error) {
@@ -34,7 +35,7 @@ func ReadFile(id int64) (*CrashReport, error) {
 func ReadRawFile(id int64) ([]byte, error) {
 	var err error
 
-	filePath := fmt.Sprintf("reports/%s.log", filenameHash(id))
+	filePath := fmt.Sprintf(filePathFmt, filenameHash(id))
 	if _, err = os.Stat(filePath); os.IsNotExist(err) {
 		log.Printf("%v\n", err)
 		return nil, err
@@ -44,7 +45,7 @@ func ReadRawFile(id int64) ([]byte, error) {
 }
 
 func (r *CrashReport) WriteFile(id int64) error {
-	filePath := fmt.Sprintf("./reports/%s.log", filenameHash(id))
+	filePath := fmt.Sprintf(filePathFmt, filenameHash(id))
 
 	return ioutil.WriteFile(filePath, []byte(r.EncodeCrashReport()), os.ModePerm)
 }
