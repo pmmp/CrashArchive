@@ -1,10 +1,10 @@
 package database
 
 type Config struct {
-	Username  string
-	Password  string
-	Hostname  string
-	Port      int
-	Name      string
-	Parameter string
+	Username  string `json:"Username"`
+	Password  string `json:"Password"`
+	Hostname  string `json:"Hostname"`
+	Port      int    `json:"Port"`
+	Name      string `json:"Name"`
+	Parameter string `json:"Parameter"`
 }
