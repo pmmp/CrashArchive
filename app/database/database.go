@@ -77,10 +77,8 @@ func (db *DB) InsertReport(report *crashreport.CrashReport) (int64, error) {
 }
 
 func (db *DB) CheckDuplicate(report *crashreport.CrashReport) (int, error) {
-	queryDupe := "SELECT COUNT(id) FROM (SELECT id, message, file, line FROM crash_reports ORDER BY id DESC LIMIT 5000)sub WHERE message = ? AND file = ? and line = ?;"
-
 	var dupes int
-	err := db.Get(&dupes, queryDupe, report.Error.Message, report.Error.File, report.Error.Line)
+	err := db.Get(&dupes, "SELECT COUNT(id) FROM (SELECT id, message, file, line FROM crash_reports ORDER BY id DESC LIMIT 5000)sub WHERE message = ? AND file = ? and line = ?;", report.Error.Message, report.Error.File, report.Error.Line)
 	if err != nil {
 		return 0, err
 	}
