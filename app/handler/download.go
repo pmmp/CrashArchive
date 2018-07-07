@@ -19,10 +19,15 @@ func DownloadGet(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	reportBytes, err := crashreport.ReadRawFile(int64(reportID))
+	reportJsonBlob, err := crashreport.ReadReportJson(int64(reportID))
 	if err != nil {
 		template.ErrorTemplate(w, "Report not found", http.StatusNotFound)
 		return
+	}
+	reportBytes, err := crashreport.JsonToCrashLog(reportJsonBlob)
+	if err != nil {
+		log.Printf("failed to encode crash report: %v", err)
+		template.ErrorTemplate(w, "", http.StatusInternalServerError)
 	}
 
 	w.Header().Set("Content-Type", "application/octet-stream")

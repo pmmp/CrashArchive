@@ -29,7 +29,7 @@ func ViewIDGet(db *database.DB) http.HandlerFunc {
 			return
 		}
 
-		report, err := crashreport.ReadFile(int64(reportID))
+		report, err := crashreport.ReadAndDecode(int64(reportID))
 		if err != nil {
 			template.ErrorTemplate(w, "Report not found", http.StatusNotFound)
 			return

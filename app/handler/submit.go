@@ -52,7 +52,7 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook) http.HandlerFunc {
 			}
 		}()
 
-		report, err := crashreport.DecodeCrashReport(reportStr)
+		report, err := crashreport.DecodeCrashReport([]byte(reportStr))
 		if err != nil {
 			//this panic will be recovered in the above deferred function
 			log.Panic(err)
@@ -86,9 +86,10 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook) http.HandlerFunc {
 			return
 		}
 
-		if err = report.WriteFile(id); err != nil {
+		jsonBytes, _ := crashreport.JsonFromCrashLog([]byte(reportStr)) //this should have given us an error earlier if it was going to
+		if err = crashreport.WriteReportJson(id, jsonBytes); err != nil {
 			log.Printf("failed to write report %d: %v\n", id, err)
-			sendError(w,"", http.StatusInternalServerError, isAPI)
+			sendError(w, "", http.StatusInternalServerError, isAPI)
 			return
 		}
 

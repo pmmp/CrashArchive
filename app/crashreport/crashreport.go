@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
+	"io/ioutil"
 	"regexp"
 	"strings"
 	"time"
@@ -89,50 +89,82 @@ func clean(v string) string {
 	return re.ReplaceAllString(v, "")
 }
 
-func DecodeCrashReport(data string) (*CrashReport, error) {
-	var r CrashReport
-
-	zlibBytes, err := base64.StdEncoding.DecodeString(extractBase64(data))
+func DecodeCrashReport(data []byte) (*CrashReport, error) {
+	jsonBytes, err := JsonFromCrashLog(data)
 	if err != nil {
 		return nil, err
 	}
 
-	br := bytes.NewReader(zlibBytes)
-	zr, err := zlib.NewReader(br)
+	return FromJson(jsonBytes)
+}
+
+func (r *CrashReport) EncodeCrashReport() ([]byte, error) {
+	jsonBytes, err := r.ToJson()
+	if err != nil {
+		return nil, err
+	}
+
+	return JsonToCrashLog(jsonBytes)
+}
+
+func JsonToCrashLog(jsonBytes []byte) ([]byte, error) {
+	var zlibBuf bytes.Buffer
+	zw := zlib.NewWriter(&zlibBuf)
+	_, err := zw.Write(jsonBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	zw.Close()
+
+	return []byte(fmt.Sprintf("%s\n%s\n%s", reportBegin, base64.StdEncoding.EncodeToString(zlibBuf.Bytes()), reportEnd)), nil
+}
+
+func JsonFromCrashLog(report []byte) ([]byte, error) {
+	zlibBytes, err := base64.StdEncoding.DecodeString(extractBase64(string(report)))
+	if err != nil {
+		return nil, err
+	}
+
+	zr, err := zlib.NewReader(bytes.NewReader(zlibBytes))
 	if err != nil {
 		return nil, err
 	}
 	defer zr.Close()
 
-	if err := json.NewDecoder(zr).Decode(&r.Data); err != nil {
-		return nil, fmt.Errorf("failed to read compressed data: %v", err)
+	jsonBytes, err := ioutil.ReadAll(zr)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decompress data: %v", err)
 	}
 
-	r.parseDate()
-	r.parseError()
-	r.parseVersion()
-	r.classifyMessage()
-
-	return &r, nil
+	return jsonBytes, nil
 }
 
-// EncodeCrashReport ...
-func (r *CrashReport) EncodeCrashReport() string {
+
+// FromJson decodes crash report JSON bytes into a CrashReport structure
+func FromJson(jsonBytes []byte) (*CrashReport, error) {
+	reader := bytes.NewReader(jsonBytes)
+
+	var r CrashReport
+	err := json.NewDecoder(reader).Decode(&r.Data)
+
+	if err == nil {
+		r.parseDate()
+		r.parseError()
+		r.parseVersion()
+		r.classifyMessage()
+	}
+
+	return &r, err
+}
+
+func (r *CrashReport) ToJson() ([]byte, error) {
 	var jsonBuf bytes.Buffer
 	jw := json.NewEncoder(&jsonBuf)
 	err := jw.Encode(r.Data)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	var zlibBuf bytes.Buffer
-	zw := zlib.NewWriter(&zlibBuf)
-	_, err = zw.Write(jsonBuf.Bytes())
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	zw.Close()
-
-	return fmt.Sprintf("%s\n%s\n%s", reportBegin, base64.StdEncoding.EncodeToString(zlibBuf.Bytes()), reportEnd)
+	return jsonBuf.Bytes(), nil
 }

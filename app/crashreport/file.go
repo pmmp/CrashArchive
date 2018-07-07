@@ -14,15 +14,15 @@ const (
 	filePathFmt = "reports/%s.log"
 )
 
-func ReadFile(id int64) (*CrashReport, error) {
-
-	bytes, err := ReadRawFile(id)
+// ReadAndDecode reads a stored JSON report, decodes it and returns the decoded report
+func ReadAndDecode(id int64) (*CrashReport, error) {
+	bytes, err := ReadReportJson(id)
 	if err != nil {
 		log.Printf("%v\n", err)
 		return nil, err
 	}
 
-	report, err := DecodeCrashReport(string(bytes))
+	report, err := FromJson(bytes)
 
 	if err != nil {
 		log.Printf("%v\n", err)
@@ -32,7 +32,8 @@ func ReadFile(id int64) (*CrashReport, error) {
 	return report, nil
 }
 
-func ReadRawFile(id int64) ([]byte, error) {
+// ReadReportJson reads a JSON report blob from storage and returns it
+func ReadReportJson(id int64) ([]byte, error) {
 	var err error
 
 	filePath := fmt.Sprintf(filePathFmt, filenameHash(id))
@@ -44,10 +45,11 @@ func ReadRawFile(id int64) ([]byte, error) {
 	return ioutil.ReadFile(filePath)
 }
 
-func (r *CrashReport) WriteFile(id int64) error {
+// WriteReportJson writes a JSON report blob to storage
+func WriteReportJson(id int64, jsonBytes []byte) error {
 	filePath := fmt.Sprintf(filePathFmt, filenameHash(id))
 
-	return ioutil.WriteFile(filePath, []byte(r.EncodeCrashReport()), os.ModePerm)
+	return ioutil.WriteFile(filePath, jsonBytes, os.ModePerm)
 }
 
 func filenameHash(id int64) string {
