@@ -44,6 +44,7 @@ func New(db *database.DB, wh *webhook.Webhook) *chi.Mux {
 			r.Get("/plugin", handler.SearchPluginGet(db))
 			r.Get("/build", handler.SearchBuildGet(db))
 			r.Get("/report", handler.SearchReportGet(db))
+			r.Get("/message", handler.SearchMessageGet(db))
 		})
 
 		r.Route("/submit", func(r chi.Router) {
