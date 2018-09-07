@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/pmmp/CrashArchive/app"
 	"github.com/pmmp/CrashArchive/app/crashreport"
 	"github.com/pmmp/CrashArchive/app/template"
 	"github.com/pmmp/CrashArchive/app/database"
@@ -20,7 +21,7 @@ func SubmitGet(w http.ResponseWriter, r *http.Request) {
 	template.ExecuteTemplate(w, "submit", nil)
 }
 
-func SubmitPost(db *database.DB, wh *webhook.Webhook) http.HandlerFunc {
+func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.FormValue("report") != "yes" {
 			http.Redirect(w, r, "/submit", http.StatusMovedPermanently)
@@ -68,6 +69,17 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook) http.HandlerFunc {
 			log.Printf("invalid git hash %s in report from: %s\n", report.Data.General.GIT, r.RemoteAddr)
 			sendError(w, "", http.StatusTeapot, isAPI)
 			return
+		}
+
+		pluginsList, ok := report.Data.Plugins.(map[string]interface{})
+		if ok {
+			for v, _ := range pluginsList {
+				if _, blacklisted := config.PluginBlacklistMap[v]; blacklisted {
+					log.Printf("blacklisted plugin \"%s\" in report from: %s\n", v, r.RemoteAddr)
+					sendError(w, "", http.StatusTeapot, isAPI)
+					return
+				}
+			}
 		}
 
 		dupes, err := db.CheckDuplicate(report)

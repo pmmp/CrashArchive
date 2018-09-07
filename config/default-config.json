@@ -13,5 +13,8 @@
         "Folder":"templates"
     },
     "SlackURL": "",
-    "SlackHookInterval": 30
+    "SlackHookInterval": 30,
+    "PluginBlacklist":[
+        "TeaSpoon"
+    ]
 }
