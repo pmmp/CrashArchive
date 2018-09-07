@@ -35,7 +35,7 @@ func main() {
 
 	var wh *webhook.Webhook = nil
 	if config.SlackURL != "" {
-		wh = webhook.New(config.SlackURL)
+		wh = webhook.New(config.SlackURL, config.SlackHookInterval)
 	}
 
 	var retry int

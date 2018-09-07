@@ -22,6 +22,7 @@ type Webhook struct{
 	slackURL         string
 	slackTime        time.Time
 	mux              sync.Mutex
+	postTimeThrottle float64
 
 	reportCount      uint32
 	dupeCount        uint32
@@ -30,12 +31,17 @@ type Webhook struct{
 	reportList       []ReportListEntry
 }
 
-func New(slackURL string) *Webhook {
-	return &Webhook{
+func New(slackURL string, postTimeThrottle uint32) *Webhook {
+	hook := &Webhook{
 		slackURL:   slackURL,
 		slackTime:  time.Now(),
 		reportList: make([]ReportListEntry, 0, reportListSize),
+		postTimeThrottle: float64(postTimeThrottle),
 	}
+	if hook.postTimeThrottle == 0 {
+		hook.postTimeThrottle = 30
+	}
+	return hook
 }
 
 func (w *Webhook) BumpDupeCounter() {
@@ -60,7 +66,7 @@ func (w *Webhook) Post(entry ReportListEntry) {
 		w.reportList = append(w.reportList, entry)
 	}
 
-	if !w.slackTime.IsZero() && time.Now().Sub(w.slackTime).Minutes() < postTimeThrottle {
+	if !w.slackTime.IsZero() && time.Now().Sub(w.slackTime).Minutes() < w.postTimeThrottle {
 		return
 	}
 

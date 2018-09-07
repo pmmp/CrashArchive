@@ -9,10 +9,11 @@ import (
 )
 
 type Config struct {
-	ListenAddress string
-	Database      *database.Config
-	Template      *template.Config
-	SlackURL      string
+	ListenAddress     string
+	Database          *database.Config
+	Template          *template.Config
+	SlackURL          string
+	SlackHookInterval uint32
 }
 
 func LoadConfig(configPath string) (*Config, error) {
