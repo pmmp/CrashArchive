@@ -9,10 +9,13 @@ import (
 )
 
 type Config struct {
-	ListenAddress string
-	Database      *database.Config
-	Template      *template.Config
-	SlackURL      string
+	ListenAddress      string
+	Database           *database.Config
+	Template           *template.Config
+	SlackURL           string
+	SlackHookInterval  uint32
+	PluginBlacklist    []string
+	PluginBlacklistMap map[string]string
 }
 
 func LoadConfig(configPath string) (*Config, error) {
@@ -31,6 +34,12 @@ func LoadConfig(configPath string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	config.PluginBlacklistMap = make(map[string]string)
+	for _, v := range config.PluginBlacklist {
+		config.PluginBlacklistMap[v] = v
+	}
+	config.PluginBlacklist = nil
 
 	return &config, nil
 }

@@ -11,5 +11,10 @@
     "Template":{
         "Extension":"html",
         "Folder":"templates"
-    }
+    },
+    "SlackURL": "",
+    "SlackHookInterval": 30,
+    "PluginBlacklist":[
+        "TeaSpoon"
+    ]
 }

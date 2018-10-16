@@ -35,7 +35,7 @@ func main() {
 
 	var wh *webhook.Webhook = nil
 	if config.SlackURL != "" {
-		wh = webhook.New(config.SlackURL)
+		wh = webhook.New(config.SlackURL, config.SlackHookInterval)
 	}
 
 	var retry int
@@ -62,7 +62,7 @@ loop:
 		retry++
 	}
 
-	r := router.New(db, wh)
+	r := router.New(db, wh, config)
 	log.Printf("listening on: %s\n", config.ListenAddress)
 	if err = http.ListenAndServe(config.ListenAddress, r); err != nil {
 		log.Fatal(err)

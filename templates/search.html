@@ -6,6 +6,24 @@
         <div class="col s12">
             <div class="card">
                 <div class="card-content">
+                    <span class="card-title">Search by error message</span>
+                    <form action="/search/message" method="get" role="form">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input placeholder="Error message, part or keyword" name="message" type="text" class="validate">
+                            </div>
+                        </div>
+                        <button type="submit" class="waves-effect waves-light btn" style="margin-top:10px;">Search</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s12">
+            <div class="card">
+                <div class="card-content">
                     <span class="card-title">Search by Plugin</span>
                     <form action="/search/plugin" method="get" role="form">
                         <div class="row">

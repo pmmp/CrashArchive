@@ -25,6 +25,19 @@ func SearchIDGet(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, fmt.Sprintf("/view/%d", reportID), http.StatusMovedPermanently)
 }
 
+func SearchMessageGet(db *database.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		message := r.URL.Query().Get("message")
+		if message == "" {
+			log.Println("no message in search")
+			template.ErrorTemplate(w, "", http.StatusBadRequest)
+			return
+		}
+
+		ListFilteredReports(w, r, db, "WHERE message LIKE ?", "%" + message + "%")
+	}
+}
+
 func SearchPluginGet(db *database.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		plugin := r.URL.Query().Get("plugin")

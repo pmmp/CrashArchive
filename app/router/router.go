@@ -9,13 +9,14 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 
+	"github.com/pmmp/CrashArchive/app"
 	"github.com/pmmp/CrashArchive/app/handler"
 	"github.com/pmmp/CrashArchive/app/template"
 	"github.com/pmmp/CrashArchive/app/database"
 	"github.com/pmmp/CrashArchive/app/webhook"
 )
 
-func New(db *database.DB, wh *webhook.Webhook) *chi.Mux {
+func New(db *database.DB, wh *webhook.Webhook, config *app.Config) *chi.Mux {
 	r := chi.NewRouter()
 
 	staticDirs := []string{"/css", "/js", "/fonts"}
@@ -44,12 +45,13 @@ func New(db *database.DB, wh *webhook.Webhook) *chi.Mux {
 			r.Get("/plugin", handler.SearchPluginGet(db))
 			r.Get("/build", handler.SearchBuildGet(db))
 			r.Get("/report", handler.SearchReportGet(db))
+			r.Get("/message", handler.SearchMessageGet(db))
 		})
 
 		r.Route("/submit", func(r chi.Router) {
 			r.Get("/", handler.SubmitGet)
-			r.Post("/", handler.SubmitPost(db, wh))
-			r.Post("/api", handler.SubmitPost(db, wh))
+			r.Post("/", handler.SubmitPost(db, wh, config))
+			r.Post("/api", handler.SubmitPost(db, wh, config))
 		})
 	})
 	return r
