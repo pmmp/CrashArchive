@@ -8,7 +8,6 @@ import (
 
 	"github.com/go-chi/chi"
 
-	"github.com/pmmp/CrashArchive/app/crashreport"
 	"github.com/pmmp/CrashArchive/app/database"
 	"github.com/pmmp/CrashArchive/app/template"
 )
@@ -29,8 +28,9 @@ func ViewIDGet(db *database.DB) http.HandlerFunc {
 			return
 		}
 
-		report, err := crashreport.ReadAndDecode(int64(reportID))
+		report, err := db.FetchReport(int64(reportID))
 		if err != nil {
+			log.Printf("error fetching report: %v", err)
 			template.ErrorTemplate(w, "Report not found", http.StatusNotFound)
 			return
 		}

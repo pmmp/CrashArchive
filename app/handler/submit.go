@@ -90,17 +90,11 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.H
 
 		name := r.FormValue("name")
 		email := r.FormValue("email")
+		jsonBytes, _ := crashreport.JsonFromCrashLog([]byte(reportStr)) //this should have given us an error earlier if it was going to
 
-		id, err := db.InsertReport(report, name, email)
+		id, err := db.InsertReport(report, name, email, jsonBytes)
 		if err != nil {
 			log.Printf("failed to insert report into database: %v", err)
-			sendError(w, "", http.StatusInternalServerError, isAPI)
-			return
-		}
-
-		jsonBytes, _ := crashreport.JsonFromCrashLog([]byte(reportStr)) //this should have given us an error earlier if it was going to
-		if err = crashreport.WriteReportJson(id, jsonBytes); err != nil {
-			log.Printf("failed to write report %d: %v\n", id, err)
 			sendError(w, "", http.StatusInternalServerError, isAPI)
 			return
 		}
