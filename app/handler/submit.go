@@ -23,6 +23,11 @@ func SubmitGet(w http.ResponseWriter, r *http.Request) {
 
 func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if _, banned := config.IpBanlistMap[r.RemoteAddr]; banned {
+			log.Printf("rejected submission from banned IP: %s\n", r.RemoteAddr);
+			sendError(w, "", http.StatusTeapot, true)
+			return
+		}
 		if r.FormValue("report") != "yes" {
 			http.Redirect(w, r, "/submit", http.StatusMovedPermanently)
 			return

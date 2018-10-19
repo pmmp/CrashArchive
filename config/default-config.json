@@ -16,5 +16,6 @@
     "SlackHookInterval": 30,
     "PluginBlacklist":[
         "TeaSpoon"
-    ]
+    ],
+    "IpBanlist":[]
 }

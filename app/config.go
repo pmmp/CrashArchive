@@ -16,6 +16,8 @@ type Config struct {
 	SlackHookInterval  uint32
 	PluginBlacklist    []string
 	PluginBlacklistMap map[string]string
+	IpBanlist          []string
+	IpBanlistMap       map[string]string
 }
 
 func LoadConfig(configPath string) (*Config, error) {
@@ -40,6 +42,12 @@ func LoadConfig(configPath string) (*Config, error) {
 		config.PluginBlacklistMap[v] = v
 	}
 	config.PluginBlacklist = nil
+
+	config.IpBanlistMap = make(map[string]string)
+	for _, v := range config.IpBanlist {
+		config.IpBanlistMap[v] = v
+	}
+	config.IpBanlist = nil
 
 	return &config, nil
 }
