@@ -39,14 +39,13 @@ func ViewIDGet(db *database.DB) http.HandlerFunc {
 		v["Report"] = report
 		v["Name"] = clean(reporterName)
 		v["PocketMineVersion"] = report.Version.Get(true)
-		v["AttachedIssue"] = "None"
 		v["ReportID"] = reportID
 
 		template.ExecuteTemplate(w, "view", v)
 	}
 }
 
-var cleanRE = regexp.MustCompile(`[^A-Za-z0-9_\-\.\,\;\:/\#\(\)\\ ]`)
+var cleanRE = regexp.MustCompile(`[^A-Za-z0-9_\-\.\,\;\:/\#\(\)\\ +]`)
 
 func clean(v string) string {
 	return cleanRE.ReplaceAllString(v, "")

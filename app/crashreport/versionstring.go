@@ -8,70 +8,54 @@ import (
 
 // VersionString ...
 type VersionString struct {
-	Minor       int
 	Major       int
-	Generation  int
+	Minor       int
+	Patch       int
+	Suffix      string
 	Development bool
 	Build       int
 }
 
-var reVersion = regexp.MustCompile(`([0-9]*)\.([0-9]*)\.{0,1}([0-9]*)(dev|)(-[0-9]{1,}|)`)
+var reVersion = regexp.MustCompile(`(\d+)\.(\d+)\.(\d+)(?:-(.*))?$`)
 
 // NewVersionString ...
-func NewVersionString(version string, build int) *VersionString {
+func NewVersionString(version string, build int, development bool) (*VersionString, error) {
 	v := &VersionString{}
-	if build > 0 {
-		version = fmt.Sprintf("%s-%d", version, build)
-	}
-	if version, err := strconv.Atoi(version); err == nil {
-		v.Minor = version & 0x1f
-		v.Major = (version >> 5) & 0x0f
-		v.Generation = (version >> 9) & 0x0f
-		return v
-	}
+
+	v.Build = build
+	v.Development = development
 
 	matches := reVersion.FindStringSubmatch(version)
-	if len(matches) > 0 {
-		v.Generation, _ = strconv.Atoi(matches[1])
-		v.Major, _ = strconv.Atoi(matches[2])
-		v.Minor, _ = strconv.Atoi(matches[3])
-		if matches[4] == "dev" {
-			v.Development = true
-		}
-		if matches[5] != "" {
-			v.Build, _ = strconv.Atoi(matches[5][1:])
-		}
+	if len(matches) >= 4 {
+		v.Major, _ = strconv.Atoi(matches[1])
+		v.Minor, _ = strconv.Atoi(matches[2])
+		v.Patch, _ = strconv.Atoi(matches[3])
+		v.Suffix = matches[4]
+		return v, nil
 	}
-	return v
+
+	return nil, fmt.Errorf("failed to parse version string %s", version)
 }
 
 // Get ...
-func (v *VersionString) Get(b bool) string {
-	var dev string
-	var build string
+func (v *VersionString) Get(withBuild bool) string {
+	var suffix string
 	if v.Development {
-		dev = "dev"
+		suffix = "+dev"
+		if (v.Build > 0) && withBuild {
+			suffix = fmt.Sprintf("%s.%d", suffix, v.Build)
+		}
 	}
-	if (v.Build > 0) && b {
-		build = fmt.Sprintf("-%d", v.Build)
-	}
-	return fmt.Sprintf("%s%s%s", v.release(), dev, build)
+
+	return fmt.Sprintf("%s%s", v.baseVersion(), suffix)
 }
 
 // release ...
-func (v *VersionString) release() string {
-	var minor string
-	if v.Minor > 0 {
-		minor = fmt.Sprintf(".%d", v.Minor)
+func (v *VersionString) baseVersion() string {
+	var suffix string
+	if v.Suffix != "" {
+		suffix = fmt.Sprintf("-%s", v.Suffix)
 	}
-	return fmt.Sprintf("%d.%d%s", v.Generation, v.Major, minor)
+	return fmt.Sprintf("%d.%d.%d%s", v.Major, v.Minor, v.Patch, suffix)
 }
 
-// build ...
-func (v *VersionString) build(b bool) string {
-	var build string
-	if (v.Build > 0) && b {
-		build = fmt.Sprintf("-%d", v.Build)
-	}
-	return fmt.Sprintf("%d.%d%s", v.Generation, v.Major, build)
-}

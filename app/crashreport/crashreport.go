@@ -46,13 +46,16 @@ func (r *CrashReport) parseError() {
 
 // ParseVersion ...
 func (r *CrashReport) parseVersion() {
-	if r.Data.General.Version == "" {
+	if r.Data.General.BaseVersion == "" {
 		panic(errors.New("version is null"))
 	}
 
+	var err error
 	general := r.Data.General
-	r.APIVersion = general.API
-	r.Version = NewVersionString(general.Version, general.Build)
+	r.Version, err = NewVersionString(general.BaseVersion, general.Build, general.IsDev)
+	if err != nil {
+		panic(err)
+	}
 }
 
 // ClassifyMessage ...

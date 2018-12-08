@@ -13,7 +13,6 @@ type CrashReport struct {
 	ReportDate time.Time
 
 	Version    *VersionString
-	APIVersion string
 
 	Error ReportError
 }
@@ -25,17 +24,17 @@ type ReportData struct {
 	Plugin        interface{}
 	General struct {
 		Name     string
-		Version  string
-		Build    int
-		Protocol int
-		API      string
-		GIT      string
-		Raklib   string
-		Uname    string
-		PHP      string
-		Zend     string
-		PHPOS    string `json:"php_os"`
-		OS       string
+		BaseVersion string `json:"base_version"`
+		Build       int
+		IsDev       bool `json:"is_dev"`
+		Protocol    int
+		GIT         string
+		Raklib      string
+		Uname       string
+		PHP         string
+		Zend        string
+		PHPOS       string `json:"php_os"`
+		OS          string
 	}
 	Error            ReportError
 	Code             map[string]string
