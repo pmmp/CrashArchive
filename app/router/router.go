@@ -36,8 +36,8 @@ func New(db *database.DB, wh *webhook.Webhook, config *app.Config) *chi.Mux {
 
 		r.Get("/", handler.HomeGet)
 		r.Get("/list", handler.ListGet(db))
-		r.Get("/view/{reportID}", handler.ViewIDGet)
-		r.Get("/download/{reportID}", handler.DownloadGet)
+		r.Get("/view/{reportID}", handler.ViewIDGet(db))
+		r.Get("/download/{reportID}", handler.DownloadGet(db))
 
 		r.Route("/search", func(r chi.Router) {
 			r.Get("/", handler.SearchGet)

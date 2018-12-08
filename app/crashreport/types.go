@@ -54,16 +54,18 @@ type ReportError struct {
 
 // Report ...
 type Report struct {
-	ID         int `db:"id"`
-	Plugin     string
-	Version    string
-	Build      int
-	File       string
-	Message    string
-	Line       int
-	Type       string
-	OS         string
-	SubmitDate int64  `db:"submitDate"`
-	ReportDate int64  `db:"reportDate"`
-	Duplicate  bool
+	ID            int `db:"id"`
+	Plugin        string
+	Version       string
+	Build         int
+	File          string
+	Message       string
+	Line          int
+	Type          string
+	OS            string
+	SubmitDate    int64  `db:"submitDate"`
+	ReportDate    int64  `db:"reportDate"`
+	Duplicate     bool
+	ReporterName  string `db:"reporterName"`
+	ReporterEmail string `db:"reporterEmail"`
 }
