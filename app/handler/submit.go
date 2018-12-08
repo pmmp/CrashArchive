@@ -17,6 +17,8 @@ import (
 	"github.com/pmmp/CrashArchive/app/webhook"
 )
 
+const CURRENT_CRASHDUMP_FORMAT_VERSION = 1
+
 func SubmitGet(w http.ResponseWriter, r *http.Request) {
 	template.ExecuteTemplate(w, "submit", nil)
 }
@@ -62,6 +64,12 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.H
 		if err != nil {
 			//this panic will be recovered in the above deferred function
 			log.Panic(err)
+		}
+
+		if report.Data.FormatVersion != CURRENT_CRASHDUMP_FORMAT_VERSION {
+			log.Printf("rejected incompatible crashdump format version %d from: %s\n", report.Data.FormatVersion, r.RemoteAddr)
+			sendError(w, "This crash report is in an outdated format", http.StatusUnprocessableEntity, isAPI)
+			return
 		}
 
 		if report.Data.General.Name != "PocketMine-MP" {

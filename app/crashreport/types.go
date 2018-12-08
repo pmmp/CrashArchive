@@ -20,8 +20,9 @@ type CrashReport struct {
 
 // ReportData ...
 type ReportData struct {
-	Time    int64
-	Plugin  interface{}
+	Time          int64
+	FormatVersion int64 `json:"format_version"`
+	Plugin        interface{}
 	General struct {
 		Name     string
 		Version  string
