@@ -61,7 +61,7 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.H
 		report, err := crashreport.DecodeCrashReport([]byte(reportStr))
 		if err != nil {
 			//this panic will be recovered in the above deferred function
-			log.Panic(err)
+			panic(err)
 		}
 
 		if report.Data.General.Name != "PocketMine-MP" {
