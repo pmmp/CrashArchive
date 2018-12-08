@@ -5,9 +5,11 @@ import (
 	"net/url"
 	"net/http"
 
+	"errors"
 	"fmt"
 	"math"
 	"strconv"
+	"strings"
 
 	"github.com/pmmp/CrashArchive/app/crashreport"
 	"github.com/pmmp/CrashArchive/app/database"
@@ -16,20 +18,24 @@ import (
 
 func ListGet(db *database.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		ListFilteredReports(w, r, db, "WHERE duplicate = false")
+		filter, filterParams, err := buildSearchQuery(r.URL.Query())
+		if err != nil {
+			template.ErrorTemplate(w, "", http.StatusBadRequest)
+			return
+		}
+		log.Printf("search generated query: %s\n", filter)
+		ListFilteredReports(w, r, db, filter, filterParams...)
 	}
 }
 
 const pageSize = 50
 
-func parseUintParam(v url.Values, paramName string, defaultValue uint64, w http.ResponseWriter) (uint64, error) {
+func parseUintParam(v url.Values, paramName string, defaultValue uint64) (uint64, error) {
 	param := v.Get(paramName)
 	if param != "" {
 		retval, err := strconv.ParseUint(param, 10, 64)
 		if err != nil {
-			log.Println(err)
-			template.ErrorTemplate(w, "", http.StatusBadRequest)
-			return 0, err
+			return 0, fmt.Errorf("Invalid value for search parameter \"%s\"", paramName)
 		}
 
 		return retval, nil
@@ -38,33 +44,75 @@ func parseUintParam(v url.Values, paramName string, defaultValue uint64, w http.
 	return defaultValue, nil
 }
 
+func buildSearchQuery(params url.Values) (filter string, filterParams []interface{}, returnError error) {
+	filters := make([]string, 0)
+	filterParams = make([]interface{}, 0)
+
+	if params.Get("duplicates") != "true" {
+		filters = append(filters, "duplicate = false")
+	}
+
+	if params.Get("min") != "" || params.Get("max") != "" {
+		//check ranges
+		filterMinId, err := parseUintParam(params, "min", 0)
+		if err != nil {
+			return "", nil, err
+		}
+		filterMaxId, err := parseUintParam(params, "max", math.MaxUint64)
+		if err != nil {
+			return
+		}
+
+		if filterMinId > filterMaxId {
+			return "", nil, errors.New("Invalid min/max ID bounds")
+		}
+
+		filters = append(filters, "id BETWEEN ? AND ?")
+		filterParams = append(filterParams, filterMinId, filterMaxId)
+	}
+
+	//filter by message
+	message := params.Get("message")
+	if message != "" {
+		filters = append(filters, "message LIKE ?")
+		filterParams = append(filterParams, "%" + message + "%")
+	}
+
+	//filter by plugin
+	plugin := params.Get("plugin")
+	if plugin != "" {
+		filters = append(filters, "plugin = ?")
+		filterParams = append(filterParams, plugin)
+	}
+
+	//filter by build number
+	if params.Get("build") != "" {
+		buildID, err := parseUintParam(params, "build", math.MaxUint64)
+		if err != nil {
+			return "", nil, err
+		}
+
+		operator := "="
+		typ := params.Get("buildtype")
+		if typ == "greater" {
+			operator = ">"
+		} else if typ == "less" {
+			operator = "<"
+		}
+
+		filters = append(filters, fmt.Sprintf("build %s ?", operator))
+		filterParams = append(filterParams, buildID)
+	}
+
+	filter = strings.Join(filters[:], " AND ")
+	if filter != "" {
+		filter = "WHERE " + filter
+	}
+	return filter, filterParams, nil
+}
+
 func ListFilteredReports(w http.ResponseWriter, r *http.Request, db *database.DB, filter string, filterParams ...interface{}) {
 	var err error
-
-	params := r.URL.Query()
-
-	filterMinId, err := parseUintParam(params, "min", 0, w)
-	if err != nil {
-		return
-	}
-	filterMaxId, err := parseUintParam(params, "max", math.MaxUint64, w)
-	if err != nil {
-		return
-	}
-
-	if filterMinId > filterMaxId {
-		log.Println("request tried to ask for min bound larger than max bound")
-		template.ErrorTemplate(w, "", http.StatusBadRequest)
-		return
-	}
-
-	if filter != "" {
-		filter = fmt.Sprintf("%s AND id BETWEEN ? AND ?", filter)
-	} else {
-		filter = "WHERE id BETWEEN ? AND ?"
-	}
-	filterParams = append(filterParams, filterMinId, filterMaxId)
-
 	var total int
 
 	queryCount := fmt.Sprintf("SELECT COUNT(*) FROM crash_reports %s", filter)
@@ -76,9 +124,9 @@ func ListFilteredReports(w http.ResponseWriter, r *http.Request, db *database.DB
 		return
 	}
 
-
 	var pageId int
 
+	params := r.URL.Query()
 	pageParam := params.Get("page")
 	if pageParam != "" {
 		pageId, err = strconv.Atoi(pageParam)

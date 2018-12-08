@@ -42,10 +42,7 @@ func New(db *database.DB, wh *webhook.Webhook, config *app.Config) *chi.Mux {
 		r.Route("/search", func(r chi.Router) {
 			r.Get("/", handler.SearchGet)
 			r.Get("/id", handler.SearchIDGet)
-			r.Get("/plugin", handler.SearchPluginGet(db))
-			r.Get("/build", handler.SearchBuildGet(db))
 			r.Get("/report", handler.SearchReportGet(db))
-			r.Get("/message", handler.SearchMessageGet(db))
 		})
 
 		r.Route("/submit", func(r chi.Router) {
