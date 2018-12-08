@@ -15,9 +15,9 @@ import (
 
 // Types ...
 const (
-
 	reportBegin = "===BEGIN CRASH DUMP==="
 	reportEnd   = "===END CRASH DUMP==="
+	currentFormatVersion = 1
 )
 
 // ParseDate parses  the unix date to time.Time
@@ -152,6 +152,9 @@ func FromJson(jsonBytes []byte) (*CrashReport, error) {
 	err := json.NewDecoder(reader).Decode(&r.Data)
 
 	if err == nil {
+		if r.Data.FormatVersion != currentFormatVersion {
+			return nil, fmt.Errorf("incompatible crashdump format version %d", r.Data.FormatVersion)
+		}
 		r.parseDate()
 		r.parseError()
 		r.parseVersion()
