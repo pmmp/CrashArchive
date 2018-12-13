@@ -15,7 +15,6 @@
                     <table class="striped">
                         <thead>
                         <tr>
-                            <th style="width: 10%">#ID</th>
                             <th style="width: 10%">Version</th>
                             <th style="width: 100%">Message</th>
                             <th></th>
@@ -23,7 +22,6 @@
                         </thead>
                         <tbody>{{ range .Data }}
                         <tr>
-                            <td>{{.ID}}</td>
                             <td>{{.Version}}</td>
                             <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 0">{{.Message}}</td>
                             <td style="float: right;"><a href="/view/{{.ID}}" class="btn btn-sm btn-primary"><i class="material-icons">arrow_forward</i></a></td>
