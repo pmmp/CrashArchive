@@ -91,6 +91,8 @@ func buildSearchQuery(params url.Values) (string, []interface{}, error) {
 		} else { //any plugin but not core crashes
 			filters = append(filters, "plugin <> \"\"")
 		}
+	} else if cause != "" {
+		return "", nil, fmt.Errorf("Invalid cause filter %s", cause)
 	}
 
 	//filter by build number
