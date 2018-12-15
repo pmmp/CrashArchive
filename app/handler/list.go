@@ -44,9 +44,10 @@ func parseUintParam(v url.Values, paramName string, defaultValue uint64) (uint64
 	return defaultValue, nil
 }
 
-func buildSearchQuery(params url.Values) (filter string, filterParams []interface{}, returnError error) {
+func buildSearchQuery(params url.Values) (string, []interface{}, error) {
 	filters := make([]string, 0)
-	filterParams = make([]interface{}, 0)
+	filterParams := make([]interface{}, 0)
+	var filter string
 
 	if params.Get("duplicates") != "true" {
 		filters = append(filters, "duplicate = false")
@@ -60,7 +61,7 @@ func buildSearchQuery(params url.Values) (filter string, filterParams []interfac
 		}
 		filterMaxId, err := parseUintParam(params, "max", math.MaxUint64)
 		if err != nil {
-			return
+			return "", nil, err
 		}
 
 		if filterMinId > filterMaxId {
