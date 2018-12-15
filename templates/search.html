@@ -7,7 +7,7 @@
             <div class="card">
                 <div class="card-content">
                     <span class="card-title">Search</span>
-                    <form action="/list" method="get" role="form">
+                    <form action="/list" method="get" role="form" id="normal-search">
                         <div class="row">
                             <div class="input-field col s12">
                                 <input placeholder="Error message, part or keyword" name="message" type="text" class="validate">
@@ -19,15 +19,15 @@
                             </div>
                         </div>
                         <div class="row">
+                            <div class="input-field col s6 m9 l10">
+                                <input placeholder="Build number" name="build" type="text" class="validate" id="normal-search-buildtext">
+                            </div>
                             <div class="input-field col s6 m3 l2">
-                                <select name="buildtype" class="browser-default">
+                                <select name="buildtype" class="browser-default" id="normal-search-build-compare" disabled>
                                     <option value="equal">Equal</option>
                                     <option value="greater">Greater than</option>
                                     <option value="less">Less than</option>
                                 </select>
-                            </div>
-                            <div class="input-field col s6 m9 l10">
-                                <input placeholder="Build number" name="build" type="text" class="validate">
                             </div>
                         </div>
                         <div class="row">
@@ -61,5 +61,18 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+$('#normal-search').submit(function () {
+    $(this)
+        .find('input[name]')
+        .filter(function () {
+            return !this.value;
+        })
+        .prop('name', '');
+});
+$('#normal-search-buildtext').on("input", function () {
+	$('#normal-search-build-compare').attr("disabled", $(this).val() === "");
+});
+</script>
 {{end}}
 {{define "foot"}}{{end}}
