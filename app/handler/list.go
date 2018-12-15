@@ -78,11 +78,18 @@ func buildSearchQuery(params url.Values) (filter string, filterParams []interfac
 		filterParams = append(filterParams, "%" + message + "%")
 	}
 
-	//filter by plugin
-	plugin := params.Get("plugin")
-	if plugin != "" {
-		filters = append(filters, "plugin = ?")
-		filterParams = append(filterParams, plugin)
+	cause := params.Get("cause")
+	if cause == "core" {
+		filters = append(filters, "plugin = \"\"")
+	} else if cause == "plugin" {
+		//filter by plugin
+		plugin := params.Get("plugin")
+		if plugin != "" {
+			filters = append(filters, "plugin = ?")
+			filterParams = append(filterParams, plugin)
+		} else { //any plugin but not core crashes
+			filters = append(filters, "plugin <> \"\"")
+		}
 	}
 
 	//filter by build number

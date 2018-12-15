@@ -14,8 +14,16 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s12">
-                                <input placeholder="Plugin name (case sensitive)" name="plugin" type="text" class="validate">
+                            <div class="input-field col s6 m3 l2">
+                                <select name="cause" class="browser-default" id="normal-search-cause">
+                                    <option disabled selected>Select crash cause</option>
+                                    <option value="">Any</option>
+                                    <option value="plugin">Plugin only</option>
+                                    <option value="core">Core only</option>
+                                </select>
+                            </div>
+                            <div class="input-field col s6 m9 l10">
+                                <input placeholder="Plugin name (case sensitive)" name="plugin" type="text" class="validate" id="normal-search-plugin-name" disabled>
                             </div>
                         </div>
                         <div class="row">
@@ -71,7 +79,11 @@ $('#normal-search').submit(function () {
         .prop('name', '');
 });
 $('#normal-search-buildtext').on("input", function () {
-	$('#normal-search-build-compare').attr("disabled", $(this).val() === "");
+    $('#normal-search-build-compare').attr("disabled", $(this).val() === "");
+});
+$('#normal-search-cause').change(function () {
+    alert($(this).val());
+    $('#normal-search-plugin-name').attr("disabled", $(this).val() !== "plugin");
 });
 </script>
 {{end}}
