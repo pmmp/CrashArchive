@@ -106,6 +106,7 @@
                                                 <th>Version</th>
                                                 <th>State</th>
                                                 <th>Author(s)</th>
+                                                <th>Website</th>
                                             </tr>
                                             </thead>
                                             <tbody>{{range .Report.Data.Plugins}}
@@ -118,6 +119,7 @@
                                                 {{if $index}},{{end}}
                                                 {{$element}}
                                                 {{end}}</td>
+                                                <td>{{if ne .website ""}}<a href="{{.website}}">Visit</a>{{end}}</td>
                                             </tr>{{end}}
                                             </tbody>
                                         </table>
