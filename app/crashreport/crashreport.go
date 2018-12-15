@@ -18,6 +18,7 @@ const (
 	reportBegin = "===BEGIN CRASH DUMP==="
 	reportEnd   = "===END CRASH DUMP==="
 	currentFormatVersion = 1
+	UnidentifiedCausingPlugin = "???" //plugin names can't contain question marks, so this avoids collisions
 )
 
 // ParseDate parses  the unix date to time.Time
@@ -33,6 +34,9 @@ func (r *CrashReport) parseError() {
 	switch plugin := r.Data.Plugin.(type) {
 	case bool:
 		r.CausedByPlugin = plugin
+		if plugin {
+			r.CausingPlugin = UnidentifiedCausingPlugin
+		}
 	case string:
 		r.CausingPlugin = clean(plugin)
 		r.CausedByPlugin = true
