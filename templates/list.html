@@ -12,17 +12,19 @@
                         <a href="{{pagenum .SearchUrl .PrevPage}}" {{if eq .PrevPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons left">arrow_back</i>Prev</a>
                         <a href="{{pagenum .SearchUrl .NextPage}}" {{if eq .NextPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons right">arrow_forward</i>Next</a>
                     </div>
-                    <table class="striped">
+                    <table class="bordered">
                         <thead>
                         <tr>
                             <th style="width: 10%">Version</th>
+                            <th style="width: 10%">Plugin</th>
                             <th style="width: 100%">Message</th>
                             <th></th>
                         </tr>
                         </thead>
                         <tbody>{{ range .Data }}
-                        <tr>
+                        <tr class="{{if ne .Plugin ""}}orange lighten-4{{end}}">
                             <td>{{.Version}}</td>
+                            <td>{{if ne .Plugin ""}}{{.Plugin}}{{else}}N/A{{end}}</td>
                             <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 0">{{.Message}}</td>
                             <td style="float: right;"><a href="/view/{{.ID}}" class="btn btn-sm btn-primary"><i class="material-icons">arrow_forward</i></a></td>
                         </tr>
