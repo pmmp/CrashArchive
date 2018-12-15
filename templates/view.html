@@ -113,7 +113,7 @@
                                             <tr>
                                                 <td>{{.name}}</td>
                                                 <td>{{.version}}</td>
-                                                <td>{{.enabled}}</td>
+                                                <td>{{if .enabled}}Enabled{{else}}Disabled{{end}}</td>
                                                 <td>{{$equipment := .authors}}
                                                 {{ range $index, $element := .authors}}
                                                 {{if $index}},{{end}}
