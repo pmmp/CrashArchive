@@ -15,7 +15,8 @@
     "SlackURL": "",
     "SlackHookInterval": 30,
     "PluginBlacklist":[
-        "TeaSpoon"
+        "TeaSpoon",
+        "AllAPILoader"
     ],
     "IpBanlist":[]
 }
