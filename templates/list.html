@@ -4,37 +4,35 @@
 <div class="container">
     <div class="row">
         <div class="col s12">
-            <div class="card">
-                <div class="card-content">
-                    <span class="card-title center">Search results</span>
-                    <p class="center">Showing {{.RangeStart}}-{{.RangeEnd}} ({{.ShowCount}} reports) of {{.TotalCount}} reports. Duplicated reports might have been hidden.</p>
-                    <div class="center" style="padding-top: 20px; padding-bottom: 10px;">
-                        <a href="{{pagenum .SearchUrl .PrevPage}}" {{if eq .PrevPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons left">arrow_back</i>Prev</a>
-                        <a href="{{pagenum .SearchUrl .NextPage}}" {{if eq .NextPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons right">arrow_forward</i>Next</a>
-                    </div>
-                    <table class="bordered">
-                        <thead>
-                        <tr>
-                            <th style="width: 10%">Version</th>
-                            <th style="width: 10%">Plugin</th>
-                            <th style="width: 100%">Message</th>
-                            <th></th>
-                        </tr>
-                        </thead>
-                        <tbody>{{ range .Data }}
-                        <tr class="{{if ne .Plugin ""}}orange lighten-4{{end}}">
-                            <td class="text-overflow-row">{{.Version}}</td>
-                            <td class="text-overflow-row">{{if ne .Plugin ""}}{{.Plugin}}{{else}}N/A{{end}}</td>
-                            <td class="text-overflow-row">{{.Message}}</td>
-                            <td style="float: right;"><a href="/view/{{.ID}}" class="btn btn-sm btn-primary" style="padding: 0 1rem"><i class="material-icons">arrow_forward</i></a></td>
-                        </tr>
-                        {{end}}</tbody>
-                    </table>
-                    <div class="center" style="padding-top: 10px;">
-                        <a href="{{pagenum .SearchUrl .PrevPage}}" {{if eq .PrevPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons left">arrow_back</i>Prev</a>
-                        <a href="{{pagenum .SearchUrl .NextPage}}" {{if eq .NextPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons right">arrow_forward</i>Next</a>
-                    </div>
+            <div class="center">
+                <h5 class="light">Search results</h5>
+                <p>Showing {{.RangeStart}}-{{.RangeEnd}} ({{.ShowCount}} reports) of {{.TotalCount}} reports. Duplicated reports might have been hidden.</p>
+                <div style="padding-top: 20px; padding-bottom: 10px;">
+                    <a href="{{pagenum .SearchUrl .PrevPage}}" {{if eq .PrevPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons left">arrow_back</i>Prev</a>
+                    <a href="{{pagenum .SearchUrl .NextPage}}" {{if eq .NextPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons right">arrow_forward</i>Next</a>
                 </div>
+            </div>
+            <table class="bordered">
+                <thead>
+                <tr>
+                    <th style="width: 10%">Version</th>
+                    <th style="width: 10%">Plugin</th>
+                    <th style="width: 100%">Message</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>{{ range .Data }}
+                <tr class="{{if ne .Plugin ""}}orange lighten-4{{end}}">
+                    <td class="text-overflow-row">{{.Version}}</td>
+                    <td class="text-overflow-row">{{if ne .Plugin ""}}{{.Plugin}}{{else}}N/A{{end}}</td>
+                    <td class="text-overflow-row">{{.Message}}</td>
+                    <td style="float: right;"><a href="/view/{{.ID}}" class="btn btn-sm btn-primary" style="padding: 0 1rem"><i class="material-icons">arrow_forward</i></a></td>
+                </tr>
+                {{end}}</tbody>
+            </table>
+            <div class="center" style="padding-top: 10px;">
+                <a href="{{pagenum .SearchUrl .PrevPage}}" {{if eq .PrevPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons left">arrow_back</i>Prev</a>
+                <a href="{{pagenum .SearchUrl .NextPage}}" {{if eq .NextPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons right">arrow_forward</i>Next</a>
             </div>
         </div>
     </div>
