@@ -11,3 +11,10 @@ main {
 table.bordered > tbody > tr > th, td {
 	border-radius: 0px; /* materialize likes to add 2px radius which creates annoying notches on table cells */
 }
+
+.text-overflow-row {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	max-width: 0;
+}

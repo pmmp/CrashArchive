@@ -23,9 +23,9 @@
                         </thead>
                         <tbody>{{ range .Data }}
                         <tr class="{{if ne .Plugin ""}}orange lighten-4{{end}}">
-                            <td>{{.Version}}</td>
-                            <td>{{if ne .Plugin ""}}{{.Plugin}}{{else}}N/A{{end}}</td>
-                            <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 0">{{.Message}}</td>
+                            <td class="text-overflow-row">{{.Version}}</td>
+                            <td class="text-overflow-row">{{if ne .Plugin ""}}{{.Plugin}}{{else}}N/A{{end}}</td>
+                            <td class="text-overflow-row">{{.Message}}</td>
                             <td style="float: right;"><a href="/view/{{.ID}}" class="btn btn-sm btn-primary"><i class="material-icons">arrow_forward</i></a></td>
                         </tr>
                         {{end}}</tbody>
