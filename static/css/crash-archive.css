@@ -18,3 +18,22 @@ table.bordered > tbody > tr > th, td {
 	white-space: nowrap;
 	max-width: 0;
 }
+
+.collapsible-body-table {
+	padding: 0px;
+}
+
+
+.card-panel {
+	padding: 18px;
+}
+
+.card .card-content {
+	padding: 18px;
+}
+
+@media only screen and (max-width: 600px) { /* don't waste space on mobile */
+	.container {
+		width: 100%;
+	}
+}
