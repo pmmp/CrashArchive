@@ -34,6 +34,6 @@ table.bordered > tbody > tr > th, td {
 
 @media only screen and (max-width: 600px) { /* don't waste space on mobile */
 	.container {
-		width: 100%;
+		width: 98%;
 	}
 }
