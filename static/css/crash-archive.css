@@ -37,3 +37,13 @@ table.bordered > tbody > tr > th, td {
 		width: 98%;
 	}
 }
+
+.link-table-cell {
+	padding: 0; /* remove default padding to allow block to fill the cell */
+}
+
+td.link-table-cell a {
+	display: block;
+	padding: 15px 5px; /* replicate normal materialize cell padding */
+	color: black;
+}
