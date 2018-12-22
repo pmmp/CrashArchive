@@ -19,7 +19,7 @@ const (
 )
 
 type Webhook struct{
-	slackURL         string
+	hookURLs         []string
 	slackTime        time.Time
 	mux              sync.Mutex
 	postTimeThrottle float64
@@ -31,9 +31,9 @@ type Webhook struct{
 	reportList       []ReportListEntry
 }
 
-func New(slackURL string, postTimeThrottle uint32) *Webhook {
+func New(hookURLs []string, postTimeThrottle uint32) *Webhook {
 	hook := &Webhook{
-		slackURL:   slackURL,
+		hookURLs:   hookURLs,
 		slackTime:  time.Now(),
 		reportList: make([]ReportListEntry, 0, reportListSize),
 		postTimeThrottle: float64(postTimeThrottle),
@@ -95,27 +95,32 @@ func (w *Webhook) Post(entry ReportListEntry) {
 	buf := new(bytes.Buffer)
 	enc := json.NewEncoder(buf)
 	enc.Encode(data)
+	encoded := buf.Bytes()
 
-	req, err := http.NewRequest("POST", w.slackURL, buf)
-	req.Header.Set("Content-Type", "application/json")
+	for _, webhookURL := range w.hookURLs {
+		encodedCopy := make([]byte, len(encoded))
+		copy(encodedCopy, encoded)
+		req, err := http.NewRequest("POST", webhookURL, bytes.NewBuffer(encodedCopy))
+		req.Header.Set("Content-Type", "application/json")
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		log.Printf("error happened when posting to webhook: %v", err)
-		return
-	}
-	defer resp.Body.Close()
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			log.Printf("error happened when posting to webhook: %v", err)
+			return
+		}
+		defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		log.Println("error happened posting update to webhook")
-		log.Println(hex.Dump(buf.Bytes()))
-		log.Println("response Status:", resp.Status)
-		log.Println("response Headers:", resp.Header)
-		body, _ := ioutil.ReadAll(resp.Body)
-		log.Println("response Body:", string(body))
-	} else {
-		log.Println("posted update to webhook successfully")
+		if resp.StatusCode != http.StatusOK {
+			log.Printf("error happened posting update to webhook %s", webhookURL)
+			log.Println(hex.Dump(buf.Bytes()))
+			log.Println("response Status:", resp.Status)
+			log.Println("response Headers:", resp.Header)
+			body, _ := ioutil.ReadAll(resp.Body)
+			log.Println("response Body:", string(body))
+		} else {
+			log.Printf("posted update to webhook %s successfully", webhookURL)
+		}
 	}
 
 	w.reportCount = 0

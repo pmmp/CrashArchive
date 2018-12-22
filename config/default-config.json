@@ -12,7 +12,7 @@
         "Extension":"html",
         "Folder":"templates"
     },
-    "SlackURL": "",
+    "SlackURLs": [],
     "SlackHookInterval": 30,
     "PluginBlacklist":[
         "TeaSpoon",

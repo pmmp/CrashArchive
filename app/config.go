@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"os"
+	"log"
 
 	"github.com/pmmp/CrashArchive/app/database"
 	"github.com/pmmp/CrashArchive/app/template"
@@ -12,12 +13,15 @@ type Config struct {
 	ListenAddress      string
 	Database           *database.Config
 	Template           *template.Config
-	SlackURL           string
+	SlackURLs          []string
 	SlackHookInterval  uint32
 	PluginBlacklist    []string
 	PluginBlacklistMap map[string]string
 	IpBanlist          []string
 	IpBanlistMap       map[string]string
+
+	//old fields, for backwards compatibility
+	SlackURL           string
 }
 
 func LoadConfig(configPath string) (*Config, error) {
@@ -48,6 +52,12 @@ func LoadConfig(configPath string) (*Config, error) {
 		config.IpBanlistMap[v] = v
 	}
 	config.IpBanlist = nil
+
+	if config.SlackURLs == nil && config.SlackURL != "" {
+		log.Println("`SlackURL` config is deprecated, use `SlackURLs` instead (supports multiple hooks)")
+		config.SlackURLs = make([]string, 0)
+		config.SlackURLs = append(config.SlackURLs, config.SlackURL)
+	}
 
 	return &config, nil
 }
