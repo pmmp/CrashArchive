@@ -10,7 +10,8 @@
                     <form action="/list" method="get" role="form" id="normal-search">
                         <div class="row">
                             <div class="input-field col s12">
-                                <input placeholder="Error message, part or keyword" name="message" type="text" class="validate">
+                                <input name="message" type="text" class="validate" id="normal-search-message">
+                                <label for="normal-search-message">Error message, part or keyword</label>
                             </div>
                         </div>
                         <div class="row">
@@ -23,12 +24,14 @@
                                 </select>
                             </div>
                             <div class="input-field col s6 m9 l10">
-                                <input placeholder="Plugin name (case sensitive)" name="plugin" type="text" class="validate" id="normal-search-plugin-name" disabled>
+                                <input name="plugin" type="text" class="validate" id="normal-search-plugin-name" disabled>
+                                <label for="normal-search-plugin-name">Plugin name (case sensitive)</label>
                             </div>
                         </div>
                         <div class="row">
                             <div class="input-field col s6 m9 l10">
-                                <input placeholder="Build number" name="build" type="text" class="validate" id="normal-search-buildtext">
+                                <input name="build" type="text" class="validate" id="normal-search-buildtext">
+                                <label for="normal-search-buildtext">Build number</label>
                             </div>
                             <div class="input-field col s6 m3 l2">
                                 <select name="buildtype" class="browser-default" id="normal-search-build-compare" disabled>
@@ -59,7 +62,8 @@
                     <form action="/search/id" method="get" role="form">
                         <div class="row">
                             <div class="input-field col s12">
-                                <input placeholder="Report ID" name="id" type="text" class="validate">
+                                <input name="id" type="text" class="validate" id="id-search-id">
+                                <label for="id-search-id">Report ID</label>
                             </div>
                         </div>
                         <button type="submit" class="waves-effect waves-light btn" style="margin-top:10px;">Search</button>
