@@ -3,6 +3,7 @@ package template
 import (
 	"fmt"
 	"html/template"
+	"math"
 	"regexp"
 	"sort"
 	"strconv"
@@ -17,6 +18,7 @@ var funcMap = template.FuncMap{
 	"sortcode":  sortcode,
 	"shorthash": shorthash,
 	"pagenum":   pagenum,
+	"add":       add,
 }
 
 func shorthash(s string) string {
@@ -43,20 +45,29 @@ func split(x string) template.HTML {
 	return template.HTML(strings.Join(r, ""))
 }
 
-func sortcode(a map[string]string) template.HTML {
+type SortedCode struct {
+	StartLine int
+	Lines     []string
+}
+
+func sortcode(a map[string]string) SortedCode {
+	startLine := math.MaxUint32
+
 	s := make([]int, 0)
 	for k, _ := range a {
 		c, _ := strconv.Atoi(k)
 		s = append(s, c)
-
+		if c < startLine {
+			startLine = c
+		}
 	}
 
 	r := make([]string, 0)
 	sort.Ints(s)
 	for _, v := range s {
-		r = append(r, fmt.Sprintf("%2d %s", v, template.HTMLEscapeString(a[strconv.Itoa(v)])))
+		r = append(r, a[strconv.Itoa(v)])
 	}
-	return template.HTML(strings.Join(r, "<br/>"))
+	return SortedCode{StartLine: startLine, Lines: r}
 }
 
 func pagenum(base string, page int) string {
@@ -70,4 +81,8 @@ func pagenum(base string, page int) string {
 	params.Set("page", strconv.Itoa(page))
 	parsed.RawQuery = params.Encode()
 	return parsed.String()
+}
+
+func add(num1 int, num2 int) int {
+	return num1 + num2
 }

@@ -47,3 +47,10 @@ td.link-table-cell a {
 	padding: 15px 5px; /* replicate normal materialize cell padding */
 	color: black;
 }
+
+.code-line-numbers {
+	float: left;
+	padding-right: 5px;
+	border-right: 1px solid;
+	text-align: right;
+}

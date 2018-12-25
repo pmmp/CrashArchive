@@ -86,7 +86,11 @@
                                     </tr>
                                     </tbody>
                                 </table>
-                                <div class="card-panel grey lighten-2"><pre><code style="overflow: auto; word-wrap: normal; white-space: pre;">{{sortcode .Report.Data.Code}}</code></pre></div>
+                                <div class="card-panel grey lighten-2">
+                                    {{ $code := sortcode .Report.Data.Code }}
+                                    <pre class="code-line-numbers">{{ range $linenum, $_ := $code.Lines }}{{add $linenum $code.StartLine}}<br>{{end}}</pre>
+                                    <pre><code style="overflow: auto; word-wrap: normal; white-space: pre;">{{range $_, $line := $code.Lines}}{{$line}}<br>{{end}}</code></pre>
+                                </div>
                                 <div class="card-panel grey lighten-2"><pre><code style="overflow: auto; word-wrap: normal; white-space: pre;">{{range .Report.Data.Trace}}{{.}}<br/>{{end}}</code></pre></div>
                             </div>
                         </div>
