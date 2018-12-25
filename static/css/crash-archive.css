@@ -59,6 +59,17 @@ table.borderless tr {
 	border-bottom: none;
 }
 
-.row .col {
-	padding: 0 5px;
+.fab-text-menu ul {
+	left: initial;
+	text-align: right;
+}
+
+.fab-text-option {
+    padding: 0px 0.5rem;
+    text-align: right;
+    background-color: #323232;
+    border-radius: 2px;
+    color: white;
+    white-space: nowrap;
+    width: auto;
 }
