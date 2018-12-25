@@ -34,7 +34,7 @@ table.bordered > tbody > tr > th, td {
 
 @media only screen and (max-width: 600px) { /* don't waste space on mobile */
 	.container {
-		width: 98%;
+		width: 100%;
 	}
 }
 
@@ -53,4 +53,12 @@ td.link-table-cell a {
 	padding-right: 5px;
 	border-right: 1px solid;
 	text-align: right;
+}
+
+table.borderless tr {
+	border-bottom: none;
+}
+
+.row .col {
+	padding: 0 5px;
 }

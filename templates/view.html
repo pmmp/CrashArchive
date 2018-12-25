@@ -12,7 +12,7 @@
                         <div class="col s12 l6">
                             <div class="card-panel">
                                 <h3>General information</h3>
-                                <table>
+                                <table class="borderless">
                                     <tbody>
                                     <tr>
                                         <th>Version:</th>
@@ -37,7 +37,7 @@
                         <div class="col s12 l6">
                             <div class="card-panel">
                                 <h3>System Information</h3>
-                                <table>
+                                <table class="borderless">
                                     <tbody>
                                     <tr>
                                         <th>PHP version:</th>
@@ -66,7 +66,7 @@
                                     Warning: This crash was caused by {{if ne .Report.CausingPlugin ""}}the <strong>{{.Report.CausingPlugin}}</strong>{{else}}a{{end}} plugin. Please contact the plugin author.
                                 </div>
                                 {{end}}
-                                <table>
+                                <table class="borderless">
                                     <tbody>
                                     <tr>
                                         <th>Message:</th>
@@ -89,9 +89,9 @@
                                 <div class="card-panel grey lighten-2">
                                     {{ $code := sortcode .Report.Data.Code }}
                                     <pre class="code-line-numbers">{{ range $linenum, $_ := $code.Lines }}{{add $linenum $code.StartLine}}<br>{{end}}</pre>
-                                    <pre><code style="overflow: auto; word-wrap: normal; white-space: pre;">{{range $_, $line := $code.Lines}}{{$line}}<br>{{end}}</code></pre>
+                                    <pre style="overflow: auto; word-wrap: normal; white-space: pre;"><code>{{range $_, $line := $code.Lines}}{{$line}}<br>{{end}}</code></pre>
                                 </div>
-                                <div class="card-panel grey lighten-2"><pre><code style="overflow: auto; word-wrap: normal; white-space: pre;">{{range .Report.Data.Trace}}{{.}}<br/>{{end}}</code></pre></div>
+                                <div class="card-panel grey lighten-2"><pre style="overflow: auto; word-wrap: normal; white-space: pre;"><code>{{range .Report.Data.Trace}}{{.}}<br/>{{end}}</code></pre></div>
                             </div>
                         </div>
                     </div>

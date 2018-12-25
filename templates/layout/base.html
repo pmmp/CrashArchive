@@ -10,7 +10,7 @@
     <title>{{template "title" .}}</title>
     <link rel="shortcut icon" href="https://cdn.pocketmine.net/favicon.png"/>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/css/materialize.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="/css/crash-archive.css">
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
@@ -26,10 +26,10 @@
 {{template "foot" .}}
 
 {{ template "footer.html" .}}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/js/materialize.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
-        $(".button-collapse").sideNav();
+        M.AutoInit();
     });
 </script>
 </body>
