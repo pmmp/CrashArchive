@@ -122,12 +122,12 @@ func (db *DB) FetchReport(id int64) (*crashreport.CrashReport, error) {
 	return crashreport.FromJson(bytes)
 }
 
-func (db *DB) CheckDuplicate(report *crashreport.CrashReport) (int, error) {
+func (db *DB) CheckDuplicate(report *crashreport.CrashReport) (bool, error) {
 	var dupes int
-	err := db.Get(&dupes, "SELECT COUNT(id) FROM (SELECT id, message, file, line FROM crash_reports ORDER BY id DESC LIMIT 5000)sub WHERE message = ? AND file = ? and line = ?;", report.Error.Message, report.Error.File, report.Error.Line)
+	err := db.Get(&dupes, "SELECT COUNT(id) FROM crash_reports WHERE message = ? AND file = ? AND line = ? AND duplicate = false;", report.Error.Message, report.Error.File, report.Error.Line)
 	if err != nil {
-		return 0, err
+		return false, err
 	}
 
-	return dupes, nil
+	return dupes != 0, nil
 }

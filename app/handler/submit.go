@@ -88,13 +88,13 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.H
 		}
 
 		dupes, err := db.CheckDuplicate(report)
-		report.Duplicate = dupes > 0
-		if dupes > 0 {
+		report.Duplicate = dupes
+		if dupes {
 			snippet := report.Data.Error.Message
 			if len(snippet) > 80 {
 				snippet = snippet[:80]
 			}
-			log.Printf("found %d duplicates of report from: %s, message is \"%s\"", dupes, r.RemoteAddr, snippet)
+			log.Printf("duplicate report from: %s, message is \"%s\"", r.RemoteAddr, snippet)
 		}
 
 		name := r.FormValue("name")
