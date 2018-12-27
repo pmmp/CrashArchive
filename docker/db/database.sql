@@ -19,7 +19,8 @@ CREATE TABLE crash_reports (
       PRIMARY KEY (id),
       INDEX(plugin(10)),
       INDEX(message(32)),
-      INDEX(file(32))
+      INDEX(file(32)),
+      INDEX(duplicate)
 ) ENGINE=InnoDB;
 
 CREATE TABLE crash_report_blobs (
