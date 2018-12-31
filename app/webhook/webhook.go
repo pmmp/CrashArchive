@@ -38,9 +38,6 @@ func New(hookURLs []string, postTimeThrottle uint32) *Webhook {
 		reportList: make([]ReportListEntry, 0, reportListSize),
 		postTimeThrottle: float64(postTimeThrottle),
 	}
-	if hook.postTimeThrottle == 0 {
-		hook.postTimeThrottle = 30
-	}
 	return hook
 }
 
