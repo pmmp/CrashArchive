@@ -10,7 +10,7 @@ CA is primarily used on Linux.
 - Docker
 
 ### Installing
-Create a directory to install in, and run:
+Run the following:
 ```sh
 mkdir ca-pmmp && cd ca-pmmp
 export GOPATH=$(pwd)
