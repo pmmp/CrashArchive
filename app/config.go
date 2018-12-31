@@ -2,11 +2,11 @@ package app
 
 import (
 	"encoding/json"
-	"os"
 	"log"
+	"os"
 
-	"github.com/pmmp/CrashArchive/app/database"
-	"github.com/pmmp/CrashArchive/app/template"
+	"./database"
+	"./template"
 )
 
 type Config struct {
@@ -19,9 +19,10 @@ type Config struct {
 	PluginBlacklistMap map[string]string
 	IpBanlist          []string
 	IpBanlistMap       map[string]string
+	BaseURL            string
 
 	//old fields, for backwards compatibility
-	SlackURL           string
+	SlackURL string
 }
 
 func LoadConfig(configPath string) (*Config, error) {

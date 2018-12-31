@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/pmmp/CrashArchive/app/crashreport"
+	"../crashreport"
 )
 
 type Config struct {

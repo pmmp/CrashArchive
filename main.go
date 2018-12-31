@@ -7,11 +7,11 @@ import (
 	"os"
 	"time"
 
-	"github.com/pmmp/CrashArchive/app"
-	"github.com/pmmp/CrashArchive/app/database"
-	"github.com/pmmp/CrashArchive/app/router"
-	"github.com/pmmp/CrashArchive/app/template"
-	"github.com/pmmp/CrashArchive/app/webhook"
+	"./app"
+	"./app/database"
+	"./app/router"
+	"./app/template"
+	"./app/webhook"
 )
 
 const dbRetry = 5
@@ -35,7 +35,7 @@ func main() {
 
 	var wh *webhook.Webhook = nil
 	if config.SlackURLs != nil {
-		wh = webhook.New(config.SlackURLs, config.SlackHookInterval)
+		wh = webhook.New(config.SlackURLs, config.SlackHookInterval, config.BaseURL)
 	}
 
 	var retry int

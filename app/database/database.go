@@ -9,7 +9,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/pmmp/CrashArchive/app/crashreport"
+	"../crashreport"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -38,6 +38,7 @@ var queryInsertReport = `INSERT INTO crash_reports
 		(plugin, version, build, file, message, line, type, os, submitDate, reportDate, duplicate, reporterName, reporterEmail)
 	VALUES
 		(:plugin, :version, :build, :file, :message, :line, :type, :os, :submitDate, :reportDate, :duplicate, :reporterName, :reporterEmail)`
+
 const queryInsertBlob = `INSERT INTO crash_report_blobs (id, crash_report_json) VALUES (?, ?)`
 
 func (db *DB) InsertReport(report *crashreport.CrashReport, reporterName string, reporterEmail string, originalData []byte) (int64, error) {
@@ -73,7 +74,7 @@ func (db *DB) InsertReport(report *crashreport.CrashReport, reporterName string,
 	}
 
 	var zlibBuf bytes.Buffer
-	zw, _:= zlib.NewWriterLevel(&zlibBuf, zlib.BestCompression)
+	zw, _ := zlib.NewWriterLevel(&zlibBuf, zlib.BestCompression)
 	_, err = zw.Write(originalData)
 	if err != nil {
 		return -1, err

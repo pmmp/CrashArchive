@@ -14,29 +14,31 @@ import (
 )
 
 const (
-	reportListSize = 20
+	reportListSize   = 20
 	postTimeThrottle = 30 //minutes
 )
 
-type Webhook struct{
+type Webhook struct {
+	baseURL          string
 	hookURLs         []string
 	slackTime        time.Time
 	mux              sync.Mutex
 	postTimeThrottle float64
 
-	reportCount      uint32
-	dupeCount        uint32
-	reportMinId      uint64
-	reportMaxId      uint64
-	reportList       []ReportListEntry
+	reportCount uint32
+	dupeCount   uint32
+	reportMinId uint64
+	reportMaxId uint64
+	reportList  []ReportListEntry
 }
 
-func New(hookURLs []string, postTimeThrottle uint32) *Webhook {
+func New(hookURLs []string, postTimeThrottle uint32, baseURL string) *Webhook {
 	hook := &Webhook{
-		hookURLs:   hookURLs,
-		slackTime:  time.Now(),
-		reportList: make([]ReportListEntry, 0, reportListSize),
+		hookURLs:         hookURLs,
+		slackTime:        time.Now(),
+		reportList:       make([]ReportListEntry, 0, reportListSize),
 		postTimeThrottle: float64(postTimeThrottle),
+		baseURL:          baseURL,
 	}
 	if hook.postTimeThrottle == 0 {
 		hook.postTimeThrottle = 30
@@ -70,22 +72,22 @@ func (w *Webhook) Post(entry ReportListEntry) {
 		return
 	}
 
-	listUrl := fmt.Sprintf("https://crash.pmmp.io/list?min=%d&max=%d", w.reportMinId, w.reportMaxId)
+	listUrl := fmt.Sprintf("%s/list?min=%d&max=%d", w.baseURL, w.reportMinId, w.reportMaxId)
 
 	messageText := make([]string, 0, 20)
 	for _, entry := range w.reportList {
-		messageText = append(messageText, fmt.Sprintf("<https://crash.pmmp.io/view/%d|#%d: %s>", entry.ReportId, entry.ReportId, entry.Message))
+		messageText = append(messageText, fmt.Sprintf("<%s/view/%d|#%d: %s>", w.baseURL, entry.ReportId, entry.ReportId, entry.Message))
 	}
 	t := strings.Join(messageText, "\n")
 	if w.reportCount > uint32(cap(w.reportList)) {
-		t += fmt.Sprintf("\n\n%d more reports not shown. <%s|View the full list>", w.reportCount - uint32(cap(w.reportList)), listUrl)
+		t += fmt.Sprintf("\n\n%d more reports not shown. <%s|View the full list>", w.reportCount-uint32(cap(w.reportList)), listUrl)
 	}
 
 	data := &slackMessage{
 		Attachments: []slackAttachment{
 			{
-				AuthorName: "crash.pmmp.io",
-				Title:      fmt.Sprintf("%d new and %d duplicate reports (%d total) since %s", w.reportCount, w.dupeCount, w.reportCount + w.dupeCount, w.slackTime.Format("2 Jan 2006 15:04")),
+				AuthorName: "CrashArchive",
+				Title:      fmt.Sprintf("%d new and %d duplicate reports (%d total) since %s", w.reportCount, w.dupeCount, w.reportCount+w.dupeCount, w.slackTime.Format("2 Jan 2006 15:04")),
 				TitleLink:  listUrl,
 				Color:      "#36a64f",
 				Text:       t,
@@ -133,7 +135,7 @@ func (w *Webhook) Post(entry ReportListEntry) {
 
 type ReportListEntry struct {
 	ReportId uint64
-	Message string
+	Message  string
 }
 
 type slackMessage struct {

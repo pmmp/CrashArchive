@@ -2,8 +2,8 @@ package handler
 
 import (
 	"log"
-	"net/url"
 	"net/http"
+	"net/url"
 
 	"errors"
 	"fmt"
@@ -11,9 +11,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/pmmp/CrashArchive/app/crashreport"
-	"github.com/pmmp/CrashArchive/app/database"
-	"github.com/pmmp/CrashArchive/app/template"
+	"../crashreport"
+	"../database"
+	"../template"
 )
 
 func ListGet(db *database.DB) http.HandlerFunc {
@@ -76,7 +76,7 @@ func buildSearchQuery(params url.Values) (string, []interface{}, error) {
 	message := params.Get("message")
 	if message != "" {
 		filters = append(filters, "message LIKE ?")
-		filterParams = append(filterParams, "%" + message + "%")
+		filterParams = append(filterParams, "%"+message+"%")
 	}
 
 	cause := params.Get("cause")

@@ -9,11 +9,11 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 
-	"github.com/pmmp/CrashArchive/app"
-	"github.com/pmmp/CrashArchive/app/handler"
-	"github.com/pmmp/CrashArchive/app/template"
-	"github.com/pmmp/CrashArchive/app/database"
-	"github.com/pmmp/CrashArchive/app/webhook"
+	"../../app"
+	"../database"
+	"../handler"
+	"../template"
+	"../webhook"
 )
 
 func New(db *database.DB, wh *webhook.Webhook, config *app.Config) *chi.Mux {

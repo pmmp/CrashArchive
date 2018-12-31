@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/pmmp/CrashArchive/app/crashreport"
-	"github.com/pmmp/CrashArchive/app/template"
-	"github.com/pmmp/CrashArchive/app/database"
+	"../crashreport"
+	"../database"
+	"../template"
 )
 
 func SearchGet(w http.ResponseWriter, r *http.Request) {

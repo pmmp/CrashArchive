@@ -8,8 +8,8 @@ import (
 
 	"github.com/go-chi/chi"
 
-	"github.com/pmmp/CrashArchive/app/database"
-	"github.com/pmmp/CrashArchive/app/template"
+	"../database"
+	"../template"
 )
 
 func ViewIDGet(db *database.DB) http.HandlerFunc {

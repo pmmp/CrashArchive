@@ -10,11 +10,11 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/pmmp/CrashArchive/app"
-	"github.com/pmmp/CrashArchive/app/crashreport"
-	"github.com/pmmp/CrashArchive/app/template"
-	"github.com/pmmp/CrashArchive/app/database"
-	"github.com/pmmp/CrashArchive/app/webhook"
+	"../../app"
+	"../crashreport"
+	"../database"
+	"../template"
+	"../webhook"
 )
 
 func SubmitGet(w http.ResponseWriter, r *http.Request) {
@@ -24,7 +24,7 @@ func SubmitGet(w http.ResponseWriter, r *http.Request) {
 func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if _, banned := config.IpBanlistMap[r.RemoteAddr]; banned {
-			log.Printf("rejected submission from banned IP: %s\n", r.RemoteAddr);
+			log.Printf("rejected submission from banned IP: %s\n", r.RemoteAddr)
 			sendError(w, "", http.StatusTeapot, true)
 			return
 		}
@@ -112,7 +112,7 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.H
 			if !report.Duplicate {
 				go wh.Post(webhook.ReportListEntry{
 					ReportId: uint64(id),
-					Message: report.Error.Message,
+					Message:  report.Error.Message,
 				})
 			} else {
 				wh.BumpDupeCounter()
@@ -122,7 +122,7 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.H
 		if isAPI {
 			jsonResponse(w, map[string]interface{}{
 				"crashId":  id,
-				"crashUrl": fmt.Sprintf("https://crash.pmmp.io/view/%d", id),
+				"crashUrl": fmt.Sprintf("%s/view/%d", config.BaseURL, id),
 			})
 		} else {
 			http.Redirect(w, r, fmt.Sprintf("/view/%d", id), http.StatusMovedPermanently)

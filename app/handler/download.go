@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"strconv"
 
+	"../crashreport"
+	"../database"
+	"../template"
 	"github.com/go-chi/chi"
-	"github.com/pmmp/CrashArchive/app/crashreport"
-	"github.com/pmmp/CrashArchive/app/database"
-	"github.com/pmmp/CrashArchive/app/template"
 	"log"
 )
 
