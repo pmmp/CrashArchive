@@ -19,6 +19,7 @@ const (
 )
 
 type Webhook struct{
+	domain           string
 	hookURLs         []string
 	slackTime        time.Time
 	mux              sync.Mutex
@@ -31,8 +32,9 @@ type Webhook struct{
 	reportList       []ReportListEntry
 }
 
-func New(hookURLs []string, postTimeThrottle uint32) *Webhook {
+func New(domain string, hookURLs []string, postTimeThrottle uint32) *Webhook {
 	hook := &Webhook{
+		domain:     domain,
 		hookURLs:   hookURLs,
 		slackTime:  time.Now(),
 		reportList: make([]ReportListEntry, 0, reportListSize),
@@ -67,11 +69,11 @@ func (w *Webhook) Post(entry ReportListEntry) {
 		return
 	}
 
-	listUrl := fmt.Sprintf("https://crash.pmmp.io/list?min=%d&max=%d", w.reportMinId, w.reportMaxId)
+	listUrl := fmt.Sprintf("%s/list?min=%d&max=%d", w.domain, w.reportMinId, w.reportMaxId)
 
 	messageText := make([]string, 0, 20)
 	for _, entry := range w.reportList {
-		messageText = append(messageText, fmt.Sprintf("<https://crash.pmmp.io/view/%d|#%d: %s>", entry.ReportId, entry.ReportId, entry.Message))
+		messageText = append(messageText, fmt.Sprintf("<%s/view/%d|#%d: %s>", w.domain, entry.ReportId, entry.ReportId, entry.Message))
 	}
 	t := strings.Join(messageText, "\n")
 	if w.reportCount > uint32(cap(w.reportList)) {

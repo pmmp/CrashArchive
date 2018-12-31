@@ -122,7 +122,7 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.H
 		if isAPI {
 			jsonResponse(w, map[string]interface{}{
 				"crashId":  id,
-				"crashUrl": fmt.Sprintf("https://crash.pmmp.io/view/%d", id),
+				"crashUrl": fmt.Sprintf("%s/view/%d", config.Domain, id),
 			})
 		} else {
 			http.Redirect(w, r, fmt.Sprintf("/view/%d", id), http.StatusMovedPermanently)

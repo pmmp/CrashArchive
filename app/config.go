@@ -10,6 +10,7 @@ import (
 )
 
 type Config struct {
+	Domain             string
 	ListenAddress      string
 	Database           *database.Config
 	Template           *template.Config
