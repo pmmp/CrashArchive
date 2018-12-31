@@ -84,7 +84,6 @@ func (w *Webhook) Post(entry ReportListEntry) {
 	data := &slackMessage{
 		Attachments: []slackAttachment{
 			{
-				AuthorName: "crash.pmmp.io",
 				Title:      fmt.Sprintf("%d new and %d duplicate reports (%d total) since %s", w.reportCount, w.dupeCount, w.reportCount + w.dupeCount, w.slackTime.Format("2 Jan 2006 15:04")),
 				TitleLink:  listUrl,
 				Color:      "#36a64f",
