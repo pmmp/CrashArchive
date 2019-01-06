@@ -1,13 +1,24 @@
 package crashreport
 
-import "time"
+import (
+	"time"
+)
+
+const (
+	PINone     = "none"
+	PIIndirect = "indirect"
+	PIDirect   = "direct"
+)
+
+var PluginInvolvementStrings = map[string]string{
+	PINone:     "None",
+	PIIndirect: "Indirect",
+	PIDirect:   "Direct",
+}
 
 // CrashReport ...
 type CrashReport struct {
 	Duplicate    bool
-
-	CausedByPlugin bool
-	CausingPlugin  string
 
 	Data       *ReportData
 	ReportDate time.Time
@@ -19,11 +30,12 @@ type CrashReport struct {
 
 // ReportData ...
 type ReportData struct {
-	Time          int64
-	FormatVersion int64 `json:"format_version"`
-	Plugin        interface{}
+	Time              int64
+	FormatVersion     int64 `json:"format_version"`
+	Plugin            string
+	PluginInvolvement string `json:"plugin_involvement"`
 	General struct {
-		Name     string
+		Name        string
 		BaseVersion string `json:"base_version"`
 		Build       int
 		IsDev       bool `json:"is_dev"`
@@ -53,18 +65,19 @@ type ReportError struct {
 
 // Report ...
 type Report struct {
-	ID            int `db:"id"`
-	Plugin        string
-	Version       string
-	Build         int
-	File          string
-	Message       string
-	Line          int
-	Type          string
-	OS            string
-	SubmitDate    int64  `db:"submitDate"`
-	ReportDate    int64  `db:"reportDate"`
-	Duplicate     bool
-	ReporterName  string `db:"reporterName"`
-	ReporterEmail string `db:"reporterEmail"`
+	ID                int `db:"id"`
+	Plugin            string
+	PluginInvolvement string `db:"pluginInvolvement"`
+	Version           string
+	Build             int
+	File              string
+	Message           string
+	Line              int
+	Type              string
+	OS                string
+	SubmitDate        int64  `db:"submitDate"`
+	ReportDate        int64  `db:"reportDate"`
+	Duplicate         bool
+	ReporterName      string `db:"reporterName"`
+	ReporterEmail     string `db:"reporterEmail"`
 }

@@ -35,26 +35,27 @@ func New(config *Config) (*DB, error) {
 }
 
 var queryInsertReport = `INSERT INTO crash_reports
-		(plugin, version, build, file, message, line, type, os, submitDate, reportDate, duplicate, reporterName, reporterEmail)
+		(plugin, pluginInvolvement, version, build, file, message, line, type, os, submitDate, reportDate, duplicate, reporterName, reporterEmail)
 	VALUES
-		(:plugin, :version, :build, :file, :message, :line, :type, :os, :submitDate, :reportDate, :duplicate, :reporterName, :reporterEmail)`
+		(:plugin, :pluginInvolvement, :version, :build, :file, :message, :line, :type, :os, :submitDate, :reportDate, :duplicate, :reporterName, :reporterEmail)`
 const queryInsertBlob = `INSERT INTO crash_report_blobs (id, crash_report_json) VALUES (?, ?)`
 
 func (db *DB) InsertReport(report *crashreport.CrashReport, reporterName string, reporterEmail string, originalData []byte) (int64, error) {
 	res, err := db.NamedExec(queryInsertReport, &crashreport.Report{
-		Plugin:        report.CausingPlugin,
-		Version:       report.Version.Get(true),
-		Build:         report.Version.Build,
-		File:          report.Error.File,
-		Message:       report.Error.Message,
-		Line:          report.Error.Line,
-		Type:          report.Error.Type,
-		OS:            report.Data.General.OS,
-		SubmitDate:    time.Now().Unix(),
-		ReportDate:    report.ReportDate.Unix(),
-		Duplicate:     report.Duplicate,
-		ReporterName:  reporterName,
-		ReporterEmail: reporterEmail,
+		Plugin:            report.Data.Plugin,
+		PluginInvolvement: report.Data.PluginInvolvement,
+		Version:           report.Version.Get(true),
+		Build:             report.Version.Build,
+		File:              report.Error.File,
+		Message:           report.Error.Message,
+		Line:              report.Error.Line,
+		Type:              report.Error.Type,
+		OS:                report.Data.General.OS,
+		SubmitDate:        time.Now().Unix(),
+		ReportDate:        report.ReportDate.Unix(),
+		Duplicate:         report.Duplicate,
+		ReporterName:      reporterName,
+		ReporterEmail:     reporterEmail,
 	})
 
 	if err != nil {

@@ -30,8 +30,8 @@
                                 <td><a href="https://github.com/pmmp/PocketMine-MP/commit/{{.Report.Data.General.GIT}}">{{ shorthash .Report.Data.General.GIT}}</a></td>
                             </tr>
                             <tr>
-                                <th>Caused by a Plugin:</th>
-                                <td>{{.Report.CausedByPlugin}}</td>
+                                <th>Plugin involvement:</th>
+                                <td>{{pluginInvolvementToString .Report.Data.PluginInvolvement}}</td>
                             </tr>
                             <tr>
                                 <th>Report date:</th>
@@ -68,9 +68,13 @@
                 <div class="col s12">
                     <div class="card-panel">
                         <h3>Error information</h3>
-                        {{if .Report.CausedByPlugin}}
-                        <div class="card-panel red lighten-2 white-text z-depth-0">
-                            Warning: This crash was caused by {{if ne .Report.CausingPlugin ""}}the <strong>{{.Report.CausingPlugin}}</strong>{{else}}a{{end}} plugin. Please contact the plugin author.
+                        {{if isDirectPluginCrash .Report.Data.PluginInvolvement}}
+                        <div class="card-panel red accent-1 z-depth-0">
+                            Warning: {{if ne .Report.Data.Plugin ""}}the <strong>{{.Report.Data.Plugin}}</strong>{{else}}a{{end}} plugin was directly involved in this crash. Please contact the plugin author.
+                        </div>
+                        {{else if isIndirectPluginCrash .Report.Data.PluginInvolvement}}
+                        <div class="card-panel orange lighten-3 z-depth-0">
+                            Warning: {{if ne .Report.Data.Plugin ""}}the <strong>{{.Report.Data.Plugin}}</strong>{{else}}a{{end}} plugin was indirectly involved in this crash. This may be a false positive. Please contact the plugin author before opening a bug ticket.
                         </div>
                         {{end}}
                         <table class="borderless">

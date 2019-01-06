@@ -4,6 +4,7 @@ SET GLOBAL INNODB_FILE_FORMAT=Barracuda;
 CREATE TABLE crash_reports (
       id INT NOT NULL AUTO_INCREMENT,
       plugin VARCHAR(128) DEFAULT NULL,
+      pluginInvolvement ENUM ('none', 'indirect', 'direct'),
       version VARCHAR(127) DEFAULT NULL,
       build INT DEFAULT 0,
       file VARCHAR(255),

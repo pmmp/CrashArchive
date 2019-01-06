@@ -1,6 +1,8 @@
 package template
 
 import (
+	"github.com/pmmp/CrashArchive/app/crashreport"
+
 	"fmt"
 	"html/template"
 	"math"
@@ -19,6 +21,9 @@ var funcMap = template.FuncMap{
 	"shorthash": shorthash,
 	"pagenum":   pagenum,
 	"add":       add,
+	"pluginInvolvementToString": pluginInvolvementToString,
+	"isDirectPluginCrash": isDirectPluginCrash,
+	"isIndirectPluginCrash": isIndirectPluginCrash,
 }
 
 func shorthash(s string) string {
@@ -85,4 +90,20 @@ func pagenum(base string, page int) string {
 
 func add(num1 int, num2 int) int {
 	return num1 + num2
+}
+
+func pluginInvolvementToString (ctype string) string {
+	f := crashreport.PluginInvolvementStrings[ctype]
+	if f == "" {
+		return "Unknown"
+	}
+	return f
+}
+
+func isDirectPluginCrash (ctype string) bool {
+	return ctype == crashreport.PIDirect
+}
+
+func isIndirectPluginCrash (ctype string) bool {
+	return ctype == crashreport.PIIndirect
 }

@@ -17,8 +17,7 @@ import (
 const (
 	reportBegin = "===BEGIN CRASH DUMP==="
 	reportEnd   = "===END CRASH DUMP==="
-	currentFormatVersion = 1
-	UnidentifiedCausingPlugin = "???" //plugin names can't contain question marks, so this avoids collisions
+	currentFormatVersion = 2
 )
 
 // ParseDate parses  the unix date to time.Time
@@ -31,17 +30,6 @@ func (r *CrashReport) parseDate() {
 
 // ParseError ...
 func (r *CrashReport) parseError() {
-	switch plugin := r.Data.Plugin.(type) {
-	case bool:
-		r.CausedByPlugin = plugin
-		if plugin {
-			r.CausingPlugin = UnidentifiedCausingPlugin
-		}
-	case string:
-		r.CausingPlugin = clean(plugin)
-		r.CausedByPlugin = true
-	}
-
 	r.Error.Type = r.Data.Error.Type
 	r.Error.Message = r.Data.Error.Message
 	r.Error.Line = r.Data.Error.Line
@@ -158,6 +146,14 @@ func FromJson(jsonBytes []byte) (*CrashReport, error) {
 	if err == nil {
 		if r.Data.FormatVersion != currentFormatVersion {
 			return nil, fmt.Errorf("incompatible crashdump format version %d", r.Data.FormatVersion)
+		}
+		switch(r.Data.PluginInvolvement) {
+			case PIDirect:
+			case PIIndirect:
+			case PINone:
+				break
+			default:
+				return nil, fmt.Errorf("unknown plugin involvement \"%s\"", r.Data.PluginInvolvement)
 		}
 		r.parseDate()
 		r.parseError()
