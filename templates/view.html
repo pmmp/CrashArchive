@@ -69,11 +69,11 @@
                     <div class="card-panel">
                         <h3>Error information</h3>
                         {{if isDirectPluginCrash .Report.Data.PluginInvolvement}}
-                        <div class="card-panel red accent-1 z-depth-0">
+                        <div class="card-panel red lighten-2 white-text z-depth-0">
                             Warning: {{if ne .Report.Data.Plugin ""}}the <strong>{{.Report.Data.Plugin}}</strong>{{else}}a{{end}} plugin was directly involved in this crash. Please contact the plugin author.
                         </div>
                         {{else if isIndirectPluginCrash .Report.Data.PluginInvolvement}}
-                        <div class="card-panel orange lighten-3 z-depth-0">
+                        <div class="card-panel orange lighten-2 z-depth-0">
                             Warning: {{if ne .Report.Data.Plugin ""}}the <strong>{{.Report.Data.Plugin}}</strong>{{else}}a{{end}} plugin was indirectly involved in this crash. This may be a false positive. Please contact the plugin author before opening a bug ticket.
                         </div>
                         {{end}}

@@ -21,7 +21,7 @@
                 </tr>
                 </thead>
                 <tbody>{{ range .Data }}
-                <tr class="{{if isDirectPluginCrash .PluginInvolvement}}red accent-1{{else if isIndirectPluginCrash .PluginInvolvement}}orange lighten-3{{end}}">
+                <tr class="{{if isDirectPluginCrash .PluginInvolvement}}red lighten-4{{else if isIndirectPluginCrash .PluginInvolvement}}orange lighten-4{{end}}">
                     <td class="link-table-cell" style="max-width:0"><a class="truncate" href="/view/{{.ID}}">{{.Version}}</a></td>
                     <td class="link-table-cell" style="max-width:0"><a class="truncate" href="/view/{{.ID}}">{{if ne .Plugin ""}}{{.Plugin}}{{else}}N/A{{end}}</a></td>
                     <td class="link-table-cell" style="max-width:0"><a class="truncate" href="/view/{{.ID}}">{{.Message}}</a></td>
