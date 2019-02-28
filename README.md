@@ -6,16 +6,15 @@ Web-based searchable archive for PocketMine-MP crash reports. https://crash.pmmp
 CA is primarily used on Linux.
 
 ### Prerequisites
-- Go 1.10+
+- Go 1.11+
 - Docker
 
 ### Installing
 Run the following:
 ```sh
-mkdir ca-pmmp && cd ca-pmmp
-export GOPATH=$(pwd)
-go get github.com/pmmp/CrashArchive
-cd src/github.com/pmmp/CrashArchive
+git clone https://github.com/pmmp/CrashArchive.git
+cd CrashArchive
+GO111MODULE=auto go get
 ```
 Run the following to generate configuration files:
 ```sh
