@@ -20,6 +20,23 @@ const (
 	currentFormatVersion = 2
 )
 
+type errorCleanPattern struct {
+	pattern     *regexp.Regexp
+	replacement string
+}
+
+var errorCleanPatterns []errorCleanPattern = nil
+
+func PrepareErrorCleanPatterns(patterns map[string]string) {
+	for pattern, replacement := range patterns {
+		var compiled = regexp.MustCompile(pattern)
+		errorCleanPatterns = append(errorCleanPatterns, errorCleanPattern{
+			pattern:     compiled,
+			replacement: replacement,
+		})
+	}
+}
+
 // ParseDate parses  the unix date to time.Time
 func (r *CrashReport) parseDate() {
 	if r.Data.Time == 0 {
@@ -60,6 +77,15 @@ func (r *CrashReport) classifyMessage() {
 		index1 := strings.Index(r.Error.Message, ", called in")
 		if index1 != -1 {
 			r.Error.Message = r.Error.Message[0:index1]
+		}
+	}
+
+	if errorCleanPatterns != nil {
+		for _, scrub := range errorCleanPatterns {
+			r.Error.Message = scrub.pattern.ReplaceAllString(
+				r.Error.Message,
+				scrub.replacement,
+			)
 		}
 	}
 }

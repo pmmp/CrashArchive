@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/pmmp/CrashArchive/app"
+	"github.com/pmmp/CrashArchive/app/crashreport"
 	"github.com/pmmp/CrashArchive/app/database"
 	"github.com/pmmp/CrashArchive/app/router"
 	"github.com/pmmp/CrashArchive/app/template"
@@ -27,6 +28,10 @@ func main() {
 	if err != nil {
 		log.Printf("unable to load config: %v", err)
 		os.Exit(1)
+	}
+
+	if config.ErrorCleanPatterns != nil {
+		crashreport.PrepareErrorCleanPatterns(config.ErrorCleanPatterns)
 	}
 
 	if err := template.Preload(config.Template); err != nil {

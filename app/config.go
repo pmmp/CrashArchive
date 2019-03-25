@@ -21,6 +21,8 @@ type Config struct {
 	IpBanlist          []string
 	IpBanlistMap       map[string]string
 
+	ErrorCleanPatterns map[string]string
+
 	//old fields, for backwards compatibility
 	SlackURL           string
 }

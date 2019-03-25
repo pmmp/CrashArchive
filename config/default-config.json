@@ -19,5 +19,9 @@
         "TeaSpoon",
         "AllAPILoader"
     ],
-    "IpBanlist":[]
+    "IpBanlist":[],
+    "ErrorCleanPatterns":{
+        "^(file_put_contents\\().+(\\): failed to open stream: .+)$": "$1$2",
+        "^(touch\\(\\): Unable to create file ).+( because .+)$": "$1$2"
+    }
 }
