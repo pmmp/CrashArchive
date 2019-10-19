@@ -1,13 +1,11 @@
 all: run
 
 build:
-	go build -o ./bin/ca-pmmp cmd/crasharchive.go
+	go build -o ./bin/crasharchive ./cmd/crasharchive.go
+	go build -o ./bin/crasharchive-adduser ./cmd/crasharchive-adduser.go
 
 run: build
-	./bin/ca-pmmp
-
-build/linux:
-	GOOS=linux go build -o ./bin/ca-pmmp-linux cmd/crasharchive.go
+	./bin/crasharchive
 
 cli/mysql:
 	docker-compose exec db mysql -p -D crash_archive

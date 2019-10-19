@@ -10,7 +10,7 @@ ca:
     ports:
         - "8080:80"
     volumes:
-        - ./bin/ca-pmmp-linux:/app/ca-pmmp-linux
+        - ./bin:/app
         - ./templates:/app/templates
         - ./config:/app/config
         - ./volumes/reports:/app/reports
