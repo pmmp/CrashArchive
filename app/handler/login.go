@@ -50,6 +50,7 @@ func LoginPost(db *database.DB) http.HandlerFunc {
 		return
 	}
 	http.SetCookie(w, cookie)
+	w.Header().Set("Cache-Control", "no-store")
 	http.Redirect(w, r, "/", http.StatusMovedPermanently)
 }
 }
@@ -57,5 +58,6 @@ func LoginPost(db *database.DB) http.HandlerFunc {
 func LogoutGet(w http.ResponseWriter, r *http.Request) {
 	log.Printf("logging out user on %s", r.RemoteAddr)
 	http.SetCookie(w, user.DeleteCookie())
+	w.Header().Set("Cache-Control", "no-store")
 	http.Redirect(w, r, "/", http.StatusMovedPermanently)
 }
