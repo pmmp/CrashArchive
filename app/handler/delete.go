@@ -28,6 +28,10 @@ func DeleteGet(db *database.DB) http.HandlerFunc {
 
 		db.Exec("DELETE FROM crash_reports WHERE id = ?", reportID)
 		log.Printf("user %s deleted crash report %d", userInfo.Name, reportID)
-		http.Redirect(w, r, "/list", http.StatusMovedPermanently)
+		redirectUrl := r.URL.Query().Get("redirect")
+		if redirectUrl == "" {
+			redirectUrl = "/list"
+		}
+		http.Redirect(w, r, redirectUrl, http.StatusMovedPermanently)
 	}
 }
