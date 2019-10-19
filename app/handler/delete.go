@@ -17,12 +17,12 @@ func DeleteGet(db *database.DB) http.HandlerFunc {
 		userInfo := user.GetUserInfo(r)
 		if(!userInfo.HasDeletePerm()){
 			log.Printf("access denied to %s (%s) for endpoint %s", userInfo.Name, r.RemoteAddr, r.RequestURI)
-			template.ErrorTemplate(w, "You don't have permission to do that", http.StatusUnauthorized)
+			template.ErrorTemplate(w, r, "You don't have permission to do that", http.StatusUnauthorized)
 			return
 		}
 		reportID, err := strconv.Atoi(chi.URLParam(r, "reportID"))
 		if err != nil {
-			template.ErrorTemplate(w, "Please specify a report", http.StatusNotFound)
+			template.ErrorTemplate(w, r, "Please specify a report", http.StatusNotFound)
 			return
 		}
 

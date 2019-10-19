@@ -17,7 +17,7 @@ func ViewIDGet(db *database.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		reportID, err := strconv.Atoi(chi.URLParam(r, "reportID"))
 		if err != nil {
-			template.ErrorTemplate(w, "Please specify a report", http.StatusNotFound)
+			template.ErrorTemplate(w, r, "Please specify a report", http.StatusNotFound)
 			return
 		}
 
@@ -25,14 +25,14 @@ func ViewIDGet(db *database.DB) http.HandlerFunc {
 		err = db.Get(&reporterName, "SELECT reporterName FROM crash_reports WHERE id = ?", reportID)
 		if err != nil {
 			log.Printf("can't find report %d in database: %v", reportID, err)
-			template.ErrorTemplate(w, "Report not found", http.StatusNotFound)
+			template.ErrorTemplate(w, r, "Report not found", http.StatusNotFound)
 			return
 		}
 
 		report, err := db.FetchReport(int64(reportID))
 		if err != nil {
 			log.Printf("error fetching report: %v", err)
-			template.ErrorTemplate(w, "Report not found", http.StatusNotFound)
+			template.ErrorTemplate(w, r, "Report not found", http.StatusNotFound)
 			return
 		}
 
@@ -43,7 +43,7 @@ func ViewIDGet(db *database.DB) http.HandlerFunc {
 		v["ReportID"] = reportID
 		v["HasDeletePerm"] = user.GetUserInfo(r).HasDeletePerm()
 
-		template.ExecuteTemplate(w, "view", v)
+		template.ExecuteTemplateParams(w, r, "view", v)
 	}
 }
 

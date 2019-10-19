@@ -12,14 +12,14 @@ import (
 )
 
 func SearchGet(w http.ResponseWriter, r *http.Request) {
-	template.ExecuteTemplate(w, "search", nil)
+	template.ExecuteTemplate(w, r, "search")
 }
 
 func SearchIDGet(w http.ResponseWriter, r *http.Request) {
 	reportID, err := strconv.Atoi(r.URL.Query().Get("id"))
 	if err != nil {
 		log.Println(err)
-		template.ErrorTemplate(w, "", http.StatusBadRequest)
+		template.ErrorTemplate(w, r, "", http.StatusBadRequest)
 		return
 	}
 	http.Redirect(w, r, fmt.Sprintf("/view/%d", reportID), http.StatusMovedPermanently)
@@ -32,7 +32,7 @@ func SearchReportGet(db *database.DB) http.HandlerFunc {
 		reportID, err := strconv.Atoi(r.URL.Query().Get("id"))
 		if err != nil {
 			log.Println(err)
-			template.ErrorTemplate(w, "", http.StatusBadRequest)
+			template.ErrorTemplate(w, r, "", http.StatusBadRequest)
 			return
 		}
 
@@ -40,7 +40,7 @@ func SearchReportGet(db *database.DB) http.HandlerFunc {
 		err = db.Get(&report, query, reportID)
 		if err != nil {
 			log.Println(err)
-			template.ErrorTemplate(w, "Report not found", http.StatusNotFound)
+			template.ErrorTemplate(w, r, "Report not found", http.StatusNotFound)
 			return
 		}
 

@@ -18,14 +18,14 @@ import (
 )
 
 func SubmitGet(w http.ResponseWriter, r *http.Request) {
-	template.ExecuteTemplate(w, "submit", nil)
+	template.ExecuteTemplate(w, r, "submit")
 }
 
 func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if _, banned := config.IpBanlistMap[r.RemoteAddr]; banned {
 			log.Printf("rejected submission from banned IP: %s\n", r.RemoteAddr);
-			sendError(w, "", http.StatusTeapot, true)
+			sendError(w, r, "", http.StatusTeapot, true)
 			return
 		}
 		if r.FormValue("report") != "yes" {
@@ -54,7 +54,7 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.H
 				}
 
 				log.Printf("got invalid crash report from: %s (%v)", r.RemoteAddr, err)
-				sendError(w, "This crash report is not valid", http.StatusUnprocessableEntity, isAPI)
+				sendError(w, r, "This crash report is not valid", http.StatusUnprocessableEntity, isAPI)
 			}
 		}()
 
@@ -66,13 +66,13 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.H
 
 		if report.Data.General.Name != "PocketMine-MP" {
 			log.Printf("spoon detected from: %s\n", r.RemoteAddr)
-			sendError(w, "", http.StatusTeapot, isAPI)
+			sendError(w, r, "", http.StatusTeapot, isAPI)
 			return
 		}
 
 		if report.Data.General.GIT == strings.Repeat("00", 20) || strings.HasSuffix(report.Data.General.GIT, "-dirty") {
 			log.Printf("invalid git hash %s in report from: %s\n", report.Data.General.GIT, r.RemoteAddr)
-			sendError(w, "", http.StatusTeapot, isAPI)
+			sendError(w, r, "", http.StatusTeapot, isAPI)
 			return
 		}
 
@@ -81,7 +81,7 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.H
 			for v, _ := range pluginsList {
 				if _, blacklisted := config.PluginBlacklistMap[v]; blacklisted {
 					log.Printf("blacklisted plugin \"%s\" in report from: %s\n", v, r.RemoteAddr)
-					sendError(w, "", http.StatusTeapot, isAPI)
+					sendError(w, r, "", http.StatusTeapot, isAPI)
 					return
 				}
 			}
@@ -104,7 +104,7 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.H
 		id, err := db.InsertReport(report, name, email, jsonBytes)
 		if err != nil {
 			log.Printf("failed to insert report into database: %v", err)
-			sendError(w, "", http.StatusInternalServerError, isAPI)
+			sendError(w, r, "", http.StatusInternalServerError, isAPI)
 			return
 		}
 
@@ -131,7 +131,7 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.H
 	}
 }
 
-func sendError(w http.ResponseWriter, message string, status int, isAPI bool) {
+func sendError(w http.ResponseWriter, r *http.Request, message string, status int, isAPI bool) {
 	if isAPI {
 		w.WriteHeader(status)
 		if message == "" {
@@ -141,7 +141,7 @@ func sendError(w http.ResponseWriter, message string, status int, isAPI bool) {
 			"error": message,
 		})
 	} else {
-		template.ErrorTemplate(w, message, status)
+		template.ErrorTemplate(w, r, message, status)
 	}
 }
 

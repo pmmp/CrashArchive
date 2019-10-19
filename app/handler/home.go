@@ -7,5 +7,5 @@ import (
 )
 
 func HomeGet(w http.ResponseWriter, r *http.Request) {
-	template.ExecuteTemplate(w, "home", nil)
+	template.ExecuteTemplate(w, r, "home")
 }

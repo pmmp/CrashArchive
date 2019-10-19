@@ -7,6 +7,11 @@
                 <li><a href="/search"><i class="material-icons">search</i></a></li>
                 <li><a href="/list"><i class="material-icons">list</i></a></li>
                 <li><a href="/submit"><i class="material-icons">add</i></a></li>
+                {{if eq .ActiveUserName "anonymous"}}
+                <li><a href="/login"><i class="material-icons">supervisor_account</i></a></li>
+                {{else}}
+                <li><a href="/logout"><i class="material-icons">exit_to_app</i></a></li>
+                {{end}}
             </ul>
         </div>
         <a href="/" data-target="mobile-menu" class="sidenav-trigger"><i class="material-icons">menu</i></a>
@@ -15,6 +20,11 @@
             <li><a href="/search">Search</a></li>
             <li><a href="/list">List</a></li>
             <li><a href="/submit">Submit</a></li>
+            {{if eq .ActiveUserName "anonymous"}}
+            <li><a href="/login">Login</a></li>
+            {{else}}
+            <li><a href="/logout">Logout "{{.ActiveUserName}}"</a></li>
+            {{end}}
         </ul>
     </div>
 </nav>

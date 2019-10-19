@@ -20,7 +20,7 @@ func ListGet(db *database.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		filter, filterParams, err := buildSearchQuery(r.URL.Query())
 		if err != nil {
-			template.ErrorTemplate(w, "", http.StatusBadRequest)
+			template.ErrorTemplate(w, r, "", http.StatusBadRequest)
 			return
 		}
 		log.Printf("search generated query: %s\n", filter)
@@ -130,7 +130,7 @@ func ListFilteredReports(w http.ResponseWriter, r *http.Request, db *database.DB
 	if err != nil {
 		log.Println(err)
 		log.Println(queryCount)
-		template.ErrorTemplate(w, "", http.StatusInternalServerError)
+		template.ErrorTemplate(w, r, "", http.StatusInternalServerError)
 		return
 	}
 
@@ -141,7 +141,7 @@ func ListFilteredReports(w http.ResponseWriter, r *http.Request, db *database.DB
 	if pageParam != "" {
 		pageId, err = strconv.Atoi(pageParam)
 		if err != nil || pageId <= 0 || (pageId-1)*pageSize > total {
-			template.ErrorTemplate(w, "", http.StatusNotFound)
+			template.ErrorTemplate(w, r, "", http.StatusNotFound)
 			return
 		}
 	} else {
@@ -156,9 +156,9 @@ func ListFilteredReports(w http.ResponseWriter, r *http.Request, db *database.DB
 	if err != nil {
 		log.Println(err)
 		log.Println(querySelect)
-		template.ErrorTemplate(w, "", http.StatusInternalServerError)
+		template.ErrorTemplate(w, r, "", http.StatusInternalServerError)
 		return
 	}
 
-	template.ExecuteListTemplate(w, reports, r.URL.String(), pageId, rangeStart, total)
+	template.ExecuteListTemplate(w, r, reports, r.URL.String(), pageId, rangeStart, total)
 }

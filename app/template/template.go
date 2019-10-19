@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/pmmp/CrashArchive/app/crashreport"
+	"github.com/pmmp/CrashArchive/app/user"
 )
 
 type Config struct {
@@ -43,22 +44,34 @@ func Preload(cfg *Config) error {
 	return nil
 }
 
-func ExecuteTemplate(w http.ResponseWriter, name string, data interface{}) error {
+func ExecuteTemplate(w http.ResponseWriter, r *http.Request, name string) error {
+	return ExecuteTemplateParams(w, r, name, make(map[string]interface{}))
+}
+
+func addContextTemplateParams(data map[string]interface{}, r *http.Request) map[string]interface{} {
+	data["ActiveUserName"] = user.GetUserInfo(r).Name
+	return data
+}
+
+func ExecuteTemplateParams(w http.ResponseWriter, r *http.Request, name string, data map[string]interface{}) error {
+	addContextTemplateParams(data, r)
 	if tmpl, ok := t[name]; ok {
 		return tmpl.ExecuteTemplate(w, "base.html", data)
 	}
-	return ErrorTemplate(w, "", http.StatusInternalServerError)
+	return ErrorTemplate(w, r, "", http.StatusInternalServerError)
 }
 
-func ErrorTemplate(w http.ResponseWriter, message string, status int) error {
+func ErrorTemplate(w http.ResponseWriter, r *http.Request, message string, status int) error {
 	w.WriteHeader(status)
 	if message == "" {
 		message = http.StatusText(status)
 	}
-	return t["error"].ExecuteTemplate(w, "base.html", struct{ Message string }{message})
+	return t["error"].ExecuteTemplate(w, "base.html", addContextTemplateParams(map[string]interface{}{
+		"Message": message,
+	}, r))
 }
 
-func ExecuteListTemplate(w http.ResponseWriter, reports []crashreport.Report, url string, id int, start int, total int) {
+func ExecuteListTemplate(w http.ResponseWriter, r *http.Request, reports []crashreport.Report, url string, id int, start int, total int) {
 	cnt := len(reports)
 
 	data := map[string]interface{}{
@@ -83,5 +96,5 @@ func ExecuteListTemplate(w http.ResponseWriter, reports []crashreport.Report, ur
 	if start+cnt < total {
 		data["NextPage"] = id + 1
 	}
-	ExecuteTemplate(w, "list", data)
+	ExecuteTemplateParams(w, r, "list", data)
 }

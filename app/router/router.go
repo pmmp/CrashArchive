@@ -33,7 +33,7 @@ func New(db *database.DB, wh *webhook.Webhook, config *app.Config) *chi.Mux {
 		r.Use(user.CheckLoginCookieMiddleware)
 
 		r.NotFound(func(w http.ResponseWriter, r *http.Request) {
-			template.ErrorTemplate(w, "", http.StatusNotFound)
+			template.ErrorTemplate(w, r, "", http.StatusNotFound)
 		})
 
 		r.Get("/", handler.HomeGet)

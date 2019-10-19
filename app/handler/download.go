@@ -17,19 +17,19 @@ func DownloadGet(db *database.DB) http.HandlerFunc {
 		reportID, err := strconv.Atoi(chi.URLParam(r, "reportID"))
 		if err != nil {
 			log.Println(err)
-			template.ErrorTemplate(w, "", http.StatusBadRequest)
+			template.ErrorTemplate(w, r, "", http.StatusBadRequest)
 			return
 		}
 
 		reportJsonBlob, err := db.FetchRawReport(int64(reportID))
 		if err != nil {
-			template.ErrorTemplate(w, "Report not found", http.StatusNotFound)
+			template.ErrorTemplate(w, r, "Report not found", http.StatusNotFound)
 			return
 		}
 		reportBytes, err := crashreport.JsonToCrashLog(reportJsonBlob)
 		if err != nil {
 			log.Printf("failed to encode crash report: %v", err)
-			template.ErrorTemplate(w, "", http.StatusInternalServerError)
+			template.ErrorTemplate(w, r, "", http.StatusInternalServerError)
 		}
 
 		w.Header().Set("Content-Type", "application/octet-stream")
