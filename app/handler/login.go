@@ -35,6 +35,7 @@ func LoginPost(db *database.DB) http.HandlerFunc {
 	}
 	username := r.FormValue("username")
 	password := r.FormValue("password")
+	redirectUrl := r.FormValue("redirect_url")
 
 	userInfo, err := db.AuthenticateUser(username, []byte(password))
 	//TODO: check the type of error (unknown user, wrong password, etc)
@@ -51,7 +52,7 @@ func LoginPost(db *database.DB) http.HandlerFunc {
 	}
 	http.SetCookie(w, cookie)
 	w.Header().Set("Cache-Control", "no-store")
-	http.Redirect(w, r, "/", http.StatusMovedPermanently)
+	http.Redirect(w, r, redirectUrl, http.StatusMovedPermanently)
 }
 }
 
@@ -59,5 +60,5 @@ func LogoutGet(w http.ResponseWriter, r *http.Request) {
 	log.Printf("logging out user on %s", r.RemoteAddr)
 	http.SetCookie(w, user.DeleteCookie())
 	w.Header().Set("Cache-Control", "no-store")
-	http.Redirect(w, r, "/", http.StatusMovedPermanently)
+	http.Redirect(w, r, r.Referer(), http.StatusMovedPermanently)
 }
