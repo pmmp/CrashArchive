@@ -1,4 +1,10 @@
-<nav class="light-blue lighten-1" role="navigation">
+<nav
+{{if eq .ActiveUserName "anonymous"}}
+class="light-blue lighten-1"
+{{else}}
+class="red"
+{{end}}
+role="navigation">
     <div class="nav-wrapper" style="height: inherit">
         <div class="container">
             <a href="/" class="brand-logo" style="padding-left: 5px; padding-right: 5px">Crash Archive</a>
