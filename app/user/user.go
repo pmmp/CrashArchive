@@ -18,3 +18,7 @@ func DefaultUserInfo() UserInfo {
 		Permission: View,
 	}
 }
+
+func (u UserInfo) HasDeletePerm() bool {
+	return u.Permission == Admin
+}

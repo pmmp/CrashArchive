@@ -10,6 +10,7 @@ import (
 
 	"github.com/pmmp/CrashArchive/app/database"
 	"github.com/pmmp/CrashArchive/app/template"
+	"github.com/pmmp/CrashArchive/app/user"
 )
 
 func ViewIDGet(db *database.DB) http.HandlerFunc {
@@ -40,6 +41,7 @@ func ViewIDGet(db *database.DB) http.HandlerFunc {
 		v["Name"] = clean(reporterName)
 		v["PocketMineVersion"] = report.Version.Get(true)
 		v["ReportID"] = reportID
+		v["HasDeletePerm"] = user.GetUserInfo(r).HasDeletePerm()
 
 		template.ExecuteTemplate(w, "view", v)
 	}

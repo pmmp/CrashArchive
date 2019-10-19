@@ -1,6 +1,13 @@
 {{define "title"}}#{{ .ReportID}}: {{.Report.Error.Message}}{{end}}
 {{define "head"}}{{end}}
 {{define "content"}}
+<script type="text/javascript">
+	function deleteHandler() {
+		if (confirm("Are you sure you want to delete this crashdump?")) {
+			window.location.href = "/delete/{{.ReportID}}"
+		}
+	}
+</script>
 <div class="fixed-action-btn fab-text-menu">
     <a class="btn-floating btn-large red">
         <i class="large material-icons">menu</i>
@@ -8,6 +15,9 @@
     <ul>
         <li><a href="/search/report?id={{.ReportID}}" class="btn-floating fab-text-option">Find duplicates</a></li>
         <li><a href="/download/{{.ReportID}}" class="btn-floating fab-text-option">Download</a></li>
+        {{if .HasDeletePerm}}
+        <li><a onclick="deleteHandler()" class="btn-floating fab-text-option">Delete</a></li>
+        {{end}}
     </ul>
 </div>
 <div class="container">
