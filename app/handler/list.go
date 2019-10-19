@@ -28,8 +28,6 @@ func ListGet(db *database.DB) http.HandlerFunc {
 	}
 }
 
-const pageSize = 50
-
 func parseUintParam(v url.Values, paramName string, defaultValue uint64) (uint64, error) {
 	param := v.Get(paramName)
 	if param != "" {
@@ -134,18 +132,24 @@ func ListFilteredReports(w http.ResponseWriter, r *http.Request, db *database.DB
 		return
 	}
 
-	var pageId int
+	pageId := 1
+	pageSize := 50
 
 	params := r.URL.Query()
-	pageParam := params.Get("page")
-	if pageParam != "" {
+	if pageSizeParam := params.Get("pagesize"); pageSizeParam != "" {
+		pageSize, err = strconv.Atoi(pageSizeParam)
+		if err != nil || pageSize <= 0 {
+			template.ErrorTemplate(w, r, "Illegal page size parameter", http.StatusBadRequest)
+			return
+		}
+	}
+
+	if pageParam := params.Get("page"); pageParam != "" {
 		pageId, err = strconv.Atoi(pageParam)
 		if err != nil || pageId <= 0 || (pageId-1)*pageSize > total {
 			template.ErrorTemplate(w, r, "", http.StatusNotFound)
 			return
 		}
-	} else {
-		pageId = 1
 	}
 
 	rangeStart := (pageId - 1) * pageSize
