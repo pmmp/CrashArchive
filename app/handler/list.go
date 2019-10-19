@@ -138,7 +138,7 @@ func ListFilteredReports(w http.ResponseWriter, r *http.Request, db *database.DB
 	params := r.URL.Query()
 	if pageSizeParam := params.Get("pagesize"); pageSizeParam != "" {
 		pageSize, err = strconv.Atoi(pageSizeParam)
-		if err != nil || pageSize <= 0 {
+		if err != nil || pageSize <= 0 || pageSize > 1000 {
 			template.ErrorTemplate(w, r, "Illegal page size parameter", http.StatusBadRequest)
 			return
 		}
