@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/pmmp/CrashArchive/app/crashreport"
+	"github.com/pmmp/CrashArchive/app/user"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -131,4 +132,37 @@ func (db *DB) CheckDuplicate(report *crashreport.CrashReport) (bool, error) {
 	}
 
 	return dupes != 0, nil
+}
+
+func (db *DB) AuthenticateUser(username string, password []byte) (user.UserInfo, error) {
+	var result struct {
+		PasswordHash []byte `db:"passwordHash"`
+		Permission int `db:"permission"`
+	}
+	err := db.Get(&result, "SELECT passwordHash, permission FROM users WHERE username = ? LIMIT 1", username);
+	if err != nil {
+		return user.DefaultUserInfo(), fmt.Errorf("database error: %v", err)
+	}
+	err = user.VerifyPassword(result.PasswordHash, password)
+	if err != nil {
+		return user.DefaultUserInfo(), fmt.Errorf("failed to verify password: %v", err)
+	}
+	return user.UserInfo{
+		Name: username,
+		Permission: user.UserPermission(result.Permission),
+	}, nil
+}
+
+func (db *DB) AddUser(username string, password []byte, permission user.UserPermission) error {
+	passwordHash, err := user.HashPassword(password)
+	if err != nil {
+		return fmt.Errorf("failed to hash password: %v", err)
+	}
+	_, err2 := db.Query(
+		"INSERT INTO users (username, passwordHash, permission) VALUES (?, ?, ?)",
+		username,
+		passwordHash,
+		int(permission),
+	)
+	return err2
 }

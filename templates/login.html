@@ -1,0 +1,32 @@
+{{define "title"}}PocketMine Crash Archive{{end}}
+{{define "head"}}{{end}}
+{{define "content"}}
+<div class="container">
+    <div class="row">
+        <div class="col s10 offset-s1">
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title">Administrator Login</span>
+                    <form action="/login" method="post" enctype="application/x-www-form-urlencoded" role="form">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input type="text" name="username" class="validate" id="username">
+                                <label for="username">Username</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input type="password" name="password" class="validate" id="password">
+                                <label for="password">Password</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-lg btn-primary btn-block" style="margin-top:10px; margin-left: auto; margin-right: auto">Login<i class="material-icons left">send</i></button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}
+{{define "foot"}}{{end}}

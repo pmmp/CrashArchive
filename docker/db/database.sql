@@ -32,3 +32,10 @@ CREATE TABLE crash_report_blobs (
             REFERENCES crash_reports(id)
             ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
+CREATE TABLE users (
+	username VARCHAR(32),
+	passwordHash BINARY(255),
+	permission INT NOT NULL,
+	PRIMARY KEY (username)
+);

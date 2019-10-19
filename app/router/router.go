@@ -13,6 +13,7 @@ import (
 	"github.com/pmmp/CrashArchive/app/handler"
 	"github.com/pmmp/CrashArchive/app/template"
 	"github.com/pmmp/CrashArchive/app/database"
+	"github.com/pmmp/CrashArchive/app/user"
 	"github.com/pmmp/CrashArchive/app/webhook"
 )
 
@@ -29,12 +30,16 @@ func New(db *database.DB, wh *webhook.Webhook, config *app.Config) *chi.Mux {
 	r.Route("/", func(r chi.Router) {
 		r.Use(RealIP)
 		r.Use(middleware.Logger)
+		r.Use(user.CheckLoginCookieMiddleware)
 
 		r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 			template.ErrorTemplate(w, "", http.StatusNotFound)
 		})
 
 		r.Get("/", handler.HomeGet)
+		r.Get("/login", handler.LoginGet)
+		r.Post("/login", handler.LoginPost(db))
+		r.Get("/logout", handler.LogoutGet)
 		r.Get("/list", handler.ListGet(db))
 		r.Get("/view/{reportID}", handler.ViewIDGet(db))
 		r.Get("/download/{reportID}", handler.DownloadGet(db))
