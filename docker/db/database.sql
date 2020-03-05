@@ -10,7 +10,7 @@ CREATE TABLE crash_reports (
       file VARCHAR(255),
       message VARCHAR(255),
       line INT NOT NULL,
-      type VARCHAR(32),
+      type VARCHAR(255),
       os VARCHAR(16),
       submitDate INT,
       reportDate INT,
