@@ -35,18 +35,18 @@ type ReportData struct {
 	Plugin            string
 	PluginInvolvement string `json:"plugin_involvement"`
 	General struct {
-		Name        string
-		BaseVersion string `json:"base_version"`
-		Build       int
-		IsDev       bool `json:"is_dev"`
-		Protocol    int
-		GIT         string
-		Raklib      string
-		Uname       string
-		PHP         string
-		Zend        string
-		PHPOS       string `json:"php_os"`
-		OS          string
+		Name              string
+		BaseVersion       string `json:"base_version"`
+		Build             int
+		IsDev             bool `json:"is_dev"`
+		Protocol          int
+		GIT               string
+		Uname             string
+		PHP               string
+		Zend              string
+		PHPOS             string `json:"php_os"`
+		OS                string
+		ComposerLibraries map[string]string `json:"composer_libraries"`
 	}
 	Error            ReportError
 	Code             map[string]string

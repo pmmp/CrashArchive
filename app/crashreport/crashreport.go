@@ -17,7 +17,7 @@ import (
 const (
 	reportBegin = "===BEGIN CRASH DUMP==="
 	reportEnd   = "===END CRASH DUMP==="
-	currentFormatVersion = 2
+	currentFormatVersion = 3
 )
 
 type errorCleanPattern struct {
