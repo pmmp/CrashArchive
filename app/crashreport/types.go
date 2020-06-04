@@ -1,6 +1,7 @@
 package crashreport
 
 import (
+	"encoding/json"
 	"time"
 )
 
@@ -14,6 +15,27 @@ var PluginInvolvementStrings = map[string]string{
 	PINone:     "None",
 	PIIndirect: "Indirect",
 	PIDirect:   "Direct",
+}
+
+type MapStringStringAllowsEmptyArray map[string]string
+
+func (this *MapStringStringAllowsEmptyArray) UnmarshalJSON(data []byte) error {
+	var decoded interface{}
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		return err
+	}
+
+	arr, ok := decoded.([]interface{})
+	if ok && len(arr) == 0 {
+		return nil //empty arrays should be treated as empty maps
+	}
+
+	casted := decoded.(map[string]interface{})
+	*this = make(MapStringStringAllowsEmptyArray)
+	for k, v := range casted {
+		(*this)[k] = v.(string)
+	}
+	return nil
 }
 
 // CrashReport ...
@@ -49,7 +71,7 @@ type ReportData struct {
 		ComposerLibraries map[string]string `json:"composer_libraries"`
 	}
 	Error            ReportError
-	Code             map[string]string
+	Code             MapStringStringAllowsEmptyArray
 	Plugins          interface{} `json:"plugins,omitempty"`
 	PocketmineYML    string      `json:"pocketmine.yml"`
 	ServerProperties string      `json:"server.properties"`
