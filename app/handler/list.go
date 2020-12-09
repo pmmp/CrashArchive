@@ -77,6 +77,12 @@ func buildSearchQuery(params url.Values) (string, []interface{}, error) {
 		filterParams = append(filterParams, "%" + message + "%")
 	}
 
+	errortype := params.Get("errortype")
+	if errortype != "" {
+		filters = append(filters, "type LIKE ?")
+		filterParams = append(filterParams, "%" + errortype + "%")
+	}
+
 	cause := params.Get("cause")
 	if cause == "core" {
 		filters = append(filters, fmt.Sprintf("pluginInvolvement = \"%s\"", crashreport.PINone))
