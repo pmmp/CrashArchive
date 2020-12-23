@@ -24,6 +24,7 @@ var funcMap = template.FuncMap{
 	"pluginInvolvementToString": pluginInvolvementToString,
 	"isDirectPluginCrash": isDirectPluginCrash,
 	"isIndirectPluginCrash": isIndirectPluginCrash,
+	"renderDuration": renderDuration,
 }
 
 func shorthash(s string) string {
@@ -106,4 +107,13 @@ func isDirectPluginCrash (ctype string) bool {
 
 func isIndirectPluginCrash (ctype string) bool {
 	return ctype == crashreport.PIIndirect
+}
+
+func renderDuration(duration float64) string {
+	durationInt := int64(duration)
+	days := durationInt / (3600 * 24)
+	hours := (durationInt % (3600 * 24)) / 3600
+	minutes := (durationInt % 3600) / 60
+	seconds := durationInt % 60
+	return fmt.Sprintf("%d days %d hours %d minutes %d seconds", days, hours, minutes, seconds)
 }

@@ -47,6 +47,10 @@
                                 <th>Report date:</th>
                                 <td>{{.Report.ReportDate}}</td>
                             </tr>
+                            <tr>
+                                <th>Server uptime:</th>
+                                <td>{{renderDuration .Report.Data.Uptime}}</td>
+                            </tr>
                             </tbody>
                         </table>
                     </div>

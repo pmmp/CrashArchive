@@ -17,7 +17,7 @@ import (
 const (
 	reportBegin = "===BEGIN CRASH DUMP==="
 	reportEnd   = "===END CRASH DUMP==="
-	currentFormatVersion = 3
+	currentFormatVersion = 4
 )
 
 type errorCleanPattern struct {
@@ -40,9 +40,9 @@ func PrepareErrorCleanPatterns(patterns map[string]string) {
 // ParseDate parses  the unix date to time.Time
 func (r *CrashReport) parseDate() {
 	if r.Data.Time == 0 {
-		r.Data.Time = time.Now().Unix()
+		r.Data.Time = float64(time.Now().Unix())
 	}
-	r.ReportDate = time.Unix(r.Data.Time, 0)
+	r.ReportDate = time.Unix(int64(r.Data.Time), 0)
 }
 
 // ParseError ...

@@ -52,7 +52,8 @@ type CrashReport struct {
 
 // ReportData ...
 type ReportData struct {
-	Time              int64
+	Time              float64
+	Uptime            float64
 	FormatVersion     int64 `json:"format_version"`
 	Plugin            string
 	PluginInvolvement string `json:"plugin_involvement"`
