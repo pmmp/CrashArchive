@@ -60,18 +60,18 @@
                         <h3>System Information</h3>
                         <table class="borderless">
                             <tbody>
-                            <tr>
-                                <th>PHP version:</th>
-                                <td>{{.Report.Data.General.PHP}}</td>
-                            </tr>
-                            <tr>
-                                <th>Operating system:</th>
-                                <td>{{.Report.Data.General.OS}}</td>
-                            </tr>
-                            <tr>
-                                <th>System banner:</th>
-                                <td>{{.Report.Data.General.Uname}}</td>
-                            </tr>
+                                <tr>
+                                    <th>PHP version:</th>
+                                    <td>{{.Report.Data.General.PHP}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Operating system:</th>
+                                    <td>{{.Report.Data.General.OS}}</td>
+                                </tr>
+                                <tr>
+                                    <th>System banner:</th>
+                                    <td>{{.Report.Data.General.Uname}}</td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -93,22 +93,22 @@
                         {{end}}
                         <table class="borderless">
                             <tbody>
-                            <tr style="word-break: break-all">
-                                <th>Message:</th>
-                                <td>{{.Report.Error.Message}}</td>
-                            </tr>
-                            <tr style="word-break: break-all">
-                                <th>File:</th>
-                                <td>{{.Report.Error.File}}</td>
-                            </tr>
-                            <tr>
-                                <th>Line:</th>
-                                <td>#{{.Report.Error.Line}}</td>
-                            </tr>
-                            <tr>
-                                <th>Error level:</th>
-                                <td>{{.Report.Error.Type}}</td>
-                            </tr>
+                                <tr style="word-break: break-all">
+                                    <th>Message:</th>
+                                    <td>{{.Report.Error.Message}}</td>
+                                </tr>
+                                <tr style="word-break: break-all">
+                                    <th>File:</th>
+                                    <td>{{.Report.Error.File}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Line:</th>
+                                    <td>#{{.Report.Error.Line}}</td>
+                                </tr>
+                                <tr>
+                                    <th>Error level:</th>
+                                    <td>{{.Report.Error.Type}}</td>
+                                </tr>
                             </tbody>
                         </table>
                         <div class="card-panel grey lighten-2">
@@ -130,26 +130,26 @@
                             <div class="collapsible-body collapsible-body-table" style="display: none;">
                                 <table class="striped" style="max-width:100%">
                                     <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Version</th>
-                                        <th>State</th>
-                                        <th>Author(s)</th>
-                                        <th>Website</th>
-                                    </tr>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Version</th>
+                                            <th>State</th>
+                                            <th>Author(s)</th>
+                                            <th>Website</th>
+                                        </tr>
                                     </thead>
                                     <tbody>{{range .Report.Data.Plugins}}
-                                    <tr>
-                                        <td>{{.name}}</td>
-                                        <td>{{.version}}</td>
-                                        <td>{{if .enabled}}Enabled{{else}}Disabled{{end}}</td>
-                                        <td>{{$equipment := .authors}}
-                                        {{ range $index, $element := .authors}}
-                                        {{if $index}},{{end}}
-                                        {{$element}}
-                                        {{end}}</td>
-                                        <td>{{if ne .website ""}}<a href="{{.website}}">Visit</a>{{end}}</td>
-                                    </tr>{{end}}
+                                        <tr>
+                                            <td>{{.name}}</td>
+                                            <td>{{.version}}</td>
+                                            <td>{{if .enabled}}Enabled{{else}}Disabled{{end}}</td>
+                                            <td>{{$equipment := .authors}}
+                                                {{ range $index, $element := .authors}}
+                                                {{if $index}},{{end}}
+                                                {{$element}}
+                                                {{end}}</td>
+                                            <td>{{if ne .website ""}}<a href="{{.website}}">Visit</a>{{end}}</td>
+                                        </tr>{{end}}
                                     </tbody>
                                 </table>
                             </div>
@@ -170,7 +170,7 @@
                                         <th>Name</th>
                                         <th>Value</th>
                                     </tr>
-                                {{split .Report.Data.ServerProperties}}
+                                    {{split .Report.Data.ServerProperties}}
                                 </table>
                             </div>
                         </li>
