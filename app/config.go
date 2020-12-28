@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"log"
+	"regexp"
 
 	"github.com/pmmp/CrashArchive/app/database"
 	"github.com/pmmp/CrashArchive/app/template"
@@ -21,7 +22,10 @@ type Config struct {
 	IpBanlist          []string
 	IpBanlistMap       map[string]string
 
-	ErrorCleanPatterns map[string]string
+	ErrorCleanPatterns     map[string]string
+	ErrorBlacklistPatterns []string
+
+	CompiledErrorBlacklistPatterns []*regexp.Regexp
 
 	//old fields, for backwards compatibility
 	SlackURL           string
@@ -60,6 +64,11 @@ func LoadConfig(configPath string) (*Config, error) {
 		log.Println("`SlackURL` config is deprecated, use `SlackURLs` instead (supports multiple hooks)")
 		config.SlackURLs = make([]string, 0)
 		config.SlackURLs = append(config.SlackURLs, config.SlackURL)
+	}
+
+	for _, patternStr := range config.ErrorBlacklistPatterns {
+		var compiled = regexp.MustCompile(patternStr)
+		config.CompiledErrorBlacklistPatterns = append(config.CompiledErrorBlacklistPatterns, compiled)
 	}
 
 	return &config, nil
