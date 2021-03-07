@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"bytes"
+	"encoding/json"
 	"log"
 	"net/http"
 	"regexp"
@@ -70,8 +72,10 @@ func ViewIDRawGet(db *database.DB) http.HandlerFunc {
 			return
 		}
 
+		var buffer bytes.Buffer
+		json.Indent(&buffer, report, "", "    ")
 		w.Header().Set("content-type", "application/json")
-		_, _ = w.Write(report)
+		_, _ = w.Write(buffer.Bytes())
 	}
 }
 
