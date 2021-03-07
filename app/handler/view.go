@@ -57,14 +57,6 @@ func ViewIDRawGet(db *database.DB) http.HandlerFunc {
 			return
 		}
 
-		var reporterName string
-		err = db.Get(&reporterName, "SELECT reporterName FROM crash_reports WHERE id = ?", reportID)
-		if err != nil {
-			log.Printf("can't find report %d in database: %v", reportID, err)
-			template.ErrorTemplate(w, r, "Report not found", http.StatusNotFound)
-			return
-		}
-
 		report, err := db.FetchRawReport(int64(reportID))
 		if err != nil {
 			log.Printf("error fetching report: %v", err)
