@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"bytes"
+	"encoding/json"
 	"log"
 	"net/http"
 	"regexp"
@@ -44,6 +46,28 @@ func ViewIDGet(db *database.DB) http.HandlerFunc {
 		v["HasDeletePerm"] = user.GetUserInfo(r).HasDeletePerm()
 
 		template.ExecuteTemplateParams(w, r, "view", v)
+	}
+}
+
+func ViewIDRawGet(db *database.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		reportID, err := strconv.Atoi(chi.URLParam(r, "reportID"))
+		if err != nil {
+			template.ErrorTemplate(w, r, "Please specify a report", http.StatusNotFound)
+			return
+		}
+
+		report, err := db.FetchRawReport(int64(reportID))
+		if err != nil {
+			log.Printf("error fetching report: %v", err)
+			template.ErrorTemplate(w, r, "Report not found", http.StatusNotFound)
+			return
+		}
+
+		var buffer bytes.Buffer
+		json.Indent(&buffer, report, "", "    ")
+		w.Header().Set("content-type", "application/json")
+		_, _ = w.Write(buffer.Bytes())
 	}
 }
 
