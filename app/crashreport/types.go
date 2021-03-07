@@ -40,12 +40,12 @@ func (this *MapStringStringAllowsEmptyArray) UnmarshalJSON(data []byte) error {
 
 // CrashReport ...
 type CrashReport struct {
-	Duplicate bool
+	Duplicate    bool
 
 	Data       *ReportData
 	ReportDate time.Time
 
-	Version *VersionString
+	Version    *VersionString
 
 	Error ReportError
 }
@@ -57,7 +57,7 @@ type ReportData struct {
 	FormatVersion     int64 `json:"format_version"`
 	Plugin            string
 	PluginInvolvement string `json:"plugin_involvement"`
-	General           struct {
+	General struct {
 		Name              string
 		BaseVersion       string `json:"base_version"`
 		Build             int
@@ -98,8 +98,8 @@ type Report struct {
 	Line              int
 	Type              string
 	OS                string
-	SubmitDate        int64 `db:"submitDate"`
-	ReportDate        int64 `db:"reportDate"`
+	SubmitDate        int64  `db:"submitDate"`
+	ReportDate        int64  `db:"reportDate"`
 	Duplicate         bool
 	ReporterName      string `db:"reporterName"`
 	ReporterEmail     string `db:"reporterEmail"`
