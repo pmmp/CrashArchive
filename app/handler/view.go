@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 	"regexp"
@@ -64,21 +63,15 @@ func ViewIDRawGet(db *database.DB) http.HandlerFunc {
 			return
 		}
 
-		report, err := db.FetchReport(int64(reportID))
+		report, err := db.FetchRawReport(int64(reportID))
 		if err != nil {
 			log.Printf("error fetching report: %v", err)
 			template.ErrorTemplate(w, r, "Report not found", http.StatusNotFound)
 			return
 		}
 
-		raw, err := json.Marshal(report)
-		if err != nil {
-			log.Printf("error marshalling report: %v", err)
-			template.ErrorTemplate(w, r, "Report not found", http.StatusNotFound)
-		}
-
 		w.Header().Set("content-type", "application/json")
-		_, _ = w.Write(raw)
+		_, _ = w.Write(report)
 	}
 }
 

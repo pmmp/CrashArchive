@@ -40,67 +40,67 @@ func (this *MapStringStringAllowsEmptyArray) UnmarshalJSON(data []byte) error {
 
 // CrashReport ...
 type CrashReport struct {
-	Duplicate bool `json:"duplicate"`
+	Duplicate bool
 
-	Data       *ReportData `json:"data"`
-	ReportDate time.Time   `json:"report_date"`
+	Data       *ReportData
+	ReportDate time.Time
 
-	Version *VersionString `json:"version"`
+	Version *VersionString
 
-	Error ReportError `json:"error"`
+	Error ReportError
 }
 
 // ReportData ...
 type ReportData struct {
-	Time              float64 `json:"time"`
-	Uptime            float64 `json:"uptime"`
-	FormatVersion     int64   `json:"format_version"`
-	Plugin            string  `json:"plugin"`
-	PluginInvolvement string  `json:"plugin_involvement"`
+	Time              float64
+	Uptime            float64
+	FormatVersion     int64 `json:"format_version"`
+	Plugin            string
+	PluginInvolvement string `json:"plugin_involvement"`
 	General           struct {
-		Name              string            `json:"name"`
-		BaseVersion       string            `json:"base_version"`
-		Build             int               `json:"build"`
-		IsDev             bool              `json:"is_dev"`
-		Protocol          int               `json:"protocol"`
-		GIT               string            `json:"git"`
-		Uname             string            `json:"uname"`
-		PHP               string            `json:"php"`
-		Zend              string            `json:"zend"`
-		PHPOS             string            `json:"php_os"`
-		OS                string            `json:"os"`
+		Name              string
+		BaseVersion       string `json:"base_version"`
+		Build             int
+		IsDev             bool `json:"is_dev"`
+		Protocol          int
+		GIT               string
+		Uname             string
+		PHP               string
+		Zend              string
+		PHPOS             string `json:"php_os"`
+		OS                string
 		ComposerLibraries map[string]string `json:"composer_libraries"`
 	}
-	Error            ReportError                     `json:"error"`
-	Code             MapStringStringAllowsEmptyArray `json:"code"`
-	Plugins          interface{}                     `json:"plugins,omitempty"`
-	PocketmineYML    string                          `json:"pocketmine.yml"`
-	ServerProperties string                          `json:"server.properties"`
-	Trace            []string                        `json:"trace"`
+	Error            ReportError
+	Code             MapStringStringAllowsEmptyArray
+	Plugins          interface{} `json:"plugins,omitempty"`
+	PocketmineYML    string      `json:"pocketmine.yml"`
+	ServerProperties string      `json:"server.properties"`
+	Trace            []string
 }
 
 type ReportError struct {
-	Type    string `json:"type"`
-	Message string `json:"message"`
-	Line    int    `json:"line"`
-	File    string `json:"file"`
+	Type    string
+	Message string
+	Line    int
+	File    string
 }
 
 // Report ...
 type Report struct {
-	ID                int    `json:"id" db:"id"`
-	Plugin            string `json:"plugin"`
-	PluginInvolvement string `json:"plugin_involvement" db:"pluginInvolvement"`
-	Version           string `json:"version"`
-	Build             int    `json:"build"`
-	File              string `json:"file"`
-	Message           string `json:"message"`
-	Line              int    `json:"line"`
-	Type              string `json:"type"`
-	OS                string `json:"os"`
-	SubmitDate        int64  `json:"submit_date" db:"submitDate"`
-	ReportDate        int64  `json:"report_date" db:"reportDate"`
-	Duplicate         bool   `json:"duplicate"`
+	ID                int `db:"id"`
+	Plugin            string
+	PluginInvolvement string `db:"pluginInvolvement"`
+	Version           string
+	Build             int
+	File              string
+	Message           string
+	Line              int
+	Type              string
+	OS                string
+	SubmitDate        int64 `db:"submitDate"`
+	ReportDate        int64 `db:"reportDate"`
+	Duplicate         bool
 	ReporterName      string `db:"reporterName"`
 	ReporterEmail     string `db:"reporterEmail"`
 }
