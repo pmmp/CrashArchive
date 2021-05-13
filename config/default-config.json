@@ -1,6 +1,7 @@
 {
     "Domain": "https://crash.pmmp.io",
     "ListenAddress":"0.0.0.0:80",
+    "Public": true,
     "Database":{
         "Username":"root",
         "Password":"password",
@@ -20,6 +21,7 @@
         "AllAPILoader"
     ],
     "IpBanlist":[],
+    "SubmitAllowedIps":[],
     "ErrorCleanPatterns":{
         "^(file_put_contents\\().+(\\): failed to open stream: .+)$": "$1$2",
         "^(touch\\(\\): Unable to create file ).+( because .+)$": "$1$2"

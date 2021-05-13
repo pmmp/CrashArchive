@@ -32,30 +32,47 @@ func New(db *database.DB, wh *webhook.Webhook, config *app.Config) *chi.Mux {
 		r.Use(middleware.Logger)
 		r.Use(user.CheckLoginCookieMiddleware)
 
-		r.NotFound(func(w http.ResponseWriter, r *http.Request) {
-			template.ErrorTemplate(w, r, "", http.StatusNotFound)
-		})
-
-		r.Get("/", handler.HomeGet)
 		r.Get("/login", handler.LoginGet)
 		r.Post("/login", handler.LoginPost(db))
 		r.Get("/logout", handler.LogoutGet)
-		r.Get("/list", handler.ListGet(db))
-		r.Get("/view/{reportID}", handler.ViewIDGet(db))
-		r.Get("/view/{reportID}/raw", handler.ViewIDRawGet(db))
-		r.Get("/download/{reportID}", handler.DownloadGet(db))
-		r.Get("/delete/{reportID}", handler.DeleteGet(db))
 
-		r.Route("/search", func(r chi.Router) {
-			r.Get("/", handler.SearchGet)
-			r.Get("/id", handler.SearchIDGet)
-			r.Get("/report", handler.SearchReportGet(db))
+		r.Group(func(r chi.Router) {
+			if !config.Public {
+				r.Use(MustBeLogged)
+			}
+
+			r.NotFound(func(w http.ResponseWriter, r *http.Request) {
+				template.ErrorTemplate(w, r, "", http.StatusNotFound)
+			})
+
+			r.Get("/", handler.HomeGet)
+			r.Get("/list", handler.ListGet(db))
+			r.Get("/view/{reportID}", handler.ViewIDGet(db))
+			r.Get("/view/{reportID}/raw", handler.ViewIDRawGet(db))
+			r.Get("/download/{reportID}", handler.DownloadGet(db))
+			r.Get("/delete/{reportID}", handler.DeleteGet(db))
+			r.Route("/search", func(r chi.Router) {
+				r.Get("/", handler.SearchGet)
+				r.Get("/id", handler.SearchIDGet)
+				r.Get("/report", handler.SearchReportGet(db))
+			})
 		})
 
 		r.Route("/submit", func(r chi.Router) {
-			r.Get("/", handler.SubmitGet)
-			r.Post("/", handler.SubmitPost(db, wh, config))
-			r.Post("/api", handler.SubmitPost(db, wh, config))
+			r.Group(func(r chi.Router) {
+				if !config.Public {
+					r.Use(MustBeLogged)
+				}
+
+				r.Get("/", handler.SubmitGet)
+			})
+
+			r.Group(func(r chi.Router) {
+				r.Use(SubmitAllowed(config))
+
+				r.Post("/", handler.SubmitPost(db, wh, config))
+				r.Post("/api", handler.SubmitPost(db, wh, config))
+			})
 		})
 	})
 	return r

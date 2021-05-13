@@ -2,8 +2,8 @@ package app
 
 import (
 	"encoding/json"
-	"os"
 	"log"
+	"os"
 	"regexp"
 
 	"github.com/pmmp/CrashArchive/app/database"
@@ -11,16 +11,22 @@ import (
 )
 
 type Config struct {
-	Domain             string
-	ListenAddress      string
-	Database           *database.Config
-	Template           *template.Config
-	SlackURLs          []string
-	SlackHookInterval  uint32
+	Domain            string
+	ListenAddress     string
+	Public            bool
+	Database          *database.Config
+	Template          *template.Config
+	SlackURLs         []string
+	SlackHookInterval uint32
+
 	PluginBlacklist    []string
 	PluginBlacklistMap map[string]string
-	IpBanlist          []string
-	IpBanlistMap       map[string]string
+
+	SubmitAllowedIps    []string
+	SubmitAllowedIpsMap map[string]string
+
+	IpBanlist    []string
+	IpBanlistMap map[string]string
 
 	ErrorCleanPatterns     map[string]string
 	ErrorBlacklistPatterns []string
@@ -28,7 +34,7 @@ type Config struct {
 	CompiledErrorBlacklistPatterns []*regexp.Regexp
 
 	//old fields, for backwards compatibility
-	SlackURL           string
+	SlackURL string
 }
 
 func LoadConfig(configPath string) (*Config, error) {
@@ -59,6 +65,12 @@ func LoadConfig(configPath string) (*Config, error) {
 		config.IpBanlistMap[v] = v
 	}
 	config.IpBanlist = nil
+
+	config.SubmitAllowedIpsMap = make(map[string]string)
+	for _, v := range config.SubmitAllowedIps {
+		config.SubmitAllowedIpsMap[v] = v
+	}
+	config.SubmitAllowedIps = nil
 
 	if config.SlackURLs == nil && config.SlackURL != "" {
 		log.Println("`SlackURL` config is deprecated, use `SlackURLs` instead (supports multiple hooks)")
