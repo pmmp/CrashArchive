@@ -68,7 +68,9 @@ func New(db *database.DB, wh *webhook.Webhook, config *app.Config) *chi.Mux {
 			})
 
 			r.Group(func(r chi.Router) {
-				r.Use(SubmitAllowed(config))
+				if !config.Public {
+					r.Use(SubmitAllowed(config))
+				}
 
 				r.Post("/", handler.SubmitPost(db, wh, config))
 				r.Post("/api", handler.SubmitPost(db, wh, config))
