@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"html"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -73,7 +74,7 @@ func (w *Webhook) Post(entry ReportListEntry) {
 
 	messageText := make([]string, 0, 20)
 	for _, entry := range w.reportList {
-		messageText = append(messageText, fmt.Sprintf("<%s/view/%d|#%d: %s>", w.domain, entry.ReportId, entry.ReportId, entry.Message))
+		messageText = append(messageText, fmt.Sprintf("<%s/view/%d|#%d: %s>", w.domain, entry.ReportId, entry.ReportId, html.EscapeString(entry.Message)))
 	}
 	t := strings.Join(messageText, "\n")
 	if w.reportCount > uint32(cap(w.reportList)) {
