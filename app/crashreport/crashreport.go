@@ -68,7 +68,7 @@ func (r *CrashReport) parseVersion() {
 }
 
 // ClassifyMessage ...
-func (r *CrashReport) classifyMessage() {
+func (r *CrashReport) ClassifyMessage() {
 	if r.Error.Message == "" {
 		panic(errors.New("error message is empty"))
 	}
@@ -184,7 +184,6 @@ func FromJson(jsonBytes []byte) (*CrashReport, error) {
 		r.parseDate()
 		r.parseError()
 		r.parseVersion()
-		r.classifyMessage()
 	}
 
 	return &r, err
