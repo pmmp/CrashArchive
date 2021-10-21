@@ -64,6 +64,13 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.H
 			panic(err)
 		}
 
+		if report.Data.General.Build != 0 && uint32(report.Data.General.Build) < config.MinBuildNumber {
+			log.Printf("too-old version %d, minimum is %d, from: %s\n", report.Data.General.Build, config.MinBuildNumber, r.RemoteAddr)
+			sendError(w, r, "This crash report is from an outdated version", http.StatusUnprocessableEntity, isAPI)
+
+			return
+		}
+
 		if report.Data.General.Name != "PocketMine-MP" {
 			log.Printf("spoon detected from: %s\n", r.RemoteAddr)
 			sendError(w, r, "", http.StatusTeapot, isAPI)

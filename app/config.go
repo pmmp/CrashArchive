@@ -25,6 +25,8 @@ type Config struct {
 	ErrorCleanPatterns     map[string]string
 	ErrorBlacklistPatterns []string
 
+	MinBuildNumber uint32
+
 	CompiledErrorBlacklistPatterns []*regexp.Regexp
 
 	//old fields, for backwards compatibility

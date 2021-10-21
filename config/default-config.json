@@ -26,5 +26,6 @@
     },
     "ErrorBlacklistPatterns":[
         "^mysqli.+$"
-    ]
+    ],
+    "MinBuildNumber": 2013
 }
