@@ -49,7 +49,7 @@ table.bordered > tbody > tr > td {
 
 td.link-table-cell a {
 	display: block;
-	padding: 15px 5px; /* replicate normal materialize cell padding */
+	padding: 15px 8px; /* replicate normal materialize cell padding */
 	color: black;
 }
 
