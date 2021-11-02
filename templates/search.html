@@ -35,16 +35,13 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s6 m9 l10">
-                                <input name="build" type="text" class="validate" id="normal-search-buildtext">
-                                <label for="normal-search-buildtext">Build number</label>
-                            </div>
-                            <div class="input-field col s6 m3 l2">
-                                <select name="buildtype" class="browser-default" id="normal-search-build-compare" disabled>
-                                    <option value="equal">Equal</option>
-                                    <option value="greater">Greater than</option>
-                                    <option value="less">Less than</option>
+                            <div class="version-selector input-field col s12">
+                                <select name="versions" id="normal-search-versions" multiple>
+                                    {{ range .KnownVersions }}
+                                    <option value="{{ . }}">{{ . }}</option>
+                                    {{ end }}
                                 </select>
+                                <label for="normal-search-versions">Filter by PocketMine-MP version</label>
                             </div>
                         </div>
                         <div class="row">

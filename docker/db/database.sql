@@ -39,3 +39,8 @@ CREATE TABLE users (
 	permission INT NOT NULL,
 	PRIMARY KEY (username)
 );
+
+CREATE TABLE known_versions (
+      version VARCHAR(32) NOT NULL,
+      PRIMARY KEY (version)
+);

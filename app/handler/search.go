@@ -11,8 +11,20 @@ import (
 	"github.com/pmmp/CrashArchive/app/database"
 )
 
-func SearchGet(w http.ResponseWriter, r *http.Request) {
-	template.ExecuteTemplate(w, r, "search")
+func SearchGet(db *database.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		knownVersions := []string{}
+		err := db.Select(&knownVersions, `SELECT version FROM known_versions`)
+		if err != nil {
+			fmt.Printf("error fetching known versions: %v\n", err)
+			template.ErrorTemplate(w, r, "", http.StatusInternalServerError)
+			return
+		}
+		log.Printf("Found %d known versions\n", len(knownVersions))
+		args := make(map[string]interface{})
+		args["KnownVersions"] = knownVersions
+		template.ExecuteTemplateParams(w, r, "search", args)
+	}
 }
 
 func SearchIDGet(w http.ResponseWriter, r *http.Request) {

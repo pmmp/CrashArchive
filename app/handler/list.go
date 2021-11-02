@@ -118,6 +118,14 @@ func buildSearchQuery(params url.Values) (string, []interface{}, error) {
 		filterParams = append(filterParams, buildID)
 	}
 
+	if filterVersions := params["versions"]; filterVersions != nil && len(filterVersions) > 0 {
+		qs := strings.Repeat("?,", len(filterVersions))
+		filters = append(filters, fmt.Sprintf("version IN (%s)", qs[:len(qs)-1]))
+		for _, filterVersion := range filterVersions {
+			filterParams = append(filterParams, filterVersion)
+		}
+	}
+
 	filter = strings.Join(filters[:], " AND ")
 	if filter != "" {
 		filter = "WHERE " + filter

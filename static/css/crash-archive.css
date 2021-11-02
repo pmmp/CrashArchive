@@ -78,3 +78,11 @@ table.borderless tr {
     white-space: nowrap;
     width: auto;
 }
+
+.version-selector li {
+	min-height: 0;
+}
+
+.version-selector li > span, .version-selector li > a {
+	padding: 6px 16px;
+}
