@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"facette.io/natsort"
 	"github.com/pmmp/CrashArchive/app/crashreport"
 	"github.com/pmmp/CrashArchive/app/template"
 	"github.com/pmmp/CrashArchive/app/database"
@@ -21,6 +22,7 @@ func SearchGet(db *database.DB) http.HandlerFunc {
 			return
 		}
 		log.Printf("Found %d known versions\n", len(knownVersions))
+		natsort.Sort(knownVersions)
 		args := make(map[string]interface{})
 		args["KnownVersions"] = knownVersions
 		template.ExecuteTemplateParams(w, r, "search", args)
