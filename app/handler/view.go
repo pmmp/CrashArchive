@@ -3,19 +3,22 @@ package handler
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"regexp"
 	"strconv"
 
 	"github.com/go-chi/chi"
 
+	"github.com/pmmp/CrashArchive/app"
 	"github.com/pmmp/CrashArchive/app/database"
 	"github.com/pmmp/CrashArchive/app/template"
 	"github.com/pmmp/CrashArchive/app/user"
 )
 
-func ViewIDGet(db *database.DB) http.HandlerFunc {
+func ViewIDGet(db *database.DB, config *app.Config) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		reportID, err := strconv.Atoi(chi.URLParam(r, "reportID"))
 		if err != nil {
@@ -44,6 +47,11 @@ func ViewIDGet(db *database.DB) http.HandlerFunc {
 		v["PocketMineVersion"] = report.Version.Get(true)
 		v["ReportID"] = reportID
 		v["HasDeletePerm"] = user.GetUserInfo(r).HasDeletePerm()
+
+		issueQueryParams := url.Values{}
+		issueQueryParams.Add("title", report.Error.Message)
+		issueQueryParams.Add("body", fmt.Sprintf("Link to crashdump: %s/view/%d\n\n### Additional comments\n", config.Domain, reportID))
+		v["ReportIssueURL"] = "https://github.com/pmmp/PocketMine-MP/issues/new?" + issueQueryParams.Encode()
 
 		template.ExecuteTemplateParams(w, r, "view", v)
 	}

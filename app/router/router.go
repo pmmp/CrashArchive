@@ -41,7 +41,7 @@ func New(db *database.DB, wh *webhook.Webhook, config *app.Config) *chi.Mux {
 		r.Post("/login", handler.LoginPost(db))
 		r.Get("/logout", handler.LogoutGet)
 		r.Get("/list", handler.ListGet(db))
-		r.Get("/view/{reportID}", handler.ViewIDGet(db))
+		r.Get("/view/{reportID}", handler.ViewIDGet(db, config))
 		r.Get("/view/{reportID}/raw", handler.ViewIDRawGet(db))
 		r.Get("/download/{reportID}", handler.DownloadGet(db))
 		r.Get("/delete/{reportID}", handler.DeleteGet(db))
