@@ -21,15 +21,15 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="input-field col s6 m3 l2">
-                                <select name="cause" class="browser-default" id="normal-search-cause">
-                                    <option disabled selected>Select crash cause</option>
-                                    <option value="">Any</option>
-                                    <option value="plugin">Plugin only</option>
-                                    <option value="core">Core only</option>
+                            <div class="version-selector input-field col s6 m3">
+                                <select name="cause" id="normal-search-cause" multiple>
+                                    <option value="plugin">Plugin (direct)</option>
+                                    <option value="plugin_indirect">Plugin (indirect)</option>
+                                    <option value="core">Core</option>
                                 </select>
+                                <label for="normal-search-cause">Filter by cause</label>
                             </div>
-                            <div class="input-field col s6 m9 l10">
+                            <div class="input-field col s6 m9">
                                 <input name="plugin" type="text" class="validate" id="normal-search-plugin-name" disabled>
                                 <label for="normal-search-plugin-name">Plugin name (case sensitive)</label>
                             </div>

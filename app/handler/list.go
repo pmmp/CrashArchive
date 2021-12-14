@@ -83,20 +83,34 @@ func buildSearchQuery(params url.Values) (string, []interface{}, error) {
 		filterParams = append(filterParams, "%" + errortype + "%")
 	}
 
-	cause := params.Get("cause")
-	if cause == "core" {
-		filters = append(filters, fmt.Sprintf("pluginInvolvement = \"%s\"", crashreport.PINone))
-	} else if cause == "plugin" {
-		//filter by plugin
-		plugin := params.Get("plugin")
-		if plugin != "" {
-			filters = append(filters, "plugin = ?")
-			filterParams = append(filterParams, plugin)
-		} else { //any plugin but not core crashes
-			filters = append(filters, fmt.Sprintf("pluginInvolvement <> \"%s\"", crashreport.PINone))
+	if causes := params["cause"]; causes != nil && len(causes) > 0 {
+		involvements := []string{}
+		for _, cause := range causes {
+			var involvement string = ""
+			switch cause {
+				case "core":
+					involvement = crashreport.PINone
+				case "plugin":
+					involvement = crashreport.PIDirect
+				case "plugin_indirect":
+					involvement = crashreport.PIIndirect
+				default:
+					return "", nil, fmt.Errorf("Invalid cause filter %s", cause)
+			}
+			involvements = append(involvements, involvement)
 		}
-	} else if cause != "" {
-		return "", nil, fmt.Errorf("Invalid cause filter %s", cause)
+		qs := strings.Repeat("?,", len(involvements))
+		filters = append(filters, fmt.Sprintf("pluginInvolvement IN (%s)", qs[:len(qs)-1]))
+		for _, involvement := range involvements {
+			filterParams = append(filterParams, involvement)
+		}
+	}
+
+	//filter by plugin
+	plugin := params.Get("plugin")
+	if plugin != "" {
+		filters = append(filters, "plugin = ?")
+		filterParams = append(filterParams, plugin)
 	}
 
 	//filter by build number
