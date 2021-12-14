@@ -91,7 +91,14 @@ $('#normal-search-buildtext').on("input", function () {
     $('#normal-search-build-compare').attr("disabled", $(this).val() === "");
 });
 $('#normal-search-cause').change(function () {
-    $('#normal-search-plugin-name').attr("disabled", $(this).val() !== "plugin");
+    var found = 0;
+    $.each($(this).val(), function(){
+        if(this == "core"){
+            found++;
+        }
+        return true;
+    });
+    $('#normal-search-plugin-name').attr("disabled", found > 0 || $(this).val().length === 0);
 });
 </script>
 {{end}}
