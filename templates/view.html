@@ -206,6 +206,32 @@
                     </ul>
                 </div>
             </div>
+            <div class="row">
+                <div class="col s12">
+                    <h3>Installed PHP Extensions</h3>
+                    <ul class="collapsible collapsible-accordion" data-collapsible="accordion">
+                        <li class="">
+                            <div class="collapsible-header">Show</div>
+                            <div class="collapsible-body collapsible-body-table" style="display: none;">
+                                <table class="striped" style="max-width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Version</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>{{range $k, $v := .Report.Data.Extensions}}
+                                        <tr>
+                                            <td>{{$k}}</td>
+                                            <td>{{$v}}</td>
+                                        </tr>{{end}}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 </div>
