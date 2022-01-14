@@ -21,7 +21,8 @@ CREATE TABLE crash_reports (
       INDEX(plugin(10)),
       INDEX(message(32)),
       INDEX(file(32)),
-      INDEX(duplicate)
+      INDEX(duplicate),
+      INDEX(version)
 ) ENGINE=InnoDB;
 
 CREATE TABLE crash_report_blobs (
@@ -38,9 +39,4 @@ CREATE TABLE users (
 	passwordHash BINARY(255),
 	permission INT NOT NULL,
 	PRIMARY KEY (username)
-);
-
-CREATE TABLE known_versions (
-      version VARCHAR(32) NOT NULL,
-      PRIMARY KEY (version)
 );

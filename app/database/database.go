@@ -41,8 +41,6 @@ var queryInsertReport = `INSERT INTO crash_reports
 		(:plugin, :pluginInvolvement, :version, :build, :file, :message, :line, :type, :os, :submitDate, :reportDate, :duplicate, :reporterName, :reporterEmail)`
 const queryInsertBlob = `INSERT INTO crash_report_blobs (id, crash_report_json) VALUES (?, ?)`
 
-const queryInsertKnownVersion = `INSERT IGNORE INTO known_versions (version) VALUES (?)`
-
 func (db *DB) InsertReport(report *crashreport.CrashReport, reporterName string, reporterEmail string, originalData []byte) (int64, error) {
 	res, err := db.NamedExec(queryInsertReport, &crashreport.Report{
 		Plugin:            report.Data.Plugin,
@@ -69,11 +67,6 @@ func (db *DB) InsertReport(report *crashreport.CrashReport, reporterName string,
 	if err != nil {
 		log.Println(err)
 		return 0, fmt.Errorf("failed to get last insert ID: %d", id)
-	}
-
-	_, err = db.Exec(queryInsertKnownVersion, report.Version.Get(true))
-	if err != nil {
-		return -1, err
 	}
 
 	stmt, err := db.Preparex(queryInsertBlob)

@@ -15,7 +15,7 @@ import (
 func SearchGet(db *database.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		knownVersions := []string{}
-		err := db.Select(&knownVersions, `SELECT version FROM known_versions`)
+		err := db.Select(&knownVersions, `SELECT DISTINCT version FROM crash_reports`)
 		if err != nil {
 			fmt.Printf("error fetching known versions: %v\n", err)
 			template.ErrorTemplate(w, r, "", http.StatusInternalServerError)
