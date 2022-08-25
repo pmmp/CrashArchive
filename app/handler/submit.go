@@ -73,13 +73,13 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.H
 
 		if report.Data.General.Name != "PocketMine-MP" {
 			log.Printf("spoon detected from: %s\n", r.RemoteAddr)
-			sendError(w, r, "", http.StatusTeapot, isAPI)
+			sendError(w, r, "Only crash reports from PocketMine-MP are accepted", http.StatusUnprocessableEntity, isAPI)
 			return
 		}
 
 		if report.Data.General.GIT == strings.Repeat("00", 20) || strings.HasSuffix(report.Data.General.GIT, "-dirty") {
 			log.Printf("invalid git hash %s in report from: %s\n", report.Data.General.GIT, r.RemoteAddr)
-			sendError(w, r, "", http.StatusTeapot, isAPI)
+			sendError(w, r, "This crash report is from a modified version of PocketMine-MP", http.StatusUnprocessableEntity, isAPI)
 			return
 		}
 
@@ -88,7 +88,7 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.H
 			for v, _ := range pluginsList {
 				if _, blacklisted := config.PluginBlacklistMap[v]; blacklisted {
 					log.Printf("blacklisted plugin \"%s\" in report from: %s\n", v, r.RemoteAddr)
-					sendError(w, r, "", http.StatusTeapot, isAPI)
+					sendError(w, r, fmt.Sprintf("Crash reports from servers using the \"%s\" plugin are not accepted", v), http.StatusUnprocessableEntity, isAPI)
 					return
 				}
 			}
@@ -97,7 +97,7 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.H
 		for _, pattern := range(config.CompiledErrorBlacklistPatterns) {
 			if pattern.MatchString(report.Data.Error.Message) {
 				log.Printf("blacklisted error pattern match in report from: %s", "", r.RemoteAddr)
-				sendError(w, r, "This crashdump is blacklisted", http.StatusUnprocessableEntity, isAPI)
+				sendError(w, r, "This crashdump is blacklisted because it may contain sensitive information", http.StatusUnprocessableEntity, isAPI)
 				return
 			}
 		}
