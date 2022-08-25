@@ -25,6 +25,7 @@ var funcMap = template.FuncMap{
 	"isDirectPluginCrash": isDirectPluginCrash,
 	"isIndirectPluginCrash": isIndirectPluginCrash,
 	"renderDuration": renderDuration,
+	"renderJitMode": renderJitMode,
 }
 
 func shorthash(s string) string {
@@ -116,4 +117,15 @@ func renderDuration(duration float64) string {
 	minutes := (durationInt % 3600) / 60
 	seconds := durationInt % 60
 	return fmt.Sprintf("%d days %d hours %d minutes %d seconds", days, hours, minutes, seconds)
+}
+
+func renderJitMode(mode *int) string {
+	if mode != nil {
+		if *mode == 0 {
+			return "Disabled"
+		}
+		return fmt.Sprintf("Enabled (%d)", *mode)
+	} else {
+		return "Not available"
+	}
 }

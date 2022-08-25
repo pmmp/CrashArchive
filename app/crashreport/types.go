@@ -75,6 +75,7 @@ type ReportData struct {
 	Code             MapStringStringAllowsEmptyArray
 	Plugins          interface{} `json:"plugins,omitempty"`
 	Extensions       MapStringStringAllowsEmptyArray
+	JITMode          *int        `json:"jit_mode"`
 	PocketmineYML    string      `json:"pocketmine.yml"`
 	ServerProperties string      `json:"server.properties"`
 	Trace            []string
