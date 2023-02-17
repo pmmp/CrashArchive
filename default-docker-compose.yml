@@ -1,16 +1,20 @@
-db:
+version: '3.3'
+
+services:
+  db:
     build: ./docker/db/
     environment:
         MYSQL_ROOT_PASSWORD: password
         MYSQL_DATABASE: crash_archive
     volumes:
         - ./volumes/mysql:/var/lib/mysql
-ca:
-    build: ./docker/ca/
+  ca:
+    build:
+      dockerfile: ./docker/ca/Dockerfile
+      context: ./
     ports:
         - "8080:80"
     volumes:
-        - ./bin:/app
         - ./templates:/app/templates
         - ./config:/app/config
         - ./volumes/reports:/app/reports
