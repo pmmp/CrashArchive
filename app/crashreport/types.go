@@ -79,6 +79,7 @@ type ReportData struct {
 	PocketmineYML    string      `json:"pocketmine.yml"`
 	ServerProperties string      `json:"server.properties"`
 	Trace            []string
+	Thread           string
 }
 
 type ReportError struct {
