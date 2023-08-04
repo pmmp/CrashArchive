@@ -7,6 +7,6 @@ RUN go build -o ./bin/crasharchive-adduser ./cmd/crasharchive-adduser.go
 FROM debian:8.8
 
 WORKDIR /app
-COPY --from=build /go/crasharchive/bin/* .
+COPY --from=build /go/crasharchive/bin/* ./
 
 CMD ["./crasharchive"]
