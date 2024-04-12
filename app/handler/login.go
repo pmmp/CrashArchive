@@ -25,44 +25,6 @@ func isAlreadyLoggedIn(w http.ResponseWriter, r *http.Request) bool {
 	return false
 }
 
-func LoginGetGitHub(githubAppConfig *app.GitHubAuthConfig) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if(isAlreadyLoggedIn(w, r)){
-			log.Println("User already logged in :/")
-			return
-		}
-
-		//TODO: all of this could probably be done client side
-		scheme := "http"
-		if r.TLS != nil {
-			scheme = "https"
-		}
-
-		baseUrlString := fmt.Sprintf("%s://%s/%s", scheme, r.Host, "github_callback")
-		log.Println("Callback URI: " + baseUrlString)
-
-		params := url.Values{}
-		params.Add("client_id", githubAppConfig.ClientId)
-		//TODO: while we technically ought to put a CSRF token in the state here, since
-		//we only currently use it for redirecting, we don't actually need it
-		//the redirect target should be CSRF-protected anyway
-		params.Add("state", r.URL.Query().Get("redirect_url"))
-
-		params.Add("redirect_uri", baseUrlString)
-		params.Add("allow_signup", "false")
-
-		githubOauth, err := url.Parse("https://github.com/login/oauth/authorize")
-		if err != nil {
-			panic(err)
-		}
-
-		githubOauth.RawQuery = params.Encode()
-
-		log.Println("REDIRECTING TO: " + githubOauth.String())
-		http.Redirect(w, r, githubOauth.String(), http.StatusFound)
-	}
-}
-
 type githubAccessInfo struct {
 	AccessToken           string `json:"access_token"`
 	ExpiresIn             int `json:"expires_in"`

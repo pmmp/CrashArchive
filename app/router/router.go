@@ -48,7 +48,6 @@ func New(db *database.DB, wh *webhook.Webhook, config *app.Config, csrfKey []byt
 			r.Get("/", handler.HomeGet)
 
 			if config.GitHubAuth != nil && config.GitHubAuth.Enabled {
-				r.Get("/login", handler.LoginGetGitHub(config.GitHubAuth))
 				r.Get("/github_callback", handler.LoginGetGithubCallback(config.GitHubAuth))
 			} else {
 				r.Get("/login", handler.LoginGetUserPassword)
