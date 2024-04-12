@@ -38,7 +38,7 @@ func New(db *database.DB, wh *webhook.Webhook, config *app.Config, csrfKey []byt
 		r.Route("/", func(r chi.Router) {
 			r.Use(csrf.Protect(
 				csrfKey,
-				csrf.Secure(config.CsrfSecureCookie),
+				csrf.Secure(!config.CsrfInsecureCookies),
 			))
 
 			r.NotFound(func(w http.ResponseWriter, r *http.Request) {

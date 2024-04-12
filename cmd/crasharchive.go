@@ -81,8 +81,10 @@ loop:
 	} else {
 		log.Println("Reusing existing CSRF key")
 	}
-	if !config.CsrfSecureCookie {
-		log.Println("WARNING: Secure CSRF cookies are disabled. Set CsrfSecureCookie to true in config.json to enable.")
+	if config.CsrfInsecureCookies {
+		log.Println("WARNING: Secure CSRF cookies are disabled. Set CsrfInsecureCookies to true in config.json to enable.")
+	} else {
+		log.Println("Secure CSRF cookies are enabled. If you're not using HTTPS and get CSRF errors, set CsrfInsecureCookies to false in config.json to disable.")
 	}
 
 	r := router.New(db, wh, config, csrfKey)

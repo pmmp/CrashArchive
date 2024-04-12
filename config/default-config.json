@@ -35,5 +35,5 @@
         "OrgName": "github_org_name_here",
         "TeamSlug": "github_team_name_here"
     },
-    "CsrfSecure": true
+    "CsrfInsecureCookies": false
 }
