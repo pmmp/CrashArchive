@@ -12,8 +12,14 @@ import (
 	"github.com/pmmp/CrashArchive/app/user"
 )
 
-func DeleteGet(db *database.DB) http.HandlerFunc {
+func DeletePost(db *database.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if err := r.ParseForm(); err != nil {
+			log.Printf("Bad delete post from %s: %v", r.RemoteAddr, err)
+			template.ErrorTemplate(w, r, "", http.StatusBadRequest)
+			return
+		}
+
 		userInfo := user.GetUserInfo(r)
 		if(!userInfo.HasDeletePerm()){
 			log.Printf("access denied to %s (%s) for endpoint %s", userInfo.Name, r.RemoteAddr, r.RequestURI)
@@ -28,7 +34,7 @@ func DeleteGet(db *database.DB) http.HandlerFunc {
 
 		db.Exec("DELETE FROM crash_reports WHERE id = ?", reportID)
 		log.Printf("user %s deleted crash report %d", userInfo.Name, reportID)
-		redirectUrl := r.URL.Query().Get("redirect")
+		redirectUrl := r.FormValue("redirect_url")
 		if redirectUrl == "" {
 			redirectUrl = "/list"
 		}

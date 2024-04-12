@@ -34,5 +34,6 @@
         "ClientSecret": "app_client_secret_here",
         "OrgName": "github_org_name_here",
         "TeamSlug": "github_team_name_here"
-    }
+    },
+    "CsrfSecure": true
 }

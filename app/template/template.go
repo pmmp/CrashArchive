@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"path/filepath"
 
+	"github.com/gorilla/csrf"
 	"github.com/pmmp/CrashArchive/app/crashreport"
 	"github.com/pmmp/CrashArchive/app/user"
 )
@@ -54,6 +55,7 @@ func ExecuteTemplate(w http.ResponseWriter, r *http.Request, name string) error 
 func addContextTemplateParams(data map[string]interface{}, r *http.Request) map[string]interface{} {
 	data["ActiveUserName"] = user.GetUserInfo(r).Name
 	data["GitHubAuthEnabled"] = githubAuthEnabled
+	data[csrf.TemplateTag] = csrf.TemplateField(r)
 	return data
 }
 

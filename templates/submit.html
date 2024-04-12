@@ -37,7 +37,7 @@
                             <textarea class="form-control" name="reportPaste" placeholder="Paste the crash report here" rows="6"></textarea>
                         </div>
                         <p>The crash report can be found on the PocketMine-MP folder. You can alternatively <a href="#" onclick="$('#upload_report').css('display', 'none');$('#paste_report').css('display', 'block');return false;">paste the report</a></p>
-
+                        {{ .csrfField }}
                         <button type="submit" class="btn btn-lg btn-primary btn-block" style="margin-top:10px; margin-left: auto; margin-right: auto">Submit<i class="material-icons left">send</i></button>
                     </form>
                 </div>

@@ -9,6 +9,8 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 
+	"github.com/gorilla/csrf"
+
 	"github.com/pmmp/CrashArchive/app"
 	"github.com/pmmp/CrashArchive/app/database"
 	"github.com/pmmp/CrashArchive/app/handler"
@@ -17,7 +19,7 @@ import (
 	"github.com/pmmp/CrashArchive/app/webhook"
 )
 
-func New(db *database.DB, wh *webhook.Webhook, config *app.Config) *chi.Mux {
+func New(db *database.DB, wh *webhook.Webhook, config *app.Config, csrfKey []byte) *chi.Mux {
 	r := chi.NewRouter()
 
 	staticDirs := []string{"/css", "/js", "/fonts"}
@@ -32,32 +34,41 @@ func New(db *database.DB, wh *webhook.Webhook, config *app.Config) *chi.Mux {
 		r.Use(middleware.Logger)
 		r.Use(user.CheckLoginCookieMiddleware)
 
-		r.NotFound(func(w http.ResponseWriter, r *http.Request) {
-			template.ErrorTemplate(w, r, "", http.StatusNotFound)
+		//CSRF-protected routes
+		r.Route("/", func(r chi.Router) {
+			r.Use(csrf.Protect(
+				csrfKey,
+				csrf.Secure(config.CsrfSecureCookie),
+			))
+
+			r.NotFound(func(w http.ResponseWriter, r *http.Request) {
+				template.ErrorTemplate(w, r, "", http.StatusNotFound)
+			})
+
+			r.Get("/", handler.HomeGet)
+
+			if config.GitHubAuth != nil && config.GitHubAuth.Enabled {
+				r.Get("/login", handler.LoginGetGitHub(config.GitHubAuth))
+				r.Get("/github_callback", handler.LoginGetGithubCallback(config.GitHubAuth))
+			} else {
+				r.Get("/login", handler.LoginGetUserPassword)
+				r.Post("/login", handler.LoginPostUserPassword(db))
+			}
+			r.Get("/logout", handler.LogoutGet)
+			r.Get("/list", handler.ListGet(db))
+			r.Get("/view/{reportID}", handler.ViewIDGet(db, config))
+			r.Get("/view/{reportID}/raw", handler.ViewIDRawGet(db))
+			r.Get("/download/{reportID}", handler.DownloadGet(db))
+			r.Post("/delete/{reportID}", handler.DeletePost(db))
+
+			r.Route("/search", func(r chi.Router) {
+				r.Get("/", handler.SearchGet(db))
+				r.Get("/id", handler.SearchIDGet)
+				r.Get("/report", handler.SearchReportGet(db))
+			})
 		})
 
-		r.Get("/", handler.HomeGet)
-
-		if config.GitHubAuth != nil && config.GitHubAuth.Enabled {
-			r.Get("/login", handler.LoginGetGitHub(config.GitHubAuth))
-			r.Get("/github_callback", handler.LoginGetGithubCallback(config.GitHubAuth))
-		} else {
-			r.Get("/login", handler.LoginGetUserPassword)
-			r.Post("/login", handler.LoginPostUserPassword(db))
-		}
-		r.Get("/logout", handler.LogoutGet)
-		r.Get("/list", handler.ListGet(db))
-		r.Get("/view/{reportID}", handler.ViewIDGet(db, config))
-		r.Get("/view/{reportID}/raw", handler.ViewIDRawGet(db))
-		r.Get("/download/{reportID}", handler.DownloadGet(db))
-		r.Get("/delete/{reportID}", handler.DeleteGet(db))
-
-		r.Route("/search", func(r chi.Router) {
-			r.Get("/", handler.SearchGet(db))
-			r.Get("/id", handler.SearchIDGet)
-			r.Get("/report", handler.SearchReportGet(db))
-		})
-
+		//these APIs don't check CSRF and won't generate tokens
 		r.Route("/submit", func(r chi.Router) {
 			r.Get("/", handler.SubmitGet)
 			r.Post("/", handler.SubmitPost(db, wh, config))

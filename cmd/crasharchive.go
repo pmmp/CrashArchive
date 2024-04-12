@@ -1,7 +1,9 @@
 package main
 
 import (
+	"crypto/rand"
 	"flag"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -69,7 +71,21 @@ loop:
 		retry++
 	}
 
-	r := router.New(db, wh, config)
+	csrfKey, err := ioutil.ReadFile("./config/csrf-key.bin")
+	if err != nil || len(csrfKey) != 32 {
+		log.Println("Unable to read CSRF key, generating a new one!")
+		csrfKey = make([]byte, 32)
+		rand.Read(csrfKey)
+		ioutil.WriteFile("./config/csrf-key.bin", csrfKey, 0644)
+		log.Println("Successfully generated new CSRF key")
+	} else {
+		log.Println("Reusing existing CSRF key")
+	}
+	if !config.CsrfSecureCookie {
+		log.Println("WARNING: Secure CSRF cookies are disabled. Set CsrfSecureCookie to true in config.json to enable.")
+	}
+
+	r := router.New(db, wh, config, csrfKey)
 	log.Printf("listening on: %s\n", config.ListenAddress)
 	if err = http.ListenAndServe(config.ListenAddress, r); err != nil {
 		log.Fatal(err)

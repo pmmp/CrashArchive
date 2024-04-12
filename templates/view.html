@@ -2,16 +2,21 @@
 {{define "head"}}{{end}}
 {{define "content"}}
 <script type="text/javascript">
-	function deleteHandler() {
-		if (confirm("Are you sure you want to delete this crashdump?")) {
-			window.location.href = "/delete/{{.ReportID}}?redirect=" + encodeURIComponent(document.referrer)
-		}
-	}
+    function deleteHandler() {
+        if (confirm("Are you sure you want to delete this crashdump?")) {
+            $("#redirect-input").val(document.referrer)
+            $("#delete-form").submit()
+        }
+    }
 </script>
 <div class="fixed-action-btn fab-text-menu">
     <a class="btn-floating btn-large red">
         <i class="large material-icons">menu</i>
     </a>
+    <form style="display: none" id="delete-form" action="/delete/{{.ReportID}}" method="post">
+        <input type="hidden" id="redirect-input" name="redirect_url" value="#">
+	{{ .csrfField }}
+    </form>
     <ul>
         <li><a href="{{.ReportIssueURL}}" class="btn-floating fab-text-option">Report GitHub issue</a></li>
         <li><a href="/search/report?id={{.ReportID}}" class="btn-floating fab-text-option">Find duplicates</a></li>

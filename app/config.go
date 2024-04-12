@@ -41,6 +41,7 @@ type Config struct {
 	SlackURL           string
 
 	GitHubAuth         *GitHubAuthConfig
+	CsrfSecureCookie   bool
 }
 
 func LoadConfig(configPath string) (*Config, error) {
