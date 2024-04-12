@@ -43,7 +43,10 @@ func LoginGetGitHub(githubAppConfig *app.GitHubAuthConfig) http.HandlerFunc {
 
 		params := url.Values{}
 		params.Add("client_id", githubAppConfig.ClientId)
-		params.Add("state", r.URL.Query().Get("redirect_url")) //TODO: CSRF protection needed here - not a big deal right now since admin perms only allow deleting crash reports
+		//TODO: while we technically ought to put a CSRF token in the state here, since
+		//we only currently use it for redirecting, we don't actually need it
+		//the redirect target should be CSRF-protected anyway
+		params.Add("state", r.URL.Query().Get("redirect_url"))
 
 		params.Add("redirect_uri", baseUrlString)
 		params.Add("allow_signup", "false")
@@ -162,7 +165,9 @@ func LoginGetGithubCallback(githubAppConfig *app.GitHubAuthConfig) http.HandlerF
 		params := r.URL.Query()
 
 		if codeParam := params.Get("code"); codeParam != "" {
-			//TODO: this is insecure - we need to verify it
+			//TODO: while we technically ought to put a CSRF token in the state here, since
+			//we only currently use it for redirecting, we don't actually need it
+			//the redirect target should be CSRF-protected anyway
 			redirectUrl := params.Get("state")
 
 			exchangeParams := url.Values{}
@@ -218,7 +223,7 @@ func LoginGetGithubCallback(githubAppConfig *app.GitHubAuthConfig) http.HandlerF
 				completeAuthentication(w, r, user.UserInfo{
 					Name: username,
 					Permission: user.Admin,
-				}, redirectUrl) //TODO: redirect URL for github login
+				}, redirectUrl)
 			} else {
 				log.Printf("GitHub user %s is NOT an administrator", username)
 				template.ErrorTemplate(w, r, "Can't log you in because you're not an administrator", http.StatusUnauthorized)
