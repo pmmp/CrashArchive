@@ -15,8 +15,11 @@ type Config struct {
 }
 
 var t map[string]*template.Template
+var githubAuthEnabled bool
 
-func Preload(cfg *Config) error {
+func Preload(cfg *Config, githubAuth bool) error {
+	githubAuthEnabled = githubAuth
+
 	t = make(map[string]*template.Template)
 	abs, _ := filepath.Abs(cfg.Folder)
 
@@ -50,6 +53,7 @@ func ExecuteTemplate(w http.ResponseWriter, r *http.Request, name string) error 
 
 func addContextTemplateParams(data map[string]interface{}, r *http.Request) map[string]interface{} {
 	data["ActiveUserName"] = user.GetUserInfo(r).Name
+	data["GitHubAuthEnabled"] = githubAuthEnabled
 	return data
 }
 

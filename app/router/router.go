@@ -37,8 +37,14 @@ func New(db *database.DB, wh *webhook.Webhook, config *app.Config) *chi.Mux {
 		})
 
 		r.Get("/", handler.HomeGet)
-		r.Get("/login", handler.LoginGet)
-		r.Post("/login", handler.LoginPost(db))
+
+		if config.GitHubAuth != nil && config.GitHubAuth.Enabled {
+			r.Get("/login", handler.LoginGetGitHub(config.GitHubAuth))
+			r.Get("/github_callback", handler.LoginGetGithubCallback(config.GitHubAuth))
+		} else {
+			r.Get("/login", handler.LoginGetUserPassword)
+			r.Post("/login", handler.LoginPostUserPassword(db))
+		}
 		r.Get("/logout", handler.LogoutGet)
 		r.Get("/list", handler.ListGet(db))
 		r.Get("/view/{reportID}", handler.ViewIDGet(db, config))

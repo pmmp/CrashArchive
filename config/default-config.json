@@ -27,5 +27,12 @@
     "ErrorBlacklistPatterns":[
         "^mysqli.+$"
     ],
-    "MinBuildNumber": 2013
+    "MinBuildNumber": 2013,
+    "GitHubAuth": {
+        "Enabled": false,
+        "ClientId": "app_client_id_here",
+        "ClientSecret": "app_client_secret_here",
+        "OrgName": "github_org_name_here",
+        "TeamSlug": "github_team_name_here"
+    }
 }

@@ -14,7 +14,7 @@ role="navigation">
                 <li><a href="/list"><i class="material-icons">list</i></a></li>
                 <li><a href="/submit"><i class="material-icons">add</i></a></li>
                 {{if eq .ActiveUserName "anonymous"}}
-                <li><a href="/login"><i class="material-icons">supervisor_account</i></a></li>
+                <li><a id="login-button" href="/login"><i class="material-icons">supervisor_account</i></a></li>
                 {{else}}
                 <li><a href="/logout"><i class="material-icons">exit_to_app</i></a></li>
                 {{end}}
@@ -27,10 +27,17 @@ role="navigation">
             <li><a href="/list">List</a></li>
             <li><a href="/submit">Submit</a></li>
             {{if eq .ActiveUserName "anonymous"}}
-            <li><a href="/login">Login</a></li>
+            <li><a id="login-button" href="/login">Login</a></li>
             {{else}}
             <li><a href="/logout">Logout "{{.ActiveUserName}}"</a></li>
             {{end}}
         </ul>
     </div>
 </nav>
+{{if .GitHubAuthEnabled}}
+<script type="text/javascript">
+        $(document).ready(function () {
+                $("#login-button").attr("href", "/login?redirect_url=" + encodeURI(window.location))
+        })
+</script>
+{{end}}

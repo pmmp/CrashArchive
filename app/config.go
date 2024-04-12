@@ -10,6 +10,14 @@ import (
 	"github.com/pmmp/CrashArchive/app/template"
 )
 
+type GitHubAuthConfig struct {
+	Enabled      bool
+	ClientId     string
+	ClientSecret string
+	OrgName      string
+	TeamSlug     string
+}
+
 type Config struct {
 	Domain             string
 	ListenAddress      string
@@ -31,6 +39,8 @@ type Config struct {
 
 	//old fields, for backwards compatibility
 	SlackURL           string
+
+	GitHubAuth         *GitHubAuthConfig
 }
 
 func LoadConfig(configPath string) (*Config, error) {

@@ -34,7 +34,9 @@ func main() {
 		crashreport.PrepareErrorCleanPatterns(config.ErrorCleanPatterns)
 	}
 
-	if err := template.Preload(config.Template); err != nil {
+	githubAuth := config.GitHubAuth != nil && config.GitHubAuth.Enabled;
+
+	if err := template.Preload(config.Template, githubAuth); err != nil {
 		log.Fatal(err)
 	}
 
