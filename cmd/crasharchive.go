@@ -37,6 +37,11 @@ func main() {
 	}
 
 	githubAuth := config.GitHubAuth != nil && config.GitHubAuth.Enabled;
+	if githubAuth {
+		log.Printf("GitHub Auth enabled")
+	} else {
+		log.Printf("GitHub Auth disabled. Use bin/crasharchive-adduser.go to add new admin users to login with username & password.")
+	}
 
 	if err := template.Preload(config.Template, githubAuth); err != nil {
 		log.Fatal(err)
