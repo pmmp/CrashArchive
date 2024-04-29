@@ -73,7 +73,7 @@ loop:
 			log.Println(err)
 		}
 		log.Printf("unable to connect to database: sleeping...\n")
-		time.Sleep(5 * time.Second)
+		time.Sleep(time.Second)
 		retry++
 	}
 	db.UpdateTables()
