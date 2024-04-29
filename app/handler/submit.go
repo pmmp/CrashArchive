@@ -2,12 +2,14 @@ package handler
 
 import (
 	"encoding/json"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"mime/multipart"
 	"net/http"
+	"math/rand"
 	"strings"
 
 	"github.com/pmmp/CrashArchive/app"
@@ -118,7 +120,11 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.H
 		email := r.FormValue("email")
 		jsonBytes, _ := crashreport.JsonFromCrashLog([]byte(reportStr)) //this should have given us an error earlier if it was going to
 
-		id, err := db.InsertReport(report, name, email, jsonBytes)
+		accessTokenBytes := make([]byte, 8)
+		rand.Read(accessTokenBytes)
+		accessTokenString := hex.EncodeToString(accessTokenBytes)
+
+		id, err := db.InsertReport(report, name, email, jsonBytes, accessTokenString)
 		if err != nil {
 			log.Printf("failed to insert report into database: %v", err)
 			sendError(w, r, "", http.StatusInternalServerError, isAPI)
@@ -139,10 +145,10 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.H
 		if isAPI {
 			jsonResponse(w, map[string]interface{}{
 				"crashId":  id,
-				"crashUrl": fmt.Sprintf("%s/view/%d", config.Domain, id),
+				"crashUrl": fmt.Sprintf("%s/view/%d?access_token=%s", config.Domain, id, accessTokenString),
 			})
 		} else {
-			http.Redirect(w, r, fmt.Sprintf("/view/%d", id), http.StatusMovedPermanently)
+			http.Redirect(w, r, fmt.Sprintf("/view/%d?access_token=%s", id, accessTokenString), http.StatusMovedPermanently)
 		}
 
 	}

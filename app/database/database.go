@@ -35,13 +35,17 @@ func New(config *Config) (*DB, error) {
 	return &DB{db}, nil
 }
 
+func (db *DB) UpdateTables() {
+	db.Exec("ALTER TABLE crash_report_blobs ADD COLUMN access_token CHAR(32) DEFAULT ''")
+}
+
 var queryInsertReport = `INSERT INTO crash_reports
 		(plugin, pluginInvolvement, version, build, file, message, line, type, os, submitDate, reportDate, duplicate, reporterName, reporterEmail)
 	VALUES
 		(:plugin, :pluginInvolvement, :version, :build, :file, :message, :line, :type, :os, :submitDate, :reportDate, :duplicate, :reporterName, :reporterEmail)`
-const queryInsertBlob = `INSERT INTO crash_report_blobs (id, crash_report_json) VALUES (?, ?)`
+const queryInsertBlob = `INSERT INTO crash_report_blobs (id, crash_report_json, access_token) VALUES (?, ?, ?)`
 
-func (db *DB) InsertReport(report *crashreport.CrashReport, reporterName string, reporterEmail string, originalData []byte) (int64, error) {
+func (db *DB) InsertReport(report *crashreport.CrashReport, reporterName string, reporterEmail string, originalData []byte, accessToken string) (int64, error) {
 	res, err := db.NamedExec(queryInsertReport, &crashreport.Report{
 		Plugin:            report.Data.Plugin,
 		PluginInvolvement: report.Data.PluginInvolvement,
@@ -82,7 +86,7 @@ func (db *DB) InsertReport(report *crashreport.CrashReport, reporterName string,
 	}
 	zw.Close()
 
-	_, err = stmt.Exec(id, zlibBuf.Bytes())
+	_, err = stmt.Exec(id, zlibBuf.Bytes(), accessToken)
 	defer stmt.Close()
 	if err != nil {
 		return -1, fmt.Errorf("failed to execute prepared statement: %v", err)
@@ -91,37 +95,44 @@ func (db *DB) InsertReport(report *crashreport.CrashReport, reporterName string,
 	return id, nil
 }
 
-func (db *DB) FetchRawReport(id int64) ([]byte, error) {
-	query := "SELECT crash_report_json FROM crash_report_blobs WHERE id = ?;"
-	var zlibBytes []byte
-	err := db.Get(&zlibBytes, query, id)
+func (db *DB) FetchRawReport(id int64) ([]byte, string, error) {
+	query := "SELECT crash_report_json, access_token FROM crash_report_blobs WHERE id = ?;"
+	var result struct {
+		ZlibBytes []byte `db:"crash_report_json"`
+		AccessToken string `db:"access_token"`
+	}
+	err := db.Get(&result, query, id)
 	if err != nil {
 		log.Println(err)
-		return nil, err
+		return nil, "", err
 	}
 
-	zr, err := zlib.NewReader(bytes.NewReader(zlibBytes))
+	zr, err := zlib.NewReader(bytes.NewReader(result.ZlibBytes))
 	if err != nil {
 		log.Println(err)
-		return nil, err
+		return nil, "", err
 	}
 	defer zr.Close()
 
 	decompressBytes, err := ioutil.ReadAll(zr)
 	if err != nil {
-		return nil, fmt.Errorf("failed to decompress data from db: %v", err)
+		return nil, "", fmt.Errorf("failed to decompress data from db: %v", err)
 	}
-	return decompressBytes, nil
+	return decompressBytes, result.AccessToken, nil
 }
 
-func (db *DB) FetchReport(id int64) (*crashreport.CrashReport, error) {
-	bytes, err := db.FetchRawReport(id)
+func (db *DB) FetchReport(id int64) (*crashreport.CrashReport, string, error) {
+	bytes, accessToken, err := db.FetchRawReport(id)
 	if err != nil {
 		log.Println(err)
-		return nil, err
+		return nil, "", err
 	}
 
-	return crashreport.FromJson(bytes)
+	report, err := crashreport.FromJson(bytes)
+	if err != nil {
+		return nil, "", err
+	}
+	return report, accessToken, nil
 }
 
 func (db *DB) CheckDuplicate(report *crashreport.CrashReport) (bool, error) {

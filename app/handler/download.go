@@ -9,6 +9,7 @@ import (
 	"github.com/pmmp/CrashArchive/app/crashreport"
 	"github.com/pmmp/CrashArchive/app/database"
 	"github.com/pmmp/CrashArchive/app/template"
+	"github.com/pmmp/CrashArchive/app/user"
 	"log"
 )
 
@@ -20,10 +21,16 @@ func DownloadGet(db *database.DB) http.HandlerFunc {
 			template.ErrorTemplate(w, r, "", http.StatusBadRequest)
 			return
 		}
+		givenAccessToken := r.URL.Query().Get("access")
 
-		reportJsonBlob, err := db.FetchRawReport(int64(reportID))
+		reportJsonBlob, expectedAccessToken, err := db.FetchRawReport(int64(reportID))
 		if err != nil {
 			template.ErrorTemplate(w, r, "Report not found", http.StatusNotFound)
+			return
+		}
+
+		if !user.GetUserInfo(r).CheckReportAccess(expectedAccessToken, givenAccessToken) {
+			template.ErrorTemplate(w, r, "", http.StatusUnauthorized)
 			return
 		}
 		reportBytes, err := crashreport.JsonToCrashLog(reportJsonBlob)

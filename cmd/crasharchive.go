@@ -76,6 +76,7 @@ loop:
 		time.Sleep(5 * time.Second)
 		retry++
 	}
+	db.UpdateTables()
 
 	csrfKey, err := ioutil.ReadFile("./config/csrf-key.bin")
 	if err != nil || len(csrfKey) != 32 {

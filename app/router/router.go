@@ -56,7 +56,7 @@ func New(db *database.DB, wh *webhook.Webhook, config *app.Config, csrfKey []byt
 			r.Get("/logout", handler.LogoutGet)
 			r.Get("/list", handler.ListGet(db))
 			r.Get("/view/{reportID}", handler.ViewIDGet(db, config))
-			r.Get("/view/{reportID}/raw", handler.ViewIDRawGet(db))
+			r.Get("/view/{reportID}/raw", handler.ViewIDRawGet(db, config.ViewReportRequiresAuth))
 			r.Get("/download/{reportID}", handler.DownloadGet(db))
 			r.Post("/delete/{reportID}", handler.DeletePost(db))
 

@@ -34,10 +34,16 @@ func ViewIDGet(db *database.DB, config *app.Config) http.HandlerFunc {
 			return
 		}
 
-		report, err := db.FetchReport(int64(reportID))
+		report, expectedAccessToken, err := db.FetchReport(int64(reportID))
 		if err != nil {
 			log.Printf("error fetching report: %v", err)
 			template.ErrorTemplate(w, r, "Report not found", http.StatusNotFound)
+			return
+		}
+
+		givenAccessToken := r.URL.Query().Get("access_token")
+		if config.ViewReportRequiresAuth && !user.GetUserInfo(r).CheckReportAccess(expectedAccessToken, givenAccessToken) {
+			template.ErrorTemplate(w, r, "This crash archive requires admin login to view reports without an access token", http.StatusUnauthorized)
 			return
 		}
 
@@ -47,6 +53,8 @@ func ViewIDGet(db *database.DB, config *app.Config) http.HandlerFunc {
 		v["PocketMineVersion"] = report.Version.Get(true)
 		v["ReportID"] = reportID
 		v["HasDeletePerm"] = user.GetUserInfo(r).HasDeletePerm()
+		//do not leak the access token if this instance allows unauthenticated viewing
+		v["AccessToken"] = givenAccessToken //needed to allow deleting without admin perms
 
 		issueQueryParams := url.Values{}
 		issueQueryParams.Add("title", report.Error.Message)
@@ -57,7 +65,7 @@ func ViewIDGet(db *database.DB, config *app.Config) http.HandlerFunc {
 	}
 }
 
-func ViewIDRawGet(db *database.DB) http.HandlerFunc {
+func ViewIDRawGet(db *database.DB, requireAdminToView bool) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		reportID, err := strconv.Atoi(chi.URLParam(r, "reportID"))
 		if err != nil {
@@ -65,10 +73,15 @@ func ViewIDRawGet(db *database.DB) http.HandlerFunc {
 			return
 		}
 
-		report, err := db.FetchRawReport(int64(reportID))
+		report, expectedAccessToken, err := db.FetchRawReport(int64(reportID))
 		if err != nil {
 			log.Printf("error fetching report: %v", err)
 			template.ErrorTemplate(w, r, "Report not found", http.StatusNotFound)
+			return
+		}
+
+		if requireAdminToView && !user.GetUserInfo(r).CheckReportAccess(expectedAccessToken, r.URL.Query().Get("access_token")) {
+			template.ErrorTemplate(w, r, "This crash archive requires admin login to view reports without an access token", http.StatusUnauthorized)
 			return
 		}
 

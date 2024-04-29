@@ -41,6 +41,8 @@ type Config struct {
 	SlackURL           string
 
 	GitHubAuth         *GitHubAuthConfig
+	ViewReportRequiresAuth bool
+
 	CsrfInsecureCookies bool
 }
 
