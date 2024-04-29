@@ -12,24 +12,24 @@ role="navigation">
                 <li><a href="/"><i class="material-icons">home</i></a></li>
                 <li><a href="/search"><i class="material-icons">search</i></a></li>
                 <li><a href="/list"><i class="material-icons">list</i></a></li>
-                <li><a href="/submit"><i class="material-icons">add</i></a></li>
+                <li><a href="/submit"><i class="material-icons">upload</i></a></li>
                 {{if eq .ActiveUserName "anonymous"}}
-                <li><a class="login-button" href="/login"><i class="material-icons">supervisor_account</i></a></li>
+                <li><a class="login-button" href="/login"><i class="material-icons right">supervisor_account</i>Login</a></li>
                 {{else}}
-                <li><a href="/logout"><i class="material-icons">exit_to_app</i></a></li>
+                <li><a href="/logout"><i class="material-icons right">exit_to_app</i>Logout "{{.ActiveUserName}}"</a></li>
                 {{end}}
             </ul>
         </div>
         <a href="/" data-target="mobile-menu" class="sidenav-trigger"><i class="material-icons">menu</i></a>
         <ul class="sidenav" id="mobile-menu">
-            <li><a href="/">Home</a></li>
-            <li><a href="/search">Search</a></li>
-            <li><a href="/list">List</a></li>
-            <li><a href="/submit">Submit</a></li>
+            <li><a href="/"><i class="material-icons left">home</i>Home</a></li>
+            <li><a href="/search"><i class="material-icons left">search</i>Search</a></li>
+            <li><a href="/list"><i class="material-icons left">list</i>List</a></li>
+            <li><a href="/submit"><i class="material-icons left">upload</i>Submit</a></li>
             {{if eq .ActiveUserName "anonymous"}}
-            <li><a class="login-button" href="/login">Login</a></li>
+            <li><a class="login-button" href="/login"><i class="material-icons left">supervisor_account</i>Login</a></li>
             {{else}}
-            <li><a href="/logout">Logout "{{.ActiveUserName}}"</a></li>
+            <li><a href="/logout"><i class="material-icons left">exit_to_app</i>Logout "{{.ActiveUserName}}"</a></li>
             {{end}}
         </ul>
     </div>
