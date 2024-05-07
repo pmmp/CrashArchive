@@ -6,7 +6,6 @@ Web-based searchable archive for PocketMine-MP crash reports. https://crash.pmmp
 CA is primarily used on Linux.
 
 ### Prerequisites
-- Go 1.13+
 - Docker
 
 ### Installing
