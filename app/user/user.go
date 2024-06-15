@@ -6,19 +6,22 @@ import (
 type UserPermission int
 
 const (
-	View UserPermission  = 0
+    Anonymous UserPermission = 0
+	Basic  UserPermission = 1
 	Admin UserPermission = 99999
 )
 
 type UserInfo struct {
 	Name       string
 	Permission UserPermission
+    Id         int64
 }
 
 func DefaultUserInfo() UserInfo {
 	return UserInfo{
 		Name:       "anonymous",
-		Permission: View,
+		Permission: Anonymous,
+        Id:         0,
 	}
 }
 
@@ -28,6 +31,7 @@ func (u UserInfo) HasDeletePerm() bool {
 
 func (u UserInfo) CheckReportAccess(expectedAccessToken string, givenAccessToken string) bool {
 	//this denies view access to all anon users for old reports that don't have an access token
+	log.Printf("checking access for %s (provided %s, should be %s)", u.Name, givenAccessToken, expectedAccessToken)
 	if givenAccessToken != expectedAccessToken || expectedAccessToken == "" {
 		log.Printf("user %s: wrong or missing report access token (provided %s, should be %s) - checking admin perms", u.Name, givenAccessToken, expectedAccessToken)
 		//TODO: allow user account access to specific reports depending on criteria (e.g. crash plugin)

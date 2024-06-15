@@ -65,6 +65,8 @@ func New(db *database.DB, wh *webhook.Webhook, config *app.Config, csrfKey []byt
 				r.Get("/id", handler.SearchIDGet)
 				r.Get("/report", handler.SearchReportGet(db))
 			})
+
+			r.Post("/access_request/{reportID}", handler.AccessRequestPost(db))
 		})
 
 		//these APIs don't check CSRF and won't generate tokens

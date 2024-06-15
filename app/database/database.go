@@ -177,3 +177,50 @@ func (db *DB) AddUser(username string, password []byte, permission user.UserPerm
 	)
 	return err2
 }
+
+func (db *DB) CheckUserReportAccess(reportId int64, userInfo user.UserInfo) (bool, error) {
+	var count int
+	var err error
+	if userInfo.Id != 0 {
+		//github auth used - the username may have changed
+		err = db.QueryRow("SELECT COUNT(*) FROM crash_report_access WHERE reportId = ? AND userId = ?", reportId, userInfo.Id).Scan(&count)
+	} else {
+		//offline auth - don't allow offline users to use access requests of github users
+		err = db.QueryRow("SELECT COUNT(*) FROM crash_report_access WHERE reportId = ? AND userId = 0 AND username = ?", reportId, userInfo.Name).Scan(&count)
+	}
+
+	return count > 0, err
+}
+
+func (db *DB) GetUserReportAccessRequestId(reportId int64, userInfo user.UserInfo) (int64, error) {
+	var id int64
+	var err error
+
+	if userInfo.Id != 0 {
+		err = db.Get(&id, "SELECT id FROM crash_report_access_requests WHERE reportId = ? AND userId = ? LIMIT 1", reportId, userInfo.Id)
+	} else {
+		err = db.Get(&id, "SELECT id FROM crash_report_access_requests WHERE reportId = ? AND userId = 0 AND username = ?", reportId, userInfo.Name)
+	}
+
+	return id, err
+}
+
+func (db *DB) InsertUserReportAccessRequest(reportId int64, userInfo user.UserInfo, description string) (int64, error) {
+    res, err := db.Exec(
+        "INSERT INTO crash_report_access_requests (reportId, username, userId, description) VALUES (?, ?, ?, ?)",
+        reportId,
+        userInfo.Name,
+        userInfo.Id,
+        description,
+    )
+    if err != nil {
+        return 0, err
+    }
+	id, err := res.LastInsertId()
+	if err != nil {
+		log.Println(err)
+		return 0, fmt.Errorf("failed to get last insert ID: %v", err)
+	}
+
+    return id, err
+}

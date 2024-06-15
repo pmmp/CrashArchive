@@ -42,9 +42,36 @@ func ViewIDGet(db *database.DB, config *app.Config) http.HandlerFunc {
 		}
 
 		givenAccessToken := r.URL.Query().Get("access_token")
-		if config.ViewReportRequiresAuth && !user.GetUserInfo(r).CheckReportAccess(expectedAccessToken, givenAccessToken) {
-			template.ErrorTemplate(w, r, "This crash archive requires admin login to view reports without an access token", http.StatusUnauthorized)
-			return
+		userInfo := user.GetUserInfo(r)
+		if config.ViewReportRequiresAuth && !userInfo.CheckReportAccess(expectedAccessToken, givenAccessToken) {
+			if userInfo.Permission < user.Basic {
+				template.ErrorTemplate(w, r, "You must login to view reports without an access token", http.StatusUnauthorized)
+				return
+			}
+			hasAccess, err := db.CheckUserReportAccess(int64(reportID), userInfo)
+			if err != nil {
+				log.Printf("error checking user report access for %s: %v", userInfo.Name, err)
+				template.ErrorTemplate(w, r, "", http.StatusInternalServerError)
+				return
+			}
+			if !hasAccess {
+				requestID, err := db.GetUserReportAccessRequestId(int64(reportID), userInfo)
+				if err != nil {
+					log.Printf("error checking for preexisting access requests for %s: %v", userInfo.Name, err)
+					template.ErrorTemplate(w, r, "", http.StatusInternalServerError)
+					return
+				}
+				if requestID != 0 {
+					log.Printf("user %s has already made an access request for report %d which hasn't yet been approved", userInfo.Name, reportID)
+					template.ErrorTemplate(w, r, fmt.Sprintf("You've already requested access to report #%d. Please check back later.", reportID), http.StatusUnauthorized)
+				} else {
+					log.Printf("directing user %s to make an access request for report %d", userInfo.Name, reportID)
+					v := make(map[string]interface{})
+					v["ReportID"] = reportID
+					template.ExecuteTemplateParams(w, r, "access_request", v)
+				}
+				return
+			}
 		}
 
 		v := make(map[string]interface{})

@@ -40,3 +40,27 @@ CREATE TABLE users (
 	permission INT NOT NULL,
 	PRIMARY KEY (username)
 );
+
+CREATE TABLE crash_report_access (
+	id INT NOT NULL AUTO_INCREMENT,
+	reportId INT NOT NULL,
+	username VARCHAR(64),
+	userId INT DEFAULT NULL,
+	PRIMARY KEY (id),
+	FOREIGN KEY (reportId)
+		REFERENCES crash_reports(id)
+		ON DELETE CASCADE
+);
+
+CREATE TABLE crash_report_access_requests (
+	id INT NOT NULL AUTO_INCREMENT,
+	reportId INT NOT NULL,
+	username VARCHAR(64),
+	userId INT DEFAULT NULL,
+	description VARCHAR(1024),
+	PRIMARY KEY (id),
+	FOREIGN KEY (reportId)
+		REFERENCES crash_reports(id)
+		ON DELETE CASCADE,
+    UNIQUE KEY user_and_id (reportId, username, userId)
+);

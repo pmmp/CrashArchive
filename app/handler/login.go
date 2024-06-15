@@ -17,7 +17,7 @@ import (
 
 func isAlreadyLoggedIn(w http.ResponseWriter, r *http.Request) bool {
 	userInfo := user.GetUserInfo(r)
-	if userInfo.Permission != user.View {
+	if userInfo.Permission != user.Anonymous {
 		log.Printf("user %s (%s) is already logged in", userInfo.Name, r.RemoteAddr)
 		template.ErrorTemplate(w, r, "You're already logged in", http.StatusBadRequest)
 		return true
@@ -60,29 +60,30 @@ func getGitHubApi(path string, accessInfo githubAccessInfo) (responseBody []byte
 	return
 }
 
-func getGitHubUsername(accessInfo githubAccessInfo) (string, error) {
+func getGitHubUserInfo(accessInfo githubAccessInfo) (string, int64, error) {
 	data, statusCode, err := getGitHubApi("user", accessInfo)
 	if err != nil {
-		return "", err
+		return "", 0, err
 	}
 	if statusCode != http.StatusOK {
-		return "", fmt.Errorf("Request error: %s", string(data))
+		return "", 0, fmt.Errorf("Request error: %s", string(data))
 	}
 
 	var userInfo struct {
 		Login string `json:"login"`
+		Id    int64  `json:"id"`
 	}
 
 	err = json.Unmarshal(data, &userInfo)
 	if err != nil {
-		return "", fmt.Errorf("Failed to unmarshal GitHub user info JSON: %v", err)
+		return "", 0, fmt.Errorf("Failed to unmarshal GitHub user info JSON: %v", err)
 	}
 
 	if userInfo.Login != "" {
-		return userInfo.Login, nil
+		return userInfo.Login, userInfo.Id, nil
 	}
 
-	return "", errors.New("Failed to locate GitHub username")
+	return "", 0, errors.New("Failed to locate GitHub username and ID")
 }
 
 func hasAdminGitHubTeam(username string, orgName string, teamSlug string, accessInfo githubAccessInfo) (bool, error) {
@@ -172,27 +173,29 @@ func LoginGetGithubCallback(githubAppConfig *app.GitHubAuthConfig) http.HandlerF
 				template.ErrorTemplate(w, r, "Error authenticating you with GitHub", http.StatusInternalServerError)
 			}
 
-			username, err := getGitHubUsername(accessInfo)
+			username, githubUserId, err := getGitHubUserInfo(accessInfo)
+			permission := user.Basic
 			if err != nil {
-				log.Printf("Error getting GitHub username: %v", err)
-				template.ErrorTemplate(w, r, "Error getting GitHub username", http.StatusInternalServerError)
+				log.Printf("Error getting GitHub user info: %v", err)
+				template.ErrorTemplate(w, r, "Error getting GitHub user info", http.StatusInternalServerError)
 				return
 			}
 
 			isAdmin, err := hasAdminGitHubTeam(username, githubAppConfig.OrgName, githubAppConfig.TeamSlug, accessInfo)
 			if isAdmin {
+				permission = user.Admin
 				log.Printf("GitHub user %s is an administrator :)", username)
-				completeAuthentication(w, r, user.UserInfo{
-					Name: username,
-					Permission: user.Admin,
-				}, redirectUrl)
 			} else {
 				log.Printf("GitHub user %s is NOT an administrator", username)
-				template.ErrorTemplate(w, r, "Can't log you in because you're not an administrator", http.StatusUnauthorized)
-				return
 			}
+			completeAuthentication(w, r, user.UserInfo{
+				Name: username,
+				Permission: permission,
+				Id: githubUserId,
+			}, redirectUrl)
 		} else {
 			log.Println("Weird GitHub callback query: %s", r.URL.String())
+			//TODO: this probably should generate an error page?
 		}
 	}
 }

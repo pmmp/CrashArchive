@@ -17,7 +17,7 @@ import (
 	"github.com/pmmp/CrashArchive/app/webhook"
 )
 
-const dbRetry = 5
+const dbRetry = 30
 
 func main() {
 	log.SetFlags(log.Lshortfile)
