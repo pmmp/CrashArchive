@@ -44,6 +44,8 @@ type Config struct {
 	ViewReportRequiresAuth bool
 
 	CsrfInsecureCookies bool
+
+	GitHubCrashIssueForm bool
 }
 
 func LoadConfig(configPath string) (*Config, error) {

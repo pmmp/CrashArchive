@@ -58,7 +58,12 @@ func ViewIDGet(db *database.DB, config *app.Config) http.HandlerFunc {
 
 		issueQueryParams := url.Values{}
 		issueQueryParams.Add("title", report.Error.Message)
-		issueQueryParams.Add("body", fmt.Sprintf("Link to crashdump: %s/view/%d\n\n### Additional comments\n", config.Domain, reportID))
+		if config.GitHubCrashIssueForm {
+			issueQueryParams.Add("template", "crash.yml")
+			issueQueryParams.Add("crashdump-url", fmt.Sprintf("%s/view/%d", config.Domain, reportID))
+		} else {
+			issueQueryParams.Add("body", fmt.Sprintf("Link to crashdump: %s/view/%d\n\n### Additional comments\n", config.Domain, reportID))
+		}
 		v["ReportIssueURL"] = "https://github.com/pmmp/PocketMine-MP/issues/new?" + issueQueryParams.Encode()
 
 		template.ExecuteTemplateParams(w, r, "view", v)
