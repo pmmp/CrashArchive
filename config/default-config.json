@@ -1,5 +1,6 @@
 {
     "Domain": "https://crash.pmmp.io",
+    "GitHubRepo": "https://github.com/pmmp/PocketMine-MP",
     "ListenAddress":"0.0.0.0:80",
     "Database":{
         "Username":"root",

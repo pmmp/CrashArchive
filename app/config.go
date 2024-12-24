@@ -20,6 +20,7 @@ type GitHubAuthConfig struct {
 
 type Config struct {
 	Domain             string
+	GitHubRepo         string
 	ListenAddress      string
 	Database           *database.Config
 	Template           *template.Config
