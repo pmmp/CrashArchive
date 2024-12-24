@@ -1,0 +1,33 @@
+{{define "title"}}PocketMine Crash Archive{{end}}
+{{define "head"}}{{end}}
+{{define "content"}}
+<div class="container">
+    <div class="row">
+        <div class="col s10 offset-s1">
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title">Request access to crash report #{{ .ReportID }}</span>
+                    <form action="/access_request/{{ .ReportID }}" method="post" enctype="application/x-www-form-urlencoded" role="form">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input type="text" name="description" class="validate" id="description">
+                                <label for="description">Tell us why you need access to this report</label>
+                            </div>
+                        </div>
+                        <input type="hidden" value="/" name="redirect_url" id="redirect-input">
+                        {{ .csrfField }}
+                        <button type="submit" class="btn btn-lg btn-primary btn-block" style="margin-top:10px; margin-left: auto; margin-right: auto">Submit request<i class="material-icons left">send</i></button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#redirect-input").val(document.referrer)
+    })
+</script>
+{{end}}
+{{define "foot"}}{{end}}
