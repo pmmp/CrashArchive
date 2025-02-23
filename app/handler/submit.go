@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"crypto/rand"
 	"encoding/json"
 	"encoding/hex"
 	"errors"
@@ -9,7 +10,6 @@ import (
 	"log"
 	"mime/multipart"
 	"net/http"
-	"math/rand"
 	"strings"
 
 	"github.com/pmmp/CrashArchive/app"
