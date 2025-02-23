@@ -43,7 +43,7 @@ func ViewIDGet(db *database.DB, config *app.Config) http.HandlerFunc {
 
 		givenAccessToken := r.URL.Query().Get("access_token")
 		if config.ViewReportRequiresAuth && !user.GetUserInfo(r).CheckReportAccess(expectedAccessToken, givenAccessToken) {
-			template.ErrorTemplate(w, r, "This crash archive requires admin login to view reports without an access token", http.StatusUnauthorized)
+			template.ErrorTemplate(w, r, "Administrator login is required to view this report", http.StatusUnauthorized)
 			return
 		}
 
