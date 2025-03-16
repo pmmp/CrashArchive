@@ -13,6 +13,7 @@ import (
 	"github.com/go-chi/chi/v5"
 
 	"github.com/pmmp/CrashArchive/app"
+	"github.com/pmmp/CrashArchive/app/crashreport"
 	"github.com/pmmp/CrashArchive/app/database"
 	"github.com/pmmp/CrashArchive/app/template"
 	"github.com/pmmp/CrashArchive/app/user"
@@ -26,8 +27,8 @@ func ViewIDGet(db *database.DB, config *app.Config) http.HandlerFunc {
 			return
 		}
 
-		var reporterName string
-		err = db.Get(&reporterName, "SELECT reporterName FROM crash_reports WHERE id = ?", reportID)
+		var mainTableInfo crashreport.Report
+		err = db.Get(&mainTableInfo, "SELECT reporterName, fork, modified FROM crash_reports WHERE id = ?", reportID)
 		if err != nil {
 			log.Printf("can't find report %d in database: %v", reportID, err)
 			template.ErrorTemplate(w, r, "Report not found", http.StatusNotFound)
@@ -49,12 +50,14 @@ func ViewIDGet(db *database.DB, config *app.Config) http.HandlerFunc {
 
 		v := make(map[string]interface{})
 		v["Report"] = report
-		v["Name"] = clean(reporterName)
+		v["Name"] = clean(mainTableInfo.ReporterName)
 		v["PocketMineVersion"] = report.Version.Get(true)
 		v["ReportID"] = reportID
 		v["HasDeletePerm"] = user.GetUserInfo(r).HasDeletePerm()
 		//do not leak the access token if this instance allows unauthenticated viewing
 		v["AccessToken"] = givenAccessToken //needed to allow deleting without admin perms
+		v["Fork"] = mainTableInfo.Fork
+		v["Modified"] = mainTableInfo.Modified
 
 		issueQueryParams := url.Values{}
 		issueQueryParams.Add("title", report.Error.Message)

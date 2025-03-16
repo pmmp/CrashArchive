@@ -26,13 +26,20 @@
         </div>
     </div>
     <div class="row">
-        <div class="version-selector input-field col s12">
+        <div class="version-selector input-field col s6 m9">
             <select name="versions" id="normal-search-versions" multiple>
                 {{ range .KnownVersions }}
-		<option value="{{ . }}" {{ if ne (index $.Search.Versions .) "" }} selected {{ end }}>{{ . }}</option>
+                <option value="{{ . }}" {{ if ne (index $.Search.Versions .) "" }} selected {{ end }}>{{ . }}</option>
                 {{ end }}
             </select>
             <label for="normal-search-versions">Filter by PocketMine-MP version</label>
+        </div>
+        <div class="version-selector input-field col s6 m3">
+            <select name="versioninclude" id="normal-search-version-include" multiple>
+                <option value="forked" {{ if .Search.Forks }} selected {{ end }}>Forks</option>
+                <option value="modified" {{ if .Search.Modified }} selected {{ end }}>Modified</option>
+            </select>
+            <label for="normal-search-version-include">Include</label>
         </div>
     </div>
     <div class="row">

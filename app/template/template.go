@@ -89,6 +89,8 @@ type SearchBoxParams struct {
 	Plugin string
 	Versions map[string]string
 	Duplicates bool
+	Forks bool
+	Modified bool
 }
 
 func ExecuteListTemplate(w http.ResponseWriter, r *http.Request, reports []crashreport.Report, url string, id int, start int, total int, searchBoxParams *SearchBoxParams, knownVersions []string) error {

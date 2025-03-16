@@ -17,6 +17,8 @@ CREATE TABLE crash_reports (
       duplicate BOOL,
       reporterName VARCHAR(127),
       reporterEmail VARCHAR(127),
+      fork BOOL,
+      modified BOOL,
       PRIMARY KEY (id),
       INDEX(plugin(10)),
       INDEX(message(32)),

@@ -40,12 +40,14 @@ func New(config *Config) (*DB, error) {
 
 func (db *DB) UpdateTables() {
 	db.Exec("ALTER TABLE crash_report_blobs ADD COLUMN access_token CHAR(32) DEFAULT ''")
+	db.Exec("ALTER TABLE crash_reports ADD COLUMN fork BOOL DEFAULT FALSE")
+	db.Exec("ALTER TABLE crash_reports ADD COLUMN modified BOOL DEFAULT FALSE")
 }
 
 var queryInsertReport = `INSERT INTO crash_reports
-		(plugin, pluginInvolvement, version, build, file, message, line, type, os, submitDate, reportDate, duplicate, reporterName, reporterEmail)
+		(plugin, pluginInvolvement, version, build, file, message, line, type, os, submitDate, reportDate, duplicate, reporterName, reporterEmail, fork, modified)
 	VALUES
-		(:plugin, :pluginInvolvement, :version, :build, :file, :message, :line, :type, :os, :submitDate, :reportDate, :duplicate, :reporterName, :reporterEmail)`
+	(:plugin, :pluginInvolvement, :version, :build, :file, :message, :line, :type, :os, :submitDate, :reportDate, :duplicate, :reporterName, :reporterEmail, :fork, :modified)`
 const queryInsertBlob = `INSERT INTO crash_report_blobs (id, crash_report_json, access_token) VALUES (?, ?, ?)`
 
 func (db *DB) InsertReport(report *crashreport.CrashReport, reporterName string, reporterEmail string, originalData []byte, accessToken string) (int64, error) {
@@ -64,6 +66,8 @@ func (db *DB) InsertReport(report *crashreport.CrashReport, reporterName string,
 		Duplicate:         report.Duplicate,
 		ReporterName:      reporterName,
 		ReporterEmail:     reporterEmail,
+		Fork:              report.Fork,
+		Modified:          report.Modified,
 	})
 
 	if err != nil {

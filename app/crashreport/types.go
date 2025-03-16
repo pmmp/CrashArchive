@@ -52,6 +52,8 @@ type CrashReport struct {
 	ReportDate time.Time
 
 	Version    *VersionString
+	Modified     bool
+	Fork         bool
 
 	Error ReportError
 }
@@ -112,4 +114,6 @@ type Report struct {
 	Duplicate         bool
 	ReporterName      string `db:"reporterName"`
 	ReporterEmail     string `db:"reporterEmail"`
+	Fork              bool
+	Modified          bool
 }

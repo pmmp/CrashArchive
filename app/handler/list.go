@@ -53,6 +53,24 @@ func buildSearchQuery(params url.Values) (string, []interface{}, *template.Searc
 	} else {
 		searchBoxParams.Duplicates = true
 	}
+	if versionInclude := params["versioninclude"]; versionInclude != nil && len(versionInclude) > 0 {
+		for _, includeOption := range versionInclude {
+			switch includeOption {
+			case "forked":
+				searchBoxParams.Forks = true
+			case "modified":
+				searchBoxParams.Modified = true
+			default:
+				return "", nil, nil, fmt.Errorf("unknown versioninclude option %s", includeOption)
+			}
+		}
+	}
+	if !searchBoxParams.Forks {
+		filters = append(filters, "fork = false")
+	}
+	if !searchBoxParams.Modified {
+		filters = append(filters, "modified = false")
+	}
 
 	if params.Get("min") != "" || params.Get("max") != "" {
 		//check ranges

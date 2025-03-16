@@ -73,18 +73,6 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.H
 			return
 		}
 
-		if report.Data.General.Name != "PocketMine-MP" {
-			log.Printf("spoon detected from: %s\n", r.RemoteAddr)
-			sendError(w, r, "Only crash reports from PocketMine-MP are accepted", http.StatusUnprocessableEntity, isAPI)
-			return
-		}
-
-		if report.Data.General.GIT == strings.Repeat("00", 20) || strings.HasSuffix(report.Data.General.GIT, "-dirty") {
-			log.Printf("invalid git hash %s in report from: %s\n", report.Data.General.GIT, r.RemoteAddr)
-			sendError(w, r, "This crash report is from a modified version of PocketMine-MP", http.StatusUnprocessableEntity, isAPI)
-			return
-		}
-
 		pluginsList, ok := report.Data.Plugins.(map[string]interface{})
 		if ok {
 			for v, _ := range pluginsList {
@@ -114,6 +102,14 @@ func SubmitPost(db *database.DB, wh *webhook.Webhook, config *app.Config) http.H
 				snippet = snippet[:80]
 			}
 			log.Printf("duplicate report from: %s, message is \"%s\"", r.RemoteAddr, snippet)
+		}
+		if report.Data.General.GIT == strings.Repeat("00", 20) || strings.HasSuffix(report.Data.General.GIT, "-dirty") {
+			log.Printf("invalid git hash %s in report from: %s\n", report.Data.General.GIT, r.RemoteAddr)
+			report.Modified = true
+		}
+		if report.Data.General.Name != "PocketMine-MP" {
+			log.Printf("fork %s detected in report from: %s\n", report.Data.General.Name, r.RemoteAddr)
+			report.Fork = true
 		}
 
 		name := r.FormValue("name")
