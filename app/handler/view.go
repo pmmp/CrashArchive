@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"strconv"
 
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
 
 	"github.com/pmmp/CrashArchive/app"
 	"github.com/pmmp/CrashArchive/app/database"
