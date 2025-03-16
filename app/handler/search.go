@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"sort"
 	"strconv"
 
-	"facette.io/natsort"
 	"github.com/pmmp/CrashArchive/app/crashreport"
 	"github.com/pmmp/CrashArchive/app/template"
 	"github.com/pmmp/CrashArchive/app/database"
@@ -15,20 +13,17 @@ import (
 
 func SearchGet(db *database.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		knownVersions := []string{}
-		err := db.Select(&knownVersions, `SELECT DISTINCT version FROM crash_reports`)
+		knownVersions, err := db.GetKnownVersions()
 		if err != nil {
 			fmt.Printf("error fetching known versions: %v\n", err)
 			template.ErrorTemplate(w, r, "", http.StatusInternalServerError)
 			return
 		}
-		log.Printf("Found %d known versions\n", len(knownVersions))
-		reverseNatsort := func(a, b int) bool {
-			return natsort.Compare(knownVersions[b], knownVersions[a])
-		}
-		sort.Slice(knownVersions, reverseNatsort)
 		args := make(map[string]interface{})
 		args["KnownVersions"] = knownVersions
+		args["PluginInvolvementOptions"] = crashreport.PluginInvolvementOptions
+		args["Search"] = &template.SearchBoxParams{}
+
 		template.ExecuteTemplateParams(w, r, "search", args)
 	}
 }
@@ -62,6 +57,6 @@ func SearchReportGet(db *database.DB) http.HandlerFunc {
 			return
 		}
 
-		ListFilteredReports(w, r, db, "WHERE message = ? AND file = ? and line = ?", report.Message, report.File, report.Line)
+		ListFilteredReports(w, r, db, nil, "WHERE message = ? AND file = ? and line = ?", report.Message, report.File, report.Line)
 	}
 }

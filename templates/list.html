@@ -3,35 +3,46 @@
 {{define "content"}}
 <div class="container">
     <div class="row">
-        <div class="col s12">
+        <div>
             <div class="center">
                 <h5 class="light">Search results</h5>
-                <p>Showing {{.RangeStart}}-{{.RangeEnd}} ({{.ShowCount}} reports) of {{.TotalCount}} reports. Duplicated reports might have been hidden.</p>
+                <p>Showing {{.RangeStart}}-{{.RangeEnd}} ({{.ShowCount}} reports) of {{.TotalCount}} reports matching your search options</p>
+            </div>
+
+            <ul class="collapsible collapsible-search">
+                <li>
+                    <div class="collapsible-header collapsible-search-header"><i class="material-icons">edit</i>Adjust search options...</div>
+                    <div class="collapsible-body collapsible-search-body">
+                        {{template "search-box.html" .}}
+                    </div>
+                </li>
+            </ul>
+            <div class="center">
                 <div style="padding-top: 20px; padding-bottom: 10px;">
                     <a href="{{pagenum .SearchUrl .PrevPage}}" {{if eq .PrevPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons left">arrow_back</i>Prev</a>
                     <a href="{{pagenum .SearchUrl .NextPage}}" {{if eq .NextPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons right">arrow_forward</i>Next</a>
                 </div>
             </div>
-            <table class="bordered linked-rows">
-                <thead>
+        </div>
+        <table class="bordered linked-rows">
+            <thead>
                 <tr>
                     <th>Version</th>
                     <th class="hide-on-small-only" style="width: 10%">Plugin</th>
                     <th style="width: 100%">Message</th>
                 </tr>
-                </thead>
-                <tbody>{{ range .Data }}
+            </thead>
+            <tbody>{{ range .Data }}
                 <tr class="{{if isDirectPluginCrash .PluginInvolvement}}red lighten-4{{else if isIndirectPluginCrash .PluginInvolvement}}orange lighten-4{{end}}">
                     <td class="link-table-cell" style="white-space: nowrap"><a href="/view/{{.ID}}">{{.Version}}</a></td>
                     <td class="link-table-cell hide-on-small-only" style="max-width:0"><a class="truncate" href="/view/{{.ID}}">{{if ne .Plugin ""}}{{.Plugin}}{{else}}N/A{{end}}</a></td>
                     <td class="link-table-cell" style="max-width:0" title="{{.Message}}"><a class="truncate" href="/view/{{.ID}}">{{.Message}}</a></td>
                 </tr>
                 {{end}}</tbody>
-            </table>
-            <div class="center" style="padding-top: 10px;">
-                <a href="{{pagenum .SearchUrl .PrevPage}}" {{if eq .PrevPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons left">arrow_back</i>Prev</a>
-                <a href="{{pagenum .SearchUrl .NextPage}}" {{if eq .NextPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons right">arrow_forward</i>Next</a>
-            </div>
+        </table>
+        <div class="center" style="padding-top: 10px;">
+            <a href="{{pagenum .SearchUrl .PrevPage}}" {{if eq .PrevPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons left">arrow_back</i>Prev</a>
+            <a href="{{pagenum .SearchUrl .NextPage}}" {{if eq .NextPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons right">arrow_forward</i>Next</a>
         </div>
     </div>
 </div>

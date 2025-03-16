@@ -7,7 +7,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"sort"
 	"time"
+
+	"facette.io/natsort"
 
 	"github.com/pmmp/CrashArchive/app/crashreport"
 	"github.com/pmmp/CrashArchive/app/user"
@@ -176,4 +179,18 @@ func (db *DB) AddUser(username string, password []byte, permission user.UserPerm
 		int(permission),
 	)
 	return err2
+}
+
+func (db *DB) GetKnownVersions() ([]string, error) {
+	knownVersions := []string{}
+	err := db.Select(&knownVersions, `SELECT DISTINCT version FROM crash_reports`)
+	if err != nil {
+		return nil, fmt.Errorf("error fetching known versions: %v\n", err)
+	}
+	log.Printf("Found %d known versions\n", len(knownVersions))
+	reverseNatsort := func(a, b int) bool {
+		return natsort.Compare(knownVersions[b], knownVersions[a])
+	}
+	sort.Slice(knownVersions, reverseNatsort)
+	return knownVersions, nil
 }

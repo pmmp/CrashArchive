@@ -18,13 +18,13 @@ import (
 
 func ListGet(db *database.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		filter, filterParams, err := buildSearchQuery(r.URL.Query())
+		filter, filterParams, searchBoxParams, err := buildSearchQuery(r.URL.Query())
 		if err != nil {
 			template.ErrorTemplate(w, r, "", http.StatusBadRequest)
 			return
 		}
 		log.Printf("search generated query: %s\n", filter)
-		ListFilteredReports(w, r, db, filter, filterParams...)
+		ListFilteredReports(w, r, db, searchBoxParams, filter, filterParams...)
 	}
 }
 
@@ -42,28 +42,31 @@ func parseUintParam(v url.Values, paramName string, defaultValue uint64) (uint64
 	return defaultValue, nil
 }
 
-func buildSearchQuery(params url.Values) (string, []interface{}, error) {
+func buildSearchQuery(params url.Values) (string, []interface{}, *template.SearchBoxParams, error) {
+	searchBoxParams := &template.SearchBoxParams{}
 	filters := make([]string, 0)
 	filterParams := make([]interface{}, 0)
 	var filter string
 
 	if params.Get("duplicates") != "true" {
 		filters = append(filters, "duplicate = false")
+	} else {
+		searchBoxParams.Duplicates = true
 	}
 
 	if params.Get("min") != "" || params.Get("max") != "" {
 		//check ranges
 		filterMinId, err := parseUintParam(params, "min", 0)
 		if err != nil {
-			return "", nil, err
+			return "", nil, nil, err
 		}
 		filterMaxId, err := parseUintParam(params, "max", math.MaxUint64)
 		if err != nil {
-			return "", nil, err
+			return "", nil, nil, err
 		}
 
 		if filterMinId > filterMaxId {
-			return "", nil, errors.New("Invalid min/max ID bounds")
+			return "", nil, nil, errors.New("Invalid min/max ID bounds")
 		}
 
 		filters = append(filters, "id BETWEEN ? AND ?")
@@ -71,33 +74,28 @@ func buildSearchQuery(params url.Values) (string, []interface{}, error) {
 	}
 
 	//filter by message
-	message := params.Get("message")
-	if message != "" {
+	searchBoxParams.Message = params.Get("message")
+	if searchBoxParams.Message != "" {
 		filters = append(filters, "message LIKE ?")
-		filterParams = append(filterParams, "%" + message + "%")
+		filterParams = append(filterParams, "%" + searchBoxParams.Message + "%")
 	}
 
-	errortype := params.Get("errortype")
-	if errortype != "" {
+	searchBoxParams.ErrorType = params.Get("errortype")
+	if searchBoxParams.ErrorType != "" {
 		filters = append(filters, "type LIKE ?")
-		filterParams = append(filterParams, "%" + errortype + "%")
+		filterParams = append(filterParams, "%" + searchBoxParams.ErrorType + "%")
 	}
 
 	if causes := params["cause"]; causes != nil && len(causes) > 0 {
+		searchBoxParams.PluginInvolvements = make(map[string]string)
 		involvements := []string{}
 		for _, cause := range causes {
-			var involvement string = ""
-			switch cause {
-				case "core":
-					involvement = crashreport.PINone
-				case "plugin":
-					involvement = crashreport.PIDirect
-				case "plugin_indirect":
-					involvement = crashreport.PIIndirect
-				default:
-					return "", nil, fmt.Errorf("Invalid cause filter %s", cause)
+			if _, ok := crashreport.PluginInvolvementStrings[cause]; ok {
+				involvements = append(involvements, cause)
+				searchBoxParams.PluginInvolvements[cause] = cause
+			} else {
+				return "", nil, nil, fmt.Errorf("Invalid cause filter %s", cause)
 			}
-			involvements = append(involvements, involvement)
 		}
 		qs := strings.Repeat("?,", len(involvements))
 		filters = append(filters, fmt.Sprintf("pluginInvolvement IN (%s)", qs[:len(qs)-1]))
@@ -107,17 +105,17 @@ func buildSearchQuery(params url.Values) (string, []interface{}, error) {
 	}
 
 	//filter by plugin
-	plugin := params.Get("plugin")
-	if plugin != "" {
+	searchBoxParams.Plugin = params.Get("plugin")
+	if searchBoxParams.Plugin != "" {
 		filters = append(filters, "plugin = ?")
-		filterParams = append(filterParams, plugin)
+		filterParams = append(filterParams, searchBoxParams.Plugin)
 	}
 
 	//filter by build number
 	if params.Get("build") != "" {
 		buildID, err := parseUintParam(params, "build", math.MaxUint64)
 		if err != nil {
-			return "", nil, err
+			return "", nil, nil, err
 		}
 
 		operator := "="
@@ -133,9 +131,11 @@ func buildSearchQuery(params url.Values) (string, []interface{}, error) {
 	}
 
 	if filterVersions := params["versions"]; filterVersions != nil && len(filterVersions) > 0 {
+		searchBoxParams.Versions = make(map[string]string)
 		qs := strings.Repeat("?,", len(filterVersions))
 		filters = append(filters, fmt.Sprintf("version IN (%s)", qs[:len(qs)-1]))
 		for _, filterVersion := range filterVersions {
+			searchBoxParams.Versions[filterVersion] = filterVersion
 			filterParams = append(filterParams, filterVersion)
 		}
 	}
@@ -144,10 +144,10 @@ func buildSearchQuery(params url.Values) (string, []interface{}, error) {
 	if filter != "" {
 		filter = "WHERE " + filter
 	}
-	return filter, filterParams, nil
+	return filter, filterParams, searchBoxParams, nil
 }
 
-func ListFilteredReports(w http.ResponseWriter, r *http.Request, db *database.DB, filter string, filterParams ...interface{}) {
+func ListFilteredReports(w http.ResponseWriter, r *http.Request, db *database.DB, searchBoxParams *template.SearchBoxParams, filter string, filterParams ...interface{}) {
 	var err error
 	var total int
 
@@ -192,5 +192,11 @@ func ListFilteredReports(w http.ResponseWriter, r *http.Request, db *database.DB
 		return
 	}
 
-	template.ExecuteListTemplate(w, r, reports, r.URL.String(), pageId, rangeStart, total)
+	knownVersions, err := db.GetKnownVersions()
+	if err != nil {
+		fmt.Printf("error fetching known versions: %v\n", err)
+		template.ErrorTemplate(w, r, "", http.StatusInternalServerError)
+		return
+	}
+	template.ExecuteListTemplate(w, r, reports, r.URL.String(), pageId, rangeStart, total, searchBoxParams, knownVersions)
 }

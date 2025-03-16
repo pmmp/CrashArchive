@@ -86,3 +86,16 @@ table.borderless tr {
 .version-selector li > span, .version-selector li > a {
 	padding: 6px 16px;
 }
+
+.collapsible-search {
+	box-shadow: none;
+}
+
+.collapsible-search-header {
+	display: flex;
+	justify-content: center;
+}
+
+.collapsible-search-body {
+	padding: 18px; /* match card */
+}

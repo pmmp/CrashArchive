@@ -17,6 +17,12 @@ var PluginInvolvementStrings = map[string]string{
 	PIDirect:   "Direct",
 }
 
+var PluginInvolvementOptions = []string{
+	PINone,
+	PIIndirect,
+	PIDirect,
+}
+
 type MapStringStringAllowsEmptyArray map[string]string
 
 func (this *MapStringStringAllowsEmptyArray) UnmarshalJSON(data []byte) error {

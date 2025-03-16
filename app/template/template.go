@@ -2,6 +2,7 @@ package template
 
 import (
 	"html/template"
+	"log"
 	"net/http"
 	"path/filepath"
 
@@ -62,7 +63,11 @@ func addContextTemplateParams(data map[string]interface{}, r *http.Request) map[
 func ExecuteTemplateParams(w http.ResponseWriter, r *http.Request, name string, data map[string]interface{}) error {
 	addContextTemplateParams(data, r)
 	if tmpl, ok := t[name]; ok {
-		return tmpl.ExecuteTemplate(w, "base.html", data)
+		err := tmpl.ExecuteTemplate(w, "base.html", data)
+		if err != nil {
+			log.Printf("error executing template %s: %v", name, err)
+		}
+		return err
 	}
 	return ErrorTemplate(w, r, "", http.StatusInternalServerError)
 }
@@ -77,8 +82,23 @@ func ErrorTemplate(w http.ResponseWriter, r *http.Request, message string, statu
 	}, r))
 }
 
-func ExecuteListTemplate(w http.ResponseWriter, r *http.Request, reports []crashreport.Report, url string, id int, start int, total int) {
+type SearchBoxParams struct {
+	Message string
+	ErrorType string
+	PluginInvolvements map[string]string
+	Plugin string
+	Versions map[string]string
+	Duplicates bool
+}
+
+func ExecuteListTemplate(w http.ResponseWriter, r *http.Request, reports []crashreport.Report, url string, id int, start int, total int, searchBoxParams *SearchBoxParams, knownVersions []string) error {
 	cnt := len(reports)
+
+	if searchBoxParams == nil {
+		searchBoxParams = &SearchBoxParams{}
+	}
+	log.Printf("searchbox params: %+v", searchBoxParams)
+
 
 	data := map[string]interface{}{
 		"RangeStart": 0,
@@ -89,6 +109,9 @@ func ExecuteListTemplate(w http.ResponseWriter, r *http.Request, reports []crash
 		"Data":       reports,
 		"PrevPage":   0,
 		"NextPage":   0,
+		"Search":     searchBoxParams,
+		"PluginInvolvementOptions": crashreport.PluginInvolvementOptions,
+		"KnownVersions": knownVersions,
 	}
 
 	if cnt > 0 {
@@ -102,5 +125,5 @@ func ExecuteListTemplate(w http.ResponseWriter, r *http.Request, reports []crash
 	if start+cnt < total {
 		data["NextPage"] = id + 1
 	}
-	ExecuteTemplateParams(w, r, "list", data)
+	return ExecuteTemplateParams(w, r, "list", data)
 }

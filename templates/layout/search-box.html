@@ -1,0 +1,70 @@
+<form action="/list" method="get" role="form" id="normal-search">
+    <div class="row">
+        <div class="input-field col s12">
+            <input name="message" type="text" class="validate" id="normal-search-message" value="{{ .Search.Message }}">
+            <label for="normal-search-message">Error message, part or keyword</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="input-field col s12">
+            <input name="errortype" type="text" class="validate" id="normal-search-errortype" value="{{ .Search.ErrorType }}">
+            <label for="normal-search-errortype">Error/exception type (partial matches accepted)</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="version-selector input-field col s6 m3">
+            <select name="cause" id="normal-search-cause" multiple>
+                {{ range .PluginInvolvementOptions }}
+		<option value="{{ . }}" {{ if ne (index $.Search.PluginInvolvements .) "" }} selected{{ end }}>{{ pluginInvolvementToString . }}</option>
+                {{ end }}
+            </select>
+            <label for="normal-search-cause">Filter by plugin involvement</label>
+        </div>
+        <div class="input-field col s6 m9">
+            <input name="plugin" type="text" class="validate" id="normal-search-plugin-name" disabled value="{{ .Search.Plugin }}">
+            <label for="normal-search-plugin-name">Plugin name (case sensitive)</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="version-selector input-field col s12">
+            <select name="versions" id="normal-search-versions" multiple>
+                {{ range .KnownVersions }}
+		<option value="{{ . }}" {{ if ne (index $.Search.Versions .) "" }} selected {{ end }}>{{ . }}</option>
+                {{ end }}
+            </select>
+            <label for="normal-search-versions">Filter by PocketMine-MP version</label>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col s12">
+            <label>
+                <input type="checkbox" name="duplicates" class="filled-in" value="true" {{ if .Search.Duplicates }} checked {{ end }}>
+                <span>Show duplicates</span>
+            </label>
+        </div>
+    </div>
+    <button type="submit" class="waves-effect waves-light btn" style="margin-top:10px;">Search</button>
+</form>
+<script type="text/javascript">
+    $('#normal-search').submit(function () {
+        $(this)
+            .find('input[name]')
+            .filter(function () {
+                return !this.value;
+            })
+            .prop('name', '');
+    });
+$('#normal-search-buildtext').on("input", function () {
+    $('#normal-search-build-compare').attr("disabled", $(this).val() === "");
+});
+$('#normal-search-cause').change(function () {
+    var found = 0;
+    $.each($(this).val(), function(){
+        if(this != "none"){
+            found++;
+        }
+        return true;
+    });
+    $('#normal-search-plugin-name').attr("disabled", found == 0 || $(this).val().length === 0);
+});
+</script>
