@@ -20,7 +20,7 @@
     </form>
     <ul>
         <li><a href="{{.ReportIssueURL}}" class="btn-floating fab-text-option">Report GitHub issue</a></li>
-        <li><a href="/search/report?id={{.ReportID}}" class="btn-floating fab-text-option">Find duplicates</a></li>
+        <li><a href="/duplicates/{{.ReportID}}" class="btn-floating fab-text-option">Find duplicates</a></li>
         <li><a href="/download/{{.ReportID}}?access_token={{.AccessToken}}" class="btn-floating fab-text-option">Download</a></li>
         <li><a href="/view/{{.ReportID}}/raw?access_token={{.AccessToken}}" class="btn-floating fab-text-option">View raw</a></li>
         <li><a onclick="deleteHandler()" class="btn-floating fab-text-option">Delete</a></li>

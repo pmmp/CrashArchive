@@ -10,7 +10,6 @@ role="navigation">
             <a href="/" class="brand-logo" style="padding-left: 5px; padding-right: 5px">Crash Archive</a>
             <ul class="right hide-on-med-and-down">
                 <li><a href="/"><i class="material-icons">home</i></a></li>
-                <li><a href="/search"><i class="material-icons">search</i></a></li>
                 <li><a href="/list"><i class="material-icons">list</i></a></li>
                 <li><a href="/submit"><i class="material-icons">upload</i></a></li>
                 {{if eq .ActiveUserName "anonymous"}}
@@ -23,8 +22,7 @@ role="navigation">
         <a href="/" data-target="mobile-menu" class="sidenav-trigger"><i class="material-icons">menu</i></a>
         <ul class="sidenav" id="mobile-menu">
             <li><a href="/"><i class="material-icons left">home</i>Home</a></li>
-            <li><a href="/search"><i class="material-icons left">search</i>Search</a></li>
-            <li><a href="/list"><i class="material-icons left">list</i>List</a></li>
+            <li><a href="/list"><i class="material-icons left">list</i>Browse</a></li>
             <li><a href="/submit"><i class="material-icons left">upload</i>Submit</a></li>
             {{if eq .ActiveUserName "anonymous"}}
             <li><a class="login-button" href="/login"><i class="material-icons left">supervisor_account</i>Login</a></li>

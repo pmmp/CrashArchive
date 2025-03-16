@@ -94,9 +94,6 @@ type SearchBoxParams struct {
 func ExecuteListTemplate(w http.ResponseWriter, r *http.Request, reports []crashreport.Report, url string, id int, start int, total int, searchBoxParams *SearchBoxParams, knownVersions []string) error {
 	cnt := len(reports)
 
-	if searchBoxParams == nil {
-		searchBoxParams = &SearchBoxParams{}
-	}
 	log.Printf("searchbox params: %+v", searchBoxParams)
 
 
