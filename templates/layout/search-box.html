@@ -15,7 +15,7 @@
         <div class="version-selector input-field col s6 m3">
             <select name="cause" id="normal-search-cause" multiple>
                 {{ range .PluginInvolvementOptions }}
-		<option value="{{ . }}" {{ if ne (index $.Search.PluginInvolvements .) "" }} selected{{ end }}>{{ pluginInvolvementToString . }}</option>
+                <option value="{{ . }}" {{ if ne (index $.Search.PluginInvolvements .) "" }} selected{{ end }}>{{ pluginInvolvementToString . }}</option>
                 {{ end }}
             </select>
             <label for="normal-search-cause">Filter by plugin involvement</label>
