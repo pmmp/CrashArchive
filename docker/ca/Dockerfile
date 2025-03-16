@@ -1,4 +1,4 @@
-FROM golang:1.20.1 as build
+FROM golang:1.23.0 as build
 WORKDIR /go/crasharchive
 COPY . .
 RUN go build -o ./bin/crasharchive ./cmd/crasharchive.go
