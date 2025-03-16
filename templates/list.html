@@ -9,7 +9,7 @@
                 <p>Showing {{.RangeStart}}-{{.RangeEnd}} ({{.ShowCount}} reports) of {{.TotalCount}} reports matching your search options</p>
             </div>
 
-	    {{if ne .Search nil}}
+            {{if ne .Search nil}}
             <ul class="collapsible collapsible-search">
                 <li>
                     <div class="collapsible-header collapsible-search-header"><i class="material-icons">edit</i>Adjust search options...</div>
@@ -18,7 +18,7 @@
                     </div>
                 </li>
             </ul>
-	    {{end}}
+            {{end}}
             <div class="center">
                 <div style="padding-top: 20px; padding-bottom: 10px;">
                     <a href="{{pagenum .SearchUrl .PrevPage}}" {{if eq .PrevPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons left">arrow_back</i>Prev</a>
