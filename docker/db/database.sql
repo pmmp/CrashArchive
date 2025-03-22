@@ -23,8 +23,8 @@ CREATE TABLE crash_reports (
       INDEX(plugin(10)),
       INDEX(message(32)),
       INDEX(file(32)),
-      INDEX(duplicate),
       INDEX(version)
+      INDEX bool_filters (duplicate, fork, modified),
 ) ENGINE=InnoDB;
 
 CREATE TABLE crash_report_blobs (

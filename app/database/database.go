@@ -39,9 +39,13 @@ func New(config *Config) (*DB, error) {
 }
 
 func (db *DB) UpdateTables() {
+	log.Printf("updating tables")
 	db.Exec("ALTER TABLE crash_report_blobs ADD COLUMN access_token CHAR(32) DEFAULT ''")
 	db.Exec("ALTER TABLE crash_reports ADD COLUMN fork BOOL DEFAULT FALSE")
 	db.Exec("ALTER TABLE crash_reports ADD COLUMN modified BOOL DEFAULT FALSE")
+	db.Exec("DROP INDEX duplicate ON crash_reports")
+	db.Exec("CREATE INDEX bool_filters ON crash_reports (duplicate, fork, modified)")
+	log.Printf("finished updating tables")
 }
 
 var queryInsertReport = `INSERT INTO crash_reports
