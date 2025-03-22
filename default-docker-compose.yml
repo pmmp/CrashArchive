@@ -17,7 +17,6 @@ services:
     volumes:
         - ./templates:/app/templates
         - ./config:/app/config
-        - ./volumes/reports:/app/reports
         - ./static:/app/static
         - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt
     links:
