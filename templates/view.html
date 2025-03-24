@@ -31,6 +31,16 @@
         <div class="col s12">
             <h5 class="light truncate" style="line-height: initial">#{{ .ReportID}} {{.Report.Error.Message}}</h5>
             <p>Submitted by {{.Name}}</p>
+
+            {{ if ne .AccessToken "" }}
+            <div class="card-panel blue lighten-2 white-text z-depth-0" style="display: flex; align-items: center;">
+                <i class="material-icons" style="padding-right: 10px;">info</i>
+                <span>
+                    You're viewing this report via an anonymous access link.<br>
+                    No one can view your crash report without this link except Crash Archive administrators.
+                </span>
+            </div>
+            {{ end }}
             <div class="row">
                 <div class="col s12 l6">
                     <div class="card-panel">
