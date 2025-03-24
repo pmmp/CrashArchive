@@ -35,7 +35,10 @@
                 </tr>
             </thead>
             <tbody>{{ range .Data }}
-                <tr class="{{if isDirectPluginCrash .PluginInvolvement}}red lighten-4{{else if isIndirectPluginCrash .PluginInvolvement}}orange lighten-4{{end}}">
+                <tr class="
+			{{if isDirectPluginCrash .PluginInvolvement}}red lighten-4{{else if isIndirectPluginCrash .PluginInvolvement}}orange lighten-4{{end}}
+			{{if or .Modified .Fork}}server-modified-entry{{end}}
+		">
                     <td class="link-table-cell" style="white-space: nowrap"><a href="/view/{{.ID}}">{{.Version}}</a></td>
                     <td class="link-table-cell hide-on-small-only" style="max-width:0"><a class="truncate" href="/view/{{.ID}}">{{if ne .Plugin ""}}{{.Plugin}}{{else}}N/A{{end}}</a></td>
                     <td class="link-table-cell" style="max-width:0" title="{{.Message}}"><a class="truncate" href="/view/{{.ID}}">{{.Message}}</a></td>

@@ -53,6 +53,11 @@ td.link-table-cell a {
 	color: black;
 }
 
+tr.server-modified-entry > td.link-table-cell a {
+	color: gray;
+	font-style: italic;
+}
+
 .code-line-numbers {
 	float: left;
 	padding-right: 5px;

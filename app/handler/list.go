@@ -201,7 +201,7 @@ func ListFilteredReports(w http.ResponseWriter, r *http.Request, db *database.DB
 	rangeStart := (pageId - 1) * pageSize
 
 	var reports []crashreport.Report
-	querySelect := fmt.Sprintf("SELECT id, version, plugin, message, pluginInvolvement FROM crash_reports %s ORDER BY id DESC LIMIT %d, %d", filter, rangeStart, pageSize)
+	querySelect := fmt.Sprintf("SELECT id, version, plugin, message, pluginInvolvement, modified, fork FROM crash_reports %s ORDER BY id DESC LIMIT %d, %d", filter, rangeStart, pageSize)
 	err = db.Select(&reports, querySelect, filterParams...)
 	if err != nil {
 		log.Println(err)
