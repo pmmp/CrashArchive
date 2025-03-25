@@ -54,8 +54,13 @@ td.link-table-cell a {
 }
 
 tr.server-modified-entry > td.link-table-cell a {
+	text-decoration: line-through;
+}
+
+tr.server-fork-entry > td.link-table-cell a {
 	color: gray;
 	font-style: italic;
+	text-decoration: line-through;
 }
 
 .code-line-numbers {

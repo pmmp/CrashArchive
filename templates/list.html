@@ -20,6 +20,27 @@
             </ul>
             {{end}}
             <div class="center">
+                <h6>Legend</h6>
+                <div>
+                    <span class="orange-text text-lighten-4">&#9632;</span>
+                    Indirect plugin involvement
+                </div>
+                <div>
+                    <span class="red-text text-lighten-4">&#9632;</span>
+                    Direct plugin involvement
+                </div>
+                <div>
+                    <span style="text-decoration: line-through">
+                        Modified PocketMine-MP
+                    </span>
+                </div>
+                <div>
+                    <span style="text-decoration: line-through; font-style: italic; color: gray">
+                        Fork of PocketMine-MP
+                    </span>
+                </div>
+            </div>
+            <div class="center">
                 <div style="padding-top: 20px; padding-bottom: 10px;">
                     <a href="{{pagenum .SearchUrl .PrevPage}}" {{if eq .PrevPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons left">arrow_back</i>Prev</a>
                     <a href="{{pagenum .SearchUrl .NextPage}}" {{if eq .NextPage 0}} class="btn disabled" {{else}} class="btn" {{end}}><i class="material-icons right">arrow_forward</i>Next</a>
@@ -36,9 +57,9 @@
             </thead>
             <tbody>{{ range .Data }}
                 <tr class="
-			{{if isDirectPluginCrash .PluginInvolvement}}red lighten-4{{else if isIndirectPluginCrash .PluginInvolvement}}orange lighten-4{{end}}
-			{{if or .Modified .Fork}}server-modified-entry{{end}}
-		">
+                           {{if isDirectPluginCrash .PluginInvolvement}}red lighten-4{{else if isIndirectPluginCrash .PluginInvolvement}}orange lighten-4{{end}}
+                           {{if .Fork}}server-fork-entry{{else if .Modified}}server-modified-entry{{end}}
+                           ">
                     <td class="link-table-cell" style="white-space: nowrap"><a href="/view/{{.ID}}">{{.Version}}</a></td>
                     <td class="link-table-cell hide-on-small-only" style="max-width:0"><a class="truncate" href="/view/{{.ID}}">{{if ne .Plugin ""}}{{.Plugin}}{{else}}N/A{{end}}</a></td>
                     <td class="link-table-cell" style="max-width:0" title="{{.Message}}"><a class="truncate" href="/view/{{.ID}}">{{.Message}}</a></td>
