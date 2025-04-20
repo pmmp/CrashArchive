@@ -12,6 +12,7 @@ import (
 	"strings"
 	"net/url"
 	"log"
+	"time"
 )
 
 var funcMap = template.FuncMap{
@@ -26,6 +27,7 @@ var funcMap = template.FuncMap{
 	"isIndirectPluginCrash": isIndirectPluginCrash,
 	"renderDuration": renderDuration,
 	"renderJitMode": renderJitMode,
+	"date": date,
 }
 
 func shorthash(s string) string {
@@ -128,4 +130,10 @@ func renderJitMode(mode *int) string {
 	} else {
 		return "Not available"
 	}
+}
+
+func date(timestamp int64) string {
+	time := time.Unix(timestamp, 0)
+	//Out with Golang and its stupid date formatting codes
+	return fmt.Sprintf("%d-%02d-%02d", time.Year(), time.Month(), time.Day())
 }
