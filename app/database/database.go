@@ -45,13 +45,14 @@ func (db *DB) UpdateTables() {
 	db.Exec("ALTER TABLE crash_reports ADD COLUMN modified BOOL DEFAULT FALSE")
 	db.Exec("DROP INDEX duplicate ON crash_reports")
 	db.Exec("CREATE INDEX bool_filters ON crash_reports (duplicate, fork, modified)")
+	db.Exec("ALTER TABLE crash_reports ADD COLUMN viewed BOOL DEFAULT TRUE")
 	log.Printf("finished updating tables")
 }
 
 var queryInsertReport = `INSERT INTO crash_reports
-		(plugin, pluginInvolvement, version, build, file, message, line, type, os, submitDate, reportDate, duplicate, reporterName, reporterEmail, fork, modified)
+		(plugin, pluginInvolvement, version, build, file, message, line, type, os, submitDate, reportDate, duplicate, reporterName, reporterEmail, fork, modified, viewed)
 	VALUES
-	(:plugin, :pluginInvolvement, :version, :build, :file, :message, :line, :type, :os, :submitDate, :reportDate, :duplicate, :reporterName, :reporterEmail, :fork, :modified)`
+	(:plugin, :pluginInvolvement, :version, :build, :file, :message, :line, :type, :os, :submitDate, :reportDate, :duplicate, :reporterName, :reporterEmail, :fork, :modified, :viewed)`
 const queryInsertBlob = `INSERT INTO crash_report_blobs (id, crash_report_json, access_token) VALUES (?, ?, ?)`
 
 func (db *DB) InsertReport(report *crashreport.CrashReport, reporterName string, reporterEmail string, originalData []byte, accessToken string) (int64, error) {
@@ -72,6 +73,7 @@ func (db *DB) InsertReport(report *crashreport.CrashReport, reporterName string,
 		ReporterEmail:     reporterEmail,
 		Fork:              report.Fork,
 		Modified:          report.Modified,
+		Viewed:            false,
 	})
 
 	if err != nil {

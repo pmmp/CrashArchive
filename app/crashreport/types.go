@@ -116,4 +116,5 @@ type Report struct {
 	ReporterEmail     string `db:"reporterEmail"`
 	Fork              bool
 	Modified          bool
+	Viewed            bool
 }

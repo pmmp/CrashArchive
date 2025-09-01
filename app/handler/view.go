@@ -71,6 +71,8 @@ func ViewIDGet(db *database.DB, config *app.Config) http.HandlerFunc {
 		v["GitTreeURL"] = config.GitHubRepo + "/tree/" + report.Data.General.GIT
 
 		template.ExecuteTemplateParams(w, r, "view", v)
+
+		db.Exec("UPDATE crash_reports SET viewed = true WHERE id = ?", reportID)
 	}
 }
 
